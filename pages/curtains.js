@@ -33,7 +33,6 @@ export default function CurtainsForm() {
   const [collapsed, setCollapsed] = useState({});
   const [success, setSuccess] = useState(false);
   const [isPreviewing, setIsPreviewing] = useState(false);
-  const [expandedWindows, setExpandedWindows] = useState({});
 
   const handleCustomerChange = (e) => {
     const { name, value } = e.target;
@@ -73,7 +72,10 @@ export default function CurtainsForm() {
     return true;
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validate()) return;
+
     const payload = { ...customerInfo, windows };
 
     try {
@@ -98,86 +100,22 @@ export default function CurtainsForm() {
     }
   };
 
-  const togglePreview = () => {
-    if (validate()) {
-      setIsPreviewing(true);
-    }
-  };
-
   const toggleCollapse = (index) => {
     setCollapsed((prev) => ({ ...prev, [index]: !prev[index] }));
   };
 
-  const toggleWindow = (index) => {
-    setExpandedWindows((prev) => ({
-      ...prev,
-      [index]: !prev[index]
-    }));
-  };
-
-  const renderPreview = () => (
-    <div className={styles.formContainer}>
-      <h2 className={styles.heading}>Preview Your Submission</h2>
-
-      <h3 className={styles.sectionHeading}>Customer Info</h3>
-      <ul>
-        {Object.entries(customerInfo).map(([key, value]) => (
-          <li key={key}><strong>{key}:</strong> {value}</li>
-        ))}
-      </ul>
-
-      <h3 className={styles.sectionHeading}>Window Details</h3>
-      {windows.map((window, idx) => (
-        <div key={idx} className={styles.windowCard}>
-          <div
-            className={styles.previewToggle}
-            onClick={() => toggleWindow(idx)}
-          >
-            {expandedWindows[idx] ? '🔽' : '▶️'} Window {idx + 1}: {window.roomName || 'Untitled'}
-          </div>
-          <div className={`${styles.collapsibleContent} ${!expandedWindows[idx] ? styles.collapsed : ''}`}>
-            <ul>
-              {Object.entries(window).map(([key, value]) => (
-                <li key={key}><strong>{key}:</strong> {value}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      ))}
-
-      <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
-        <button onClick={() => setIsPreviewing(false)} className={styles.addWindowBtn}>🔙 Back to Edit</button>
-        <button onClick={handleSubmit} className={styles.submitBtn}>✅ Confirm Submit</button>
-      </div>
-    </div>
-  );
-
   if (success) {
-    return (
-      <div className={styles.successMessage}>
-        ✅ Thank you! Your curtains form has been submitted.
-      </div>
-    );
+    return <div className={styles.successMessage}>✅ Thank you! Your form has been submitted.</div>;
   }
 
-  if (isPreviewing) return renderPreview();
-
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        togglePreview();
-      }}
-      className={styles.formContainer}
-    >
+    <form onSubmit={handleSubmit} className={styles.formContainer}>
       <h2 className={styles.heading}>Curtains Measurement Form</h2>
 
       <h3 className={styles.sectionHeading}>Customer Info</h3>
       {['salesRep', 'customerName', 'customerAddress', 'customerPhone', 'customerEmail'].map((field) => (
         <div key={field} className={styles.inputGroup}>
-          <label className={styles.label}>
-            {field.charAt(0).toUpperCase() + field.slice(1)}:
-          </label>
+          <label className={styles.label}>{field.charAt(0).toUpperCase() + field.slice(1)}:</label>
           <input
             type="text"
             name={field}
@@ -189,46 +127,24 @@ export default function CurtainsForm() {
         </div>
       ))}
 
-      <h3 className={styles.sectionHeading}>Window Measurements (mm)</h3>
-
+      <h3 className={styles.sectionHeading}>Window Measurements</h3>
       {windows.map((window, idx) => (
         <div key={idx} className={styles.windowCard}>
-          <div
-            className={styles.previewToggle}
-            onClick={() => toggleCollapse(idx)}
-          >
+          <div className={styles.previewToggle} onClick={() => toggleCollapse(idx)}>
             {collapsed[idx] ? '▶️' : '🔽'} Window {idx + 1}: {window.roomName || 'Untitled'}
           </div>
 
           <div className={`${styles.collapsibleContent} ${collapsed[idx] ? styles.collapsed : ''}`}>
-            {['roomName', 'subcategory', 'fabric', 'color', 'customSplit', 'comments'].map((field) => (
+            {['roomName', 'subcategory', 'fabric', 'color', 'width', 'height', 'customSplit', 'comments'].map((field) => (
               <div key={field} className={styles.inputGroup}>
-                <label className={styles.label}>
-                  {field.charAt(0).toUpperCase() + field.slice(1)}:
-                </label>
+                <label className={styles.label}>{field.charAt(0).toUpperCase() + field.slice(1)}:</label>
                 <input
-                  type="text"
+                  type={['width', 'height'].includes(field) ? 'number' : 'text'}
                   name={field}
                   value={window[field]}
                   onChange={(e) => handleWindowChange(idx, e)}
-                  className={styles.input}
+                  className={`${styles.input} ${['width', 'height'].includes(field) ? styles.measurementInput : ''}`}
                   required={field !== 'comments'}
-                />
-              </div>
-            ))}
-
-            {['width', 'height'].map((field) => (
-              <div key={field} className={styles.inputGroup}>
-                <label className={styles.label}>
-                  {field.charAt(0).toUpperCase() + field.slice(1)} (mm): <span style={{ color: '#d00' }}>* Please double-check</span>
-                </label>
-                <input
-                  type="number"
-                  name={field}
-                  value={window[field]}
-                  onChange={(e) => handleWindowChange(idx, e)}
-                  className={`${styles.input} ${styles.measurementInput}`}
-                  required
                 />
               </div>
             ))}
@@ -241,9 +157,7 @@ export default function CurtainsForm() {
               { name: 'fixing', options: ['Top Fix', 'Double Extension Face Fix', 'Double Face Fix', 'Single Face Fix'] }
             ].map(({ name, options }) => (
               <div key={name} className={styles.inputGroup}>
-                <label className={styles.label}>
-                  {name.charAt(0).toUpperCase() + name.slice(1)}:
-                </label>
+                <label className={styles.label}>{name.charAt(0).toUpperCase() + name.slice(1)}:</label>
                 <select
                   name={name}
                   value={window[name]}
@@ -262,13 +176,8 @@ export default function CurtainsForm() {
         </div>
       ))}
 
-      <button type="button" onClick={addWindow} className={styles.addWindowBtn}>
-        ➕ Add Another Window
-      </button>
-
-      <button type="submit" className={styles.submitBtn}>
-        Preview Before Submit
-      </button>
+      <button type="button" onClick={addWindow} className={styles.addWindowBtn}>➕ Add Another Window</button>
+      <button type="submit" className={styles.submitBtn}>Submit</button>
     </form>
   );
 }
