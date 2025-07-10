@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import styles from '../styles/CurtainsForm.module.css';
 
 const initialCustomerState = {
   date: new Date().toLocaleDateString('en-GB'),
@@ -29,7 +30,7 @@ const initialWindowState = {
 export default function CurtainsForm() {
   const [customerInfo, setCustomerInfo] = useState({ ...initialCustomerState });
   const [windows, setWindows] = useState([{ ...initialWindowState }]);
-  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const handleCustomerChange = (e) => {
     const { name, value } = e.target;
@@ -49,25 +50,18 @@ export default function CurtainsForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-
-    const payload = {
-      ...customerInfo,
-      windows
-    };
+    const payload = { ...customerInfo, windows };
 
     try {
       const response = await fetch('/api/curtains-proxy', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
 
       const result = await response.json();
       if (result.result === 'success') {
-        alert('✅ Form submitted successfully');
+        setSuccess(true);
         setCustomerInfo({ ...initialCustomerState });
         setWindows([{ ...initialWindowState }]);
       } else {
@@ -76,107 +70,95 @@ export default function CurtainsForm() {
     } catch (err) {
       alert('❌ Submission failed: ' + err.message);
     }
-
-    setLoading(false);
   };
 
-  return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: '900px', margin: 'auto', padding: '20px' }}>
-      <h2 style={{ textAlign: 'center' }}>Curtains Measurement Form</h2>
-
-      <h3>Customer Info</h3>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-        {['salesRep', 'customerName', 'customerAddress', 'customerPhone', 'customerEmail'].map((field) => (
-          <div key={field} style={{ flex: '1 1 300px', marginBottom: '10px' }}>
-            <label>{field.charAt(0).toUpperCase() + field.slice(1)}:</label>
-            <input
-              type="text"
-              name={field}
-              value={customerInfo[field]}
-              onChange={handleCustomerChange}
-              style={{ width: '100%', padding: '8px' }}
-              required
-            />
-          </div>
-        ))}
+  if (success) {
+    return (
+      <div className={styles.successMessage}>
+        ✅ Thank you! Your curtains form has been submitted.
       </div>
+    );
+  }
 
-      <h3>Window Measurements</h3>
+  return (
+    <form onSubmit={handleSubmit} className={styles.formContainer}>
+      <h2 className={styles.heading}>Curtains Measurement Form</h2>
+
+      <h3 className={styles.sectionHeading}>Customer Info</h3>
+      {['salesRep', 'customerName', 'customerAddress', 'customerPhone', 'customerEmail'].map((field) => (
+        <div key={field} className={styles.inputGroup}>
+          <label className={styles.label}>
+            {field.charAt(0).toUpperCase() + field.slice(1)}:
+          </label>
+          <input
+            type="text"
+            name={field}
+            value={customerInfo[field]}
+            onChange={handleCustomerChange}
+            className={styles.input}
+            required
+          />
+        </div>
+      ))}
+
+      <h3 className={styles.sectionHeading}>Window Measurements</h3>
       {windows.map((window, idx) => (
-        <details key={idx} open style={{ border: '1px solid #ccc', borderRadius: '5px', padding: '10px', marginBottom: '15px' }}>
-          <summary style={{ fontWeight: 'bold', marginBottom: '10px', cursor: 'pointer' }}>🪟 Window {idx + 1}</summary>
+        <div key={idx} className={styles.windowCard}>
+          <h4 className={styles.windowTitle}>Window {idx + 1}</h4>
 
-          {['roomName', 'subcategory', 'fabric', 'color', 'width', 'height', 'customSplit', 'comments'].map(field => (
-            <div key={field} style={{ marginBottom: '10px' }}>
-              <label>{field.charAt(0).toUpperCase() + field.slice(1)}:</label>
+          {['roomName', 'subcategory', 'fabric', 'color', 'width', 'height', 'customSplit', 'comments'].map((field) => (
+            <div key={field} className={styles.inputGroup}>
+              <label className={styles.label}>
+                {field.charAt(0).toUpperCase() + field.slice(1)}:
+              </label>
               <input
                 type="text"
                 name={field}
                 value={window[field]}
                 onChange={(e) => handleWindowChange(idx, e)}
-                style={{ width: '100%', padding: '8px' }}
+                className={styles.input}
                 required={field !== 'comments'}
               />
             </div>
           ))}
 
-          {[{ name: 'headingType', options: ['Double Pinch Pleat', 'Wave Fold (S-fold)'] },
+          {[
+            { name: 'headingType', options: ['Double Pinch Pleat', 'Wave Fold (S-fold)'] },
             { name: 'track', options: ['Normal', 'Designer'] },
             { name: 'trackColor', options: ['Black', 'White', 'Anodised Silver', 'N/A'] },
             { name: 'control', options: ['Centre Opening', 'Full Right', 'Full Left'] },
             { name: 'fixing', options: ['Top Fix', 'Double Extension Face Fix', 'Double Face Fix', 'Single Face Fix'] }
           ].map(({ name, options }) => (
-            <div key={name} style={{ marginBottom: '10px' }}>
-              <label>{name.charAt(0).toUpperCase() + name.slice(1)}:</label>
+            <div key={name} className={styles.inputGroup}>
+              <label className={styles.label}>
+                {name.charAt(0).toUpperCase() + name.slice(1)}:
+              </label>
               <select
                 name={name}
                 value={window[name]}
                 onChange={(e) => handleWindowChange(idx, e)}
+                className={styles.select}
                 required
-                style={{ width: '100%', padding: '8px' }}
               >
                 <option value="">-- Select --</option>
-                {options.map(opt => (
-                  <option key={opt} value={opt}>{opt}</option>
+                {options.map((opt) => (
+                  <option key={opt} value={opt}>
+                    {opt}
+                  </option>
                 ))}
               </select>
             </div>
           ))}
-        </details>
+        </div>
       ))}
 
-      <button
-        type="button"
-        onClick={addWindow}
-        style={{
-          marginBottom: '20px',
-          padding: '10px 15px',
-          backgroundColor: '#e0e0e0',
-          border: '1px solid #ccc',
-          cursor: 'pointer'
-        }}
-      >
+      <button type="button" onClick={addWindow} className={styles.addWindowBtn}>
         ➕ Add Another Window
       </button>
 
-      <div style={{ position: 'sticky', bottom: 0, background: '#fff', paddingTop: '10px' }}>
-        <button
-          type="submit"
-          disabled={loading}
-          style={{
-            padding: '12px 20px',
-            backgroundColor: loading ? '#999' : '#0070f3',
-            color: '#fff',
-            border: 'none',
-            fontSize: '16px',
-            cursor: loading ? 'not-allowed' : 'pointer',
-            width: '100%',
-            borderRadius: '5px'
-          }}
-        >
-          {loading ? 'Submitting...' : 'Submit'}
-        </button>
-      </div>
+      <button type="submit" className={styles.submitBtn}>
+        Submit
+      </button>
     </form>
   );
 }
