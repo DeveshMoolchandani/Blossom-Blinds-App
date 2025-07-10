@@ -21,7 +21,8 @@ const initialBlindState = {
   baseRailColor: '',
   componentColor: '',
   rollDirection: '',
-  comments: ''
+  comments: '',
+  collapsed: false
 };
 
 export default function IndoorBlindsForm() {
@@ -44,6 +45,12 @@ export default function IndoorBlindsForm() {
     setBlinds([...blinds, { ...initialBlindState }]);
   };
 
+  const toggleCollapse = (index) => {
+    const updated = [...blinds];
+    updated[index].collapsed = !updated[index].collapsed;
+    setBlinds(updated);
+  };
+
   const validate = () => {
     const phoneRegex = /^\d{10}$/;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -56,13 +63,6 @@ export default function IndoorBlindsForm() {
     if (!emailRegex.test(customerInfo.customerEmail)) {
       alert('❌ Please enter a valid email address');
       return false;
-    }
-
-    for (const blind of blinds) {
-      if (!blinds.roomName || !blinds.width || !blinds.height) {
-        alert('❌ Each blind must have Room, Width and Height filled');
-        return false;
-      }
     }
 
     return true;
@@ -121,77 +121,86 @@ export default function IndoorBlindsForm() {
       <h3>Blinds</h3>
       {blinds.map((blind, idx) => (
         <div key={idx} style={{ border: '1px solid #ccc', padding: '10px', marginBottom: '15px' }}>
-          <h4>Blind {idx + 1}</h4>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h4>Blind {idx + 1}</h4>
+            <button type="button" onClick={() => toggleCollapse(idx)} style={{ background: 'none', border: 'none', color: '#0070f3', cursor: 'pointer' }}>
+              {blind.collapsed ? '➕ Expand' : '➖ Collapse'}
+            </button>
+          </div>
 
-          {[
-            { name: 'roomName', label: 'Location' },
-            { name: 'fabric', label: 'Material' },
-            { name: 'color', label: 'Colour' },
-            { name: 'width', label: 'Width (mm)' },
-            { name: 'height', label: 'Drop (mm)' },
-            { name: 'comments', label: 'Comments' }
-          ].map(({ name, label }) => (
-            <div key={name} style={{ marginBottom: '10px' }}>
-              <label>{label}:</label>
-              <input
-                type="text"
-                name={name}
-                value={blind[name]}
-                onChange={(e) => handleBlindChange(idx, e)}
-                style={{ width: '100%', padding: '8px' }}
-                required={name !== 'comments'}
-              />
-            </div>
-          ))}
+          {!blind.collapsed && (
+            <>
+              {[
+                { name: 'roomName', label: 'Location' },
+                { name: 'fabric', label: 'Material' },
+                { name: 'color', label: 'Colour' },
+                { name: 'width', label: 'Width (mm)' },
+                { name: 'height', label: 'Drop (mm)' },
+                { name: 'comments', label: 'Comments' }
+              ].map(({ name, label }) => (
+                <div key={name} style={{ marginBottom: '10px' }}>
+                  <label>{label}:</label>
+                  <input
+                    type="text"
+                    name={name}
+                    value={blind[name]}
+                    onChange={(e) => handleBlindChange(idx, e)}
+                    style={{ width: '100%', padding: '8px' }}
+                    required={name !== 'comments'}
+                  />
+                </div>
+              ))}
 
-          {[
-            {
-              name: 'controlSide',
-              label: 'Control Side',
-              options: ['Left', 'Right']
-            },
-            {
-              name: 'brackets',
-              label: 'Brackets',
-              options: [
-                'N/A', '55mm', 'Dual Opposite side', 'Dual Same Side to suit',
-                'Dual Same side', 'Dual opposite Side to suit', 'None', 'Single',
-                'Slim Combo Top Back', 'Slim Combo Top Back to suit',
-                'Slim Combo Top Front to suit', 'Slim Combo Top front'
-              ]
-            },
-            {
-              name: 'baseRailColor',
-              label: 'Base Rail Colour',
-              options: ['Anodised', 'Bone', 'Pure white', 'Sandstone', 'Satin black']
-            },
-            {
-              name: 'componentColor',
-              label: 'Component Colour',
-              options: ['Black grey', 'Sandstone', 'White', 'Standard']
-            },
-            {
-              name: 'rollDirection',
-              label: 'Roll Direction',
-              options: ['Over roll', 'Standard']
-            }
-          ].map(({ name, label, options }) => (
-            <div key={name} style={{ marginBottom: '10px' }}>
-              <label>{label}:</label>
-              <select
-                name={name}
-                value={blind[name]}
-                onChange={(e) => handleBlindChange(idx, e)}
-                style={{ width: '100%', padding: '8px' }}
-                required
-              >
-                <option value="">-- Select --</option>
-                {options.map((opt) => (
-                  <option key={opt} value={opt}>{opt}</option>
-                ))}
-              </select>
-            </div>
-          ))}
+              {[
+                {
+                  name: 'controlSide',
+                  label: 'Control Side',
+                  options: ['Left', 'Right']
+                },
+                {
+                  name: 'brackets',
+                  label: 'Brackets',
+                  options: [
+                    'N/A', '55mm', 'Dual Opposite side', 'Dual Same Side to suit',
+                    'Dual Same side', 'Dual opposite Side to suit', 'None', 'Single',
+                    'Slim Combo Top Back', 'Slim Combo Top Back to suit',
+                    'Slim Combo Top Front to suit', 'Slim Combo Top front'
+                  ]
+                },
+                {
+                  name: 'baseRailColor',
+                  label: 'Base Rail Colour',
+                  options: ['Anodised', 'Bone', 'Pure white', 'Sandstone', 'Satin black']
+                },
+                {
+                  name: 'componentColor',
+                  label: 'Component Colour',
+                  options: ['Black grey', 'Sandstone', 'White', 'Standard']
+                },
+                {
+                  name: 'rollDirection',
+                  label: 'Roll Direction',
+                  options: ['Over roll', 'Standard']
+                }
+              ].map(({ name, label, options }) => (
+                <div key={name} style={{ marginBottom: '10px' }}>
+                  <label>{label}:</label>
+                  <select
+                    name={name}
+                    value={blind[name]}
+                    onChange={(e) => handleBlindChange(idx, e)}
+                    style={{ width: '100%', padding: '8px' }}
+                    required
+                  >
+                    <option value="">-- Select --</option>
+                    {options.map((opt) => (
+                      <option key={opt} value={opt}>{opt}</option>
+                    ))}
+                  </select>
+                </div>
+              ))}
+            </>
+          )}
         </div>
       ))}
 
@@ -199,7 +208,15 @@ export default function IndoorBlindsForm() {
         ➕ Add Another Blind
       </button>
 
-      <button type="submit" style={{ padding: '12px 20px', backgroundColor: '#0070f3', color: '#fff', border: 'none', fontSize: '16px' }}>
+      <button type="submit" style={{
+        padding: '12px 20px',
+        backgroundColor: '#0070f3',
+        color: '#fff',
+        border: 'none',
+        fontSize: '16px',
+        width: '100%',
+        borderRadius: '6px'
+      }}>
         Submit
       </button>
     </form>
