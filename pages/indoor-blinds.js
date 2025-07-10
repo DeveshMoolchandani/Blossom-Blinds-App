@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import styles from '../styles/CurtainsForm.module.css';
 
 const initialCustomerState = {
   date: new Date().toLocaleDateString('en-GB'),
@@ -11,24 +12,24 @@ const initialCustomerState = {
 };
 
 const initialWindowState = {
-  location: '',
-  width: '',
-  drop: '',
+  roomName: '',
+  subcategory: '',
   material: '',
   colour: '',
-  control: '',
+  width: '',
+  drop: '',
+  controlSide: '',
   brackets: '',
   baseRailColour: '',
   componentColour: '',
   rollDirection: '',
-  comments: ''
+  comments: '',
+  collapsed: false
 };
 
 export default function IndoorBlindsForm() {
   const [customerInfo, setCustomerInfo] = useState({ ...initialCustomerState });
   const [windows, setWindows] = useState([{ ...initialWindowState }]);
-  const [expandedIndex, setExpandedIndex] = useState(null);
-  const [showPreview, setShowPreview] = useState(false);
 
   const handleCustomerChange = (e) => {
     const { name, value } = e.target;
@@ -42,37 +43,28 @@ export default function IndoorBlindsForm() {
     setWindows(updated);
   };
 
+  const toggleCollapse = (index) => {
+    const updated = [...windows];
+    updated[index].collapsed = !updated[index].collapsed;
+    setWindows(updated);
+  };
+
   const addWindow = () => {
     setWindows([...windows, { ...initialWindowState }]);
   };
 
-  const validatePhone = (phone) => /^[0-9]{10}$/.test(phone);
-  const validateEmail = (email) => /\S+@\S+\.\S+/.test(email);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validatePhone(customerInfo.customerPhone)) {
-      alert('❌ Phone must be exactly 10 digits');
-      return;
-    }
-
-    if (!validateEmail(customerInfo.customerEmail)) {
-      alert('❌ Invalid email address');
-      return;
-    }
-
     const payload = {
       ...customerInfo,
-      windows
+      windows: windows.map(({ collapsed, ...rest }) => rest)
     };
 
     try {
       const response = await fetch('/api/indoor-blinds-proxy', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
 
@@ -81,7 +73,6 @@ export default function IndoorBlindsForm() {
         alert('✅ Form submitted successfully');
         setCustomerInfo({ ...initialCustomerState });
         setWindows([{ ...initialWindowState }]);
-        setShowPreview(false);
       } else {
         alert('❌ Submission failed: ' + (result.message || 'Unknown error'));
       }
@@ -91,85 +82,88 @@ export default function IndoorBlindsForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: '900px', margin: 'auto', padding: '20px' }}>
-      <h2 style={{ textAlign: 'center' }}>Indoor Blinds Measurement Form</h2>
+    <form onSubmit={handleSubmit} className={styles.form}>
+      <h2 className={styles.title}>Indoor Blinds Measurement Form</h2>
 
-      <h3>Customer Info</h3>
+      <h3 className={styles.sectionTitle}>Customer Info</h3>
       {['salesRep', 'customerName', 'customerAddress', 'customerPhone', 'customerEmail'].map((field) => (
-        <div key={field} style={{ marginBottom: '10px' }}>
+        <div key={field} className={styles.field}>
           <label>{field.charAt(0).toUpperCase() + field.slice(1)}:</label>
           <input
             type="text"
             name={field}
             value={customerInfo[field]}
             onChange={handleCustomerChange}
-            style={{ width: '100%', padding: '8px' }}
             required
           />
         </div>
       ))}
 
-      <h3>Window Measurements</h3>
+      <h3 className={styles.sectionTitle}>Window Measurements</h3>
       {windows.map((window, idx) => (
-        <div key={idx} style={{ border: '1px solid #ccc', padding: '10px', marginBottom: '15px' }}>
-          <h4 onClick={() => setExpandedIndex(idx === expandedIndex ? null : idx)} style={{ cursor: 'pointer' }}>
-            {expandedIndex === idx ? '🔽' : '▶️'} Window {idx + 1}
-          </h4>
-          {expandedIndex === idx && (
-            <div>
-              {[
-                'location',
-                'width',
-                'drop',
-                'material',
-                'colour',
-                'comments'
-              ].map(field => (
-                <div key={field} style={{ marginBottom: '10px' }}>
+        <div key={idx} className={styles.windowSection}>
+          <div className={styles.collapseHeader} onClick={() => toggleCollapse(idx)}>
+            <strong>🪟 Window {idx + 1}</strong>
+            <span>{window.collapsed ? '➕ Expand' : '➖ Collapse'}</span>
+          </div>
+
+          {!window.collapsed && (
+            <>
+              {['roomName', 'subcategory', 'material', 'colour'].map((field) => (
+                <div key={field} className={styles.field}>
                   <label>{field.charAt(0).toUpperCase() + field.slice(1)}:</label>
                   <input
                     type="text"
                     name={field}
                     value={window[field]}
                     onChange={(e) => handleWindowChange(idx, e)}
-                    style={{ width: '100%', padding: '8px' }}
-                    required={field !== 'comments'}
+                    required
                   />
                 </div>
               ))}
 
-              {/* Dropdowns */}
+              {/* Width and Drop with special styling */}
+              {['width', 'drop'].map((field) => (
+                <div key={field} className={styles.field}>
+                  <label><strong>{field === 'width' ? 'Width (mm)' : 'Drop (mm)'}:</strong></label>
+                  <input
+                    type="number"
+                    name={field}
+                    value={window[field]}
+                    onChange={(e) => handleWindowChange(idx, e)}
+                    required
+                    className={styles.measurementInput}
+                    min="0"
+                    inputMode="numeric"
+                  />
+                </div>
+              ))}
+              <div className={styles.reminderNote}>
+                📏 All measurements must be in millimetres (MM). Please double check!
+              </div>
+
               {[
-                { name: 'control', options: ['Left', 'Right'] },
+                { name: 'controlSide', options: ['Left', 'Right'] },
                 {
                   name: 'brackets',
                   options: [
-                    'N/A', '55mm', 'Dual Opposite side', 'Dual Same Side to suit', 'Dual Same side',
-                    'Dual opposite Side to suit', 'None', 'Single', 'Slim Combo Top Back',
-                    'Slim Combo Top Back to suit', 'Slim Combo Top Front to suit', 'Slim Combo Top front'
+                    'N/A', '55mm', 'Dual Opposite side', 'Dual Same Side to suit',
+                    'Dual Same side', 'Dual opposite Side to suit', 'None',
+                    'Single', 'Slim Combo Top Back', 'Slim Combo Top Back to suit',
+                    'Slim Combo Top Front to suit', 'Slim Combo Top front'
                   ]
                 },
-                {
-                  name: 'baseRailColour',
-                  options: ['Anodised', 'Bone', 'Pure White', 'Sandstone', 'Satin Black']
-                },
-                {
-                  name: 'componentColour',
-                  options: ['Black Grey', 'Sandstone', 'White', 'Standard']
-                },
-                {
-                  name: 'rollDirection',
-                  options: ['Over Roll', 'Standard']
-                }
+                { name: 'baseRailColour', options: ['Anodised', 'Bone', 'Pure White', 'Sandstone', 'Satin Black'] },
+                { name: 'componentColour', options: ['Black Grey', 'Sandstone', 'White', 'Standard'] },
+                { name: 'rollDirection', options: ['Over roll', 'Standard'] }
               ].map(({ name, options }) => (
-                <div key={name} style={{ marginBottom: '10px' }}>
-                  <label>{name.charAt(0).toUpperCase() + name.slice(1).replace(/([A-Z])/g, ' $1')}:</label>
+                <div key={name} className={styles.field}>
+                  <label>{name.replace(/([A-Z])/g, ' $1')}:</label>
                   <select
                     name={name}
                     value={window[name]}
                     onChange={(e) => handleWindowChange(idx, e)}
                     required
-                    style={{ width: '100%', padding: '8px' }}
                   >
                     <option value="">-- Select --</option>
                     {options.map(opt => (
@@ -178,56 +172,28 @@ export default function IndoorBlindsForm() {
                   </select>
                 </div>
               ))}
-            </div>
+
+              <div className={styles.field}>
+                <label>Comments:</label>
+                <input
+                  type="text"
+                  name="comments"
+                  value={window.comments}
+                  onChange={(e) => handleWindowChange(idx, e)}
+                />
+              </div>
+            </>
           )}
         </div>
       ))}
 
-      <button type="button" onClick={addWindow} style={{ marginBottom: '20px' }}>
+      <button type="button" onClick={addWindow} className={styles.addButton}>
         ➕ Add Another Window
       </button>
 
-      <button
-        type="button"
-        onClick={() => setShowPreview(true)}
-        style={{
-          padding: '12px 20px',
-          marginBottom: '10px',
-          backgroundColor: 'orange',
-          color: '#fff',
-          border: 'none',
-          fontSize: '16px'
-        }}
-      >
-        Preview Before Submit
-      </button>
-
-      <button
-        type="submit"
-        style={{
-          padding: '12px 20px',
-          backgroundColor: '#0070f3',
-          color: '#fff',
-          border: 'none',
-          fontSize: '16px'
-        }}
-      >
+      <button type="submit" className={styles.submitButton}>
         Submit
       </button>
-
-      {showPreview && (
-        <div style={{
-          backgroundColor: '#f9f9f9',
-          border: '1px solid #ccc',
-          padding: '20px',
-          marginTop: '20px'
-        }}>
-          <h3>🔍 Review Your Submission</h3>
-          <pre style={{ whiteSpace: 'pre-wrap', fontSize: '14px' }}>
-            {JSON.stringify({ ...customerInfo, windows }, null, 2)}
-          </pre>
-        </div>
-      )}
     </form>
   );
 }
