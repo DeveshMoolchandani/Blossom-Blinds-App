@@ -29,6 +29,7 @@ const initialWindowState = {
 export default function CurtainsForm() {
   const [customerInfo, setCustomerInfo] = useState({ ...initialCustomerState });
   const [windows, setWindows] = useState([{ ...initialWindowState }]);
+  const [loading, setLoading] = useState(false);
 
   const handleCustomerChange = (e) => {
     const { name, value } = e.target;
@@ -48,6 +49,8 @@ export default function CurtainsForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+
     const payload = {
       ...customerInfo,
       windows
@@ -73,6 +76,8 @@ export default function CurtainsForm() {
     } catch (err) {
       alert('❌ Submission failed: ' + err.message);
     }
+
+    setLoading(false);
   };
 
   return (
@@ -80,24 +85,27 @@ export default function CurtainsForm() {
       <h2 style={{ textAlign: 'center' }}>Curtains Measurement Form</h2>
 
       <h3>Customer Info</h3>
-      {['salesRep', 'customerName', 'customerAddress', 'customerPhone', 'customerEmail'].map((field) => (
-        <div key={field} style={{ marginBottom: '10px' }}>
-          <label>{field.charAt(0).toUpperCase() + field.slice(1)}:</label>
-          <input
-            type="text"
-            name={field}
-            value={customerInfo[field]}
-            onChange={handleCustomerChange}
-            style={{ width: '100%', padding: '8px' }}
-            required
-          />
-        </div>
-      ))}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+        {['salesRep', 'customerName', 'customerAddress', 'customerPhone', 'customerEmail'].map((field) => (
+          <div key={field} style={{ flex: '1 1 300px', marginBottom: '10px' }}>
+            <label>{field.charAt(0).toUpperCase() + field.slice(1)}:</label>
+            <input
+              type="text"
+              name={field}
+              value={customerInfo[field]}
+              onChange={handleCustomerChange}
+              style={{ width: '100%', padding: '8px' }}
+              required
+            />
+          </div>
+        ))}
+      </div>
 
       <h3>Window Measurements</h3>
       {windows.map((window, idx) => (
-        <div key={idx} style={{ border: '1px solid #ccc', padding: '10px', marginBottom: '15px' }}>
-          <h4>Window {idx + 1}</h4>
+        <details key={idx} open style={{ border: '1px solid #ccc', borderRadius: '5px', padding: '10px', marginBottom: '15px' }}>
+          <summary style={{ fontWeight: 'bold', marginBottom: '10px', cursor: 'pointer' }}>🪟 Window {idx + 1}</summary>
+
           {['roomName', 'subcategory', 'fabric', 'color', 'width', 'height', 'customSplit', 'comments'].map(field => (
             <div key={field} style={{ marginBottom: '10px' }}>
               <label>{field.charAt(0).toUpperCase() + field.slice(1)}:</label>
@@ -134,16 +142,41 @@ export default function CurtainsForm() {
               </select>
             </div>
           ))}
-        </div>
+        </details>
       ))}
 
-      <button type="button" onClick={addWindow} style={{ marginBottom: '20px' }}>
+      <button
+        type="button"
+        onClick={addWindow}
+        style={{
+          marginBottom: '20px',
+          padding: '10px 15px',
+          backgroundColor: '#e0e0e0',
+          border: '1px solid #ccc',
+          cursor: 'pointer'
+        }}
+      >
         ➕ Add Another Window
       </button>
 
-      <button type="submit" style={{ padding: '12px 20px', backgroundColor: '#0070f3', color: '#fff', border: 'none', fontSize: '16px' }}>
-        Submit
-      </button>
+      <div style={{ position: 'sticky', bottom: 0, background: '#fff', paddingTop: '10px' }}>
+        <button
+          type="submit"
+          disabled={loading}
+          style={{
+            padding: '12px 20px',
+            backgroundColor: loading ? '#999' : '#0070f3',
+            color: '#fff',
+            border: 'none',
+            fontSize: '16px',
+            cursor: loading ? 'not-allowed' : 'pointer',
+            width: '100%',
+            borderRadius: '5px'
+          }}
+        >
+          {loading ? 'Submitting...' : 'Submit'}
+        </button>
+      </div>
     </form>
   );
 }
