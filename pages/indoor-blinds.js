@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import styles from '../styles/styles/Form.module.css';
+import styles from '../styles/Form.module.css'; //
 
 export default function IndoorBlindsForm() {
   const [customerInfo, setCustomerInfo] = useState({
