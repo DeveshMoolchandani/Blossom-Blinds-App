@@ -1,142 +1,207 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+
+const initialCustomerState = {
+  date: new Date().toLocaleDateString('en-GB'),
+  time: new Date().toLocaleTimeString(),
+  salesRep: '',
+  customerName: '',
+  customerAddress: '',
+  customerPhone: '',
+  customerEmail: ''
+};
+
+const initialBlindState = {
+  roomName: '',
+  width: '',
+  height: '',
+  fabric: '',
+  color: '',
+  controlSide: '',
+  brackets: '',
+  baseRailColor: '',
+  componentColor: '',
+  rollDirection: '',
+  comments: ''
+};
 
 export default function IndoorBlindsForm() {
-  const [formData, setFormData] = useState({
-    date: '',
-    time: '',
-    salesRep: '',
-    customerName: '',
-    customerAddress: '',
-    customerPhone: '',
-    customerEmail: '',
-    roomName: '',
-    subcategory: '',
-    fabric: '',
-    color: '',
-    width: '',
-    height: '',
-    control: '',
-    fit: '',
-    roll: '',
-    motorised: '',
-    comments: ''
-  });
+  const [customerInfo, setCustomerInfo] = useState({ ...initialCustomerState });
+  const [blinds, setBlinds] = useState([{ ...initialBlindState }]);
 
-  // Set current time on load
-  useEffect(() => {
-    const now = new Date();
-    const formattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const formattedDate = now.toISOString().split('T')[0];
-    setFormData(prev => ({ ...prev, time: formattedTime, date: formattedDate }));
-  }, []);
-
-  const handleChange = (e) => {
+  const handleCustomerChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setCustomerInfo((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleBlindChange = (index, e) => {
+    const { name, value } = e.target;
+    const updated = [...blinds];
+    updated[index][name] = value;
+    setBlinds(updated);
+  };
+
+  const addBlind = () => {
+    setBlinds([...blinds, { ...initialBlindState }]);
+  };
+
+  const validate = () => {
+    const phoneRegex = /^\d{10}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!phoneRegex.test(customerInfo.customerPhone)) {
+      alert('❌ Phone number must be exactly 10 digits');
+      return false;
+    }
+
+    if (!emailRegex.test(customerInfo.customerEmail)) {
+      alert('❌ Please enter a valid email address');
+      return false;
+    }
+
+    for (const blind of blinds) {
+      if (!blinds.roomName || !blinds.width || !blinds.height) {
+        alert('❌ Each blind must have Room, Width and Height filled');
+        return false;
+      }
+    }
+
+    return true;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validate()) return;
+
+    const payload = {
+      product: 'Indoor Blinds',
+      ...customerInfo,
+      blinds
+    };
+
     try {
-      const response = await fetch('https://api.sheetbest.com/sheets/15cd72a3-53a0-41fb-a04a-f6038ef57c4d', {
+      const response = await fetch('/api/curtains-proxy', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
       });
 
       const result = await response.json();
-      console.log("✅ Sheet.best response: ", result);
-      alert('Form submitted successfully!');
-    } catch (error) {
-      alert('Error submitting form.');
-      console.error(error);
+      if (result.result === 'success') {
+        alert('✅ Form submitted successfully!');
+        setCustomerInfo({ ...initialCustomerState });
+        setBlinds([{ ...initialBlindState }]);
+      } else {
+        alert('❌ Submission failed: ' + (result.message || 'Unknown error'));
+      }
+    } catch (err) {
+      alert('❌ Submission error: ' + err.message);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} style={styles.form}>
-      <h2 style={styles.title}>Indoor Blinds Form</h2>
-      {Object.keys(formData).map((field) => (
-        <div key={field} style={styles.field}>
-          <label style={styles.label}>
-            {field.charAt(0).toUpperCase() + field.slice(1)}:
-          </label>
-          {field === 'date' ? (
-            <input
-              type="date"
-              name="date"
-              value={formData.date}
-              onChange={handleChange}
-              style={styles.input}
-              required
-            />
-          ) : field === 'time' ? (
-            <input
-              type="text"
-              name="time"
-              value={formData.time}
-              readOnly
-              style={{ ...styles.input, backgroundColor: '#f0f0f0' }}
-            />
-          ) : (
-            <input
-              type="text"
-              name={field}
-              value={formData[field]}
-              onChange={handleChange}
-              required={field !== 'comments'}
-              style={styles.input}
-            />
-          )}
+    <form onSubmit={handleSubmit} style={{ maxWidth: '900px', margin: 'auto', padding: '20px' }}>
+      <h2 style={{ textAlign: 'center' }}>Indoor Blinds Measurement Form</h2>
+
+      <h3>Customer Info</h3>
+      {['salesRep', 'customerName', 'customerAddress', 'customerPhone', 'customerEmail'].map((field) => (
+        <div key={field} style={{ marginBottom: '10px' }}>
+          <label>{field.charAt(0).toUpperCase() + field.slice(1)}:</label>
+          <input
+            type="text"
+            name={field}
+            value={customerInfo[field]}
+            onChange={handleCustomerChange}
+            style={{ width: '100%', padding: '8px' }}
+            required
+          />
         </div>
       ))}
-      <button type="submit" style={styles.button}>Submit</button>
+
+      <h3>Blinds</h3>
+      {blinds.map((blind, idx) => (
+        <div key={idx} style={{ border: '1px solid #ccc', padding: '10px', marginBottom: '15px' }}>
+          <h4>Blind {idx + 1}</h4>
+
+          {[
+            { name: 'roomName', label: 'Location' },
+            { name: 'fabric', label: 'Material' },
+            { name: 'color', label: 'Colour' },
+            { name: 'width', label: 'Width (mm)' },
+            { name: 'height', label: 'Drop (mm)' },
+            { name: 'comments', label: 'Comments' }
+          ].map(({ name, label }) => (
+            <div key={name} style={{ marginBottom: '10px' }}>
+              <label>{label}:</label>
+              <input
+                type="text"
+                name={name}
+                value={blind[name]}
+                onChange={(e) => handleBlindChange(idx, e)}
+                style={{ width: '100%', padding: '8px' }}
+                required={name !== 'comments'}
+              />
+            </div>
+          ))}
+
+          {[
+            {
+              name: 'controlSide',
+              label: 'Control Side',
+              options: ['Left', 'Right']
+            },
+            {
+              name: 'brackets',
+              label: 'Brackets',
+              options: [
+                'N/A', '55mm', 'Dual Opposite side', 'Dual Same Side to suit',
+                'Dual Same side', 'Dual opposite Side to suit', 'None', 'Single',
+                'Slim Combo Top Back', 'Slim Combo Top Back to suit',
+                'Slim Combo Top Front to suit', 'Slim Combo Top front'
+              ]
+            },
+            {
+              name: 'baseRailColor',
+              label: 'Base Rail Colour',
+              options: ['Anodised', 'Bone', 'Pure white', 'Sandstone', 'Satin black']
+            },
+            {
+              name: 'componentColor',
+              label: 'Component Colour',
+              options: ['Black grey', 'Sandstone', 'White', 'Standard']
+            },
+            {
+              name: 'rollDirection',
+              label: 'Roll Direction',
+              options: ['Over roll', 'Standard']
+            }
+          ].map(({ name, label, options }) => (
+            <div key={name} style={{ marginBottom: '10px' }}>
+              <label>{label}:</label>
+              <select
+                name={name}
+                value={blind[name]}
+                onChange={(e) => handleBlindChange(idx, e)}
+                style={{ width: '100%', padding: '8px' }}
+                required
+              >
+                <option value="">-- Select --</option>
+                {options.map((opt) => (
+                  <option key={opt} value={opt}>{opt}</option>
+                ))}
+              </select>
+            </div>
+          ))}
+        </div>
+      ))}
+
+      <button type="button" onClick={addBlind} style={{ marginBottom: '20px' }}>
+        ➕ Add Another Blind
+      </button>
+
+      <button type="submit" style={{ padding: '12px 20px', backgroundColor: '#0070f3', color: '#fff', border: 'none', fontSize: '16px' }}>
+        Submit
+      </button>
     </form>
   );
 }
-
-const styles = {
-  form: {
-    maxWidth: '700px',
-    margin: '30px auto',
-    padding: '30px',
-    backgroundColor: '#ffffff',
-    borderRadius: '12px',
-    boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
-    fontFamily: 'Arial, sans-serif'
-  },
-  title: {
-    textAlign: 'center',
-    marginBottom: '30px',
-    fontSize: '24px',
-    color: '#333'
-  },
-  field: {
-    marginBottom: '18px'
-  },
-  label: {
-    display: 'block',
-    marginBottom: '6px',
-    fontWeight: 'bold',
-    color: '#444'
-  },
-  input: {
-    width: '100%',
-    padding: '10px',
-    borderRadius: '6px',
-    border: '1px solid #ccc',
-    fontSize: '14px'
-  },
-  button: {
-    width: '100%',
-    padding: '12px',
-    backgroundColor: '#4CAF50',
-    color: 'white',
-    fontSize: '16px',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer'
-  }
-};
