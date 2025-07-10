@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import styles from '../styles/Form.module.css'; //
+import styles from '../styles/Form.module.css';
 
 const initialCustomerState = {
   date: new Date().toLocaleDateString('en-GB'),
