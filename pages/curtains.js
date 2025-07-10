@@ -1,40 +1,48 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from '../styles/Form.module.css';
 
-const initialCustomerState = {
-  date: new Date().toLocaleDateString('en-GB'),
-  time: new Date().toLocaleTimeString(),
-  salesRep: '',
-  customerName: '',
-  customerAddress: '',
-  customerPhone: '',
-  customerEmail: ''
-};
-
-const initialWindowState = {
-  roomName: '',
-  subcategory: '',
-  fabric: '',
-  color: '',
-  width: '',
-  height: '',
-  customSplit: '',
-  comments: '',
-  headingType: '',
-  track: '',
-  trackColor: '',
-  control: '',
-  fixing: ''
-};
-
 export default function CurtainsForm() {
-  const [customerInfo, setCustomerInfo] = useState({ ...initialCustomerState });
-  const [windows, setWindows] = useState([{ ...initialWindowState }]);
-  const [collapsed, setCollapsed] = useState([false]);
+  const [customerInfo, setCustomerInfo] = useState({
+    date: '',
+    time: '',
+    salesRep: '',
+    customerName: '',
+    customerAddress: '',
+    customerPhone: '',
+    customerEmail: ''
+  });
+
+  const [windows, setWindows] = useState([
+    {
+      roomName: '',
+      subcategory: '',
+      fabric: '',
+      color: '',
+      width: '',
+      height: '',
+      customSplit: '',
+      comments: '',
+      headingType: '',
+      track: '',
+      trackColor: '',
+      control: '',
+      fixing: ''
+    }
+  ]);
+
+  const [showModal, setShowModal] = useState(false);
+  const [expanded, setExpanded] = useState([true]);
+
+  useEffect(() => {
+    const now = new Date();
+    const formattedDate = now.toISOString().split('T')[0];
+    const formattedTime = now.toLocaleTimeString('en-GB');
+    setCustomerInfo(prev => ({ ...prev, date: formattedDate, time: formattedTime }));
+  }, []);
 
   const handleCustomerChange = (e) => {
     const { name, value } = e.target;
-    setCustomerInfo((prev) => ({ ...prev, [name]: value }));
+    setCustomerInfo(prev => ({ ...prev, [name]: value }));
   };
 
   const handleWindowChange = (index, e) => {
@@ -45,128 +53,147 @@ export default function CurtainsForm() {
   };
 
   const addWindow = () => {
-    setWindows([...windows, { ...initialWindowState }]);
-    setCollapsed([...collapsed, false]);
+    setWindows([...windows, {
+      roomName: '', subcategory: '', fabric: '', color: '',
+      width: '', height: '', customSplit: '', comments: '',
+      headingType: '', track: '', trackColor: '', control: '', fixing: ''
+    }]);
+    setExpanded([...expanded, true]);
   };
 
-  const toggleCollapse = (idx) => {
-    const updated = [...collapsed];
-    updated[idx] = !updated[idx];
-    setCollapsed(updated);
+  const deleteWindow = (index) => {
+    const isBlank = Object.values(windows[index]).every(val => val === '');
+    if (!isBlank) return;
+    const updated = windows.filter((_, i) => i !== index);
+    const exp = expanded.filter((_, i) => i !== index);
+    setWindows(updated);
+    setExpanded(exp);
   };
 
-  const isWindowEmpty = (window) =>
-    Object.values(window).every(val => !val);
+  const validateNumeric = (val) => /^\d*$/.test(val);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const payload = {
-      ...customerInfo,
-      windows
-    };
+  const handleSubmit = async () => {
+    if (!customerInfo.customerName || !customerInfo.customerPhone || windows.length === 0) {
+      alert('❌ Missing required customer fields or window entries.');
+      return;
+    }
 
+    const payload = { ...customerInfo, windows };
     try {
       const response = await fetch('/api/curtains-proxy', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-
       const result = await response.json();
       if (result.result === 'success') {
-        alert('✅ Form submitted successfully');
-        setCustomerInfo({ ...initialCustomerState });
-        setWindows([{ ...initialWindowState }]);
-        setCollapsed([false]);
+        alert('✅ Submitted successfully!');
+        window.location.reload();
       } else {
-        alert('❌ Submission failed: ' + (result.message || 'Unknown error'));
+        alert('❌ Submission failed: ' + result.message);
       }
     } catch (err) {
-      alert('❌ Submission failed: ' + err.message);
+      console.error(err);
+      alert('❌ Submission failed: Network error');
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className={styles.formContainer}>
-      <h2 className={styles.title}>Curtains Measurement Form</h2>
+    <div className={styles.formContainer}>
+      <h2 className={styles.formTitle}>Curtains Measurement Form</h2>
 
-      <h3>Customer Info</h3>
-      {['salesRep', 'customerName', 'customerAddress', 'customerPhone', 'customerEmail'].map((field) => (
-        <div key={field} className={styles.field}>
-          <label className={styles.label}>{field.charAt(0).toUpperCase() + field.slice(1)}:</label>
+      <h3 className={styles.sectionHeading}>Customer Info</h3>
+      {Object.entries(customerInfo).map(([key, value]) => (
+        <div className={styles.inputGroup} key={key}>
+          <label>{key.charAt(0).toUpperCase() + key.slice(1)}</label>
           <input
-            type="text"
-            name={field}
-            value={customerInfo[field]}
+            type={key === 'email' ? 'email' : key === 'phone' ? 'tel' : 'text'}
+            name={key}
+            value={value}
             onChange={handleCustomerChange}
-            className={styles.inputField}
-            required
+            required={key !== 'comments'}
           />
         </div>
       ))}
 
-      <h3>Window Measurements</h3>
-      {windows.map((window, idx) => (
-        <div key={idx} className={styles.section}>
-          <h4 style={{ display: 'flex', justifyContent: 'space-between', cursor: 'pointer' }}>
-            <span onClick={() => toggleCollapse(idx)}>Window {idx + 1} {collapsed[idx] ? '➕' : '➖'}</span>
-            {windows.length > 1 && isWindowEmpty(window) && (
-              <button
-                type="button"
-                onClick={() => {
-                  const updatedWindows = [...windows];
-                  const updatedCollapsed = [...collapsed];
-                  updatedWindows.splice(idx, 1);
-                  updatedCollapsed.splice(idx, 1);
-                  setWindows(updatedWindows);
-                  setCollapsed(updatedCollapsed);
-                }}
-                style={{ background: 'transparent', border: 'none', color: 'red' }}
-              >
-                🗑️
-              </button>
-            )}
-          </h4>
-
-          {!collapsed[idx] && (
+      <h3 className={styles.sectionHeading}>Window Measurements</h3>
+      {windows.map((window, index) => (
+        <div key={index} className={styles.windowSection}>
+          <div className={styles.windowHeader} onClick={() => {
+            const copy = [...expanded];
+            copy[index] = !copy[index];
+            setExpanded(copy);
+          }}>
+            <span>Window {index + 1}</span>
+            <button
+              className={styles.deleteBtn}
+              onClick={(e) => {
+                e.stopPropagation();
+                deleteWindow(index);
+              }}
+              title="Delete if blank"
+            >
+              ❌
+            </button>
+          </div>
+          {expanded[index] && (
             <>
-              {['roomName', 'subcategory', 'fabric', 'color', 'width', 'height', 'customSplit', 'comments'].map(field => (
-                <div key={field} className={styles.field}>
-                  <label className={styles.label}>{field.charAt(0).toUpperCase() + field.slice(1)}:</label>
+              {['roomName', 'subcategory', 'fabric', 'color'].map(field => (
+                <div key={field} className={styles.inputGroup}>
+                  <label>{field}</label>
                   <input
                     type="text"
                     name={field}
                     value={window[field]}
-                    onChange={(e) => handleWindowChange(idx, e)}
-                    className={`${styles.inputField} ${['width', 'height'].includes(field) ? styles.measurementInput : ''}`}
-                    required={field !== 'comments'}
-                    pattern={['width', 'height'].includes(field) ? '\\d*' : undefined}
+                    onChange={(e) => handleWindowChange(index, e)}
+                    required
                   />
                 </div>
               ))}
-
+              {['width', 'height'].map(field => (
+                <div key={field} className={styles.inputGroup}>
+                  <label>{field.toUpperCase()} (in mm) — Double check!</label>
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    name={field}
+                    className={styles.measurementInput}
+                    value={window[field]}
+                    onChange={(e) => {
+                      if (validateNumeric(e.target.value)) handleWindowChange(index, e);
+                    }}
+                    required
+                  />
+                </div>
+              ))}
+              {['customSplit', 'comments'].map(field => (
+                <div key={field} className={styles.inputGroup}>
+                  <label>{field}</label>
+                  <input
+                    type="text"
+                    name={field}
+                    value={window[field]}
+                    onChange={(e) => handleWindowChange(index, e)}
+                  />
+                </div>
+              ))}
               {[
                 { name: 'headingType', options: ['Double Pinch Pleat', 'Wave Fold (S-fold)'] },
                 { name: 'track', options: ['Normal', 'Designer'] },
-                { name: 'trackColor', options: ['Black', 'White', 'Anodised Silver', 'N/A'] },
+                { name: 'trackColor', options: ['Black', 'White', 'Silver', 'N/A'] },
                 { name: 'control', options: ['Centre Opening', 'Full Right', 'Full Left'] },
-                { name: 'fixing', options: ['Top Fix', 'Double Extension Face Fix', 'Double Face Fix', 'Single Face Fix'] }
+                { name: 'fixing', options: ['Top Fix', 'Face Fix'] }
               ].map(({ name, options }) => (
-                <div key={name} className={styles.field}>
-                  <label className={styles.label}>{name.charAt(0).toUpperCase() + name.slice(1)}:</label>
+                <div key={name} className={styles.inputGroup}>
+                  <label>{name}</label>
                   <select
                     name={name}
                     value={window[name]}
-                    onChange={(e) => handleWindowChange(idx, e)}
-                    className={styles.inputField}
+                    onChange={(e) => handleWindowChange(index, e)}
                     required
                   >
                     <option value="">-- Select --</option>
-                    {options.map(opt => (
-                      <option key={opt} value={opt}>{opt}</option>
-                    ))}
+                    {options.map(opt => <option key={opt}>{opt}</option>)}
                   </select>
                 </div>
               ))}
@@ -175,13 +202,35 @@ export default function CurtainsForm() {
         </div>
       ))}
 
-      <button type="button" onClick={addWindow} className={`${styles.button} ${styles.addButton}`}>
+      <button onClick={addWindow} type="button" className={styles.addBtn}>
         ➕ Add Another Window
       </button>
 
-      <button type="submit" className={styles.button}>
-        Submit
+      <button
+        type="button"
+        className={styles.reviewBtn}
+        onClick={() => setShowModal(true)}
+      >
+        👁️ Preview Before Submit
       </button>
-    </form>
+
+      <button
+        onClick={handleSubmit}
+        type="button"
+        className={styles.submitBtn}
+      >
+        📤 Submit Form
+      </button>
+
+      {showModal && (
+        <div className={styles.modal} onClick={() => setShowModal(false)}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <h3>Review Data</h3>
+            <pre>{JSON.stringify({ ...customerInfo, windows }, null, 2)}</pre>
+            <button onClick={() => setShowModal(false)} className={styles.submitBtn}>Close Preview</button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
