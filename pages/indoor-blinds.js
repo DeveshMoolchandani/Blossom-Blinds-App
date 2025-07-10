@@ -14,33 +14,34 @@ export default function IndoorBlindsForm() {
 
   const [windows, setWindows] = useState([
     {
-      roomName: '',
+      location: '',
       width: '',
-      height: '',
+      drop: '',
       material: '',
       color: '',
       controlSide: '',
       brackets: '',
       baseRailColor: '',
       componentColor: '',
-      rollDirection: '',
-      comments: ''
+      rollDirection: ''
     }
   ]);
 
-  const [expanded, setExpanded] = useState([true]);
-  const [showModal, setShowModal] = useState(false);
+  const [expandedWindows, setExpandedWindows] = useState([true]);
+  const [showPreview, setShowPreview] = useState(false);
 
   useEffect(() => {
     const now = new Date();
-    const formattedDate = now.toISOString().split('T')[0];
-    const formattedTime = now.toLocaleTimeString('en-GB');
-    setCustomerInfo(prev => ({ ...prev, date: formattedDate, time: formattedTime }));
+    setCustomerInfo((prev) => ({
+      ...prev,
+      date: now.toLocaleDateString('en-GB'),
+      time: now.toLocaleTimeString()
+    }));
   }, []);
 
   const handleCustomerChange = (e) => {
     const { name, value } = e.target;
-    setCustomerInfo(prev => ({ ...prev, [name]: value }));
+    setCustomerInfo((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleWindowChange = (index, e) => {
@@ -50,165 +51,188 @@ export default function IndoorBlindsForm() {
     setWindows(updated);
   };
 
-  const validateNumeric = (value) => /^\d*$/.test(value);
-
   const addWindow = () => {
-    setWindows([...windows, {
-      roomName: '',
-      width: '',
-      height: '',
-      material: '',
-      color: '',
-      controlSide: '',
-      brackets: '',
-      baseRailColor: '',
-      componentColor: '',
-      rollDirection: '',
-      comments: ''
-    }]);
-    setExpanded([...expanded, true]);
+    setWindows((prev) => [
+      ...prev,
+      {
+        location: '',
+        width: '',
+        drop: '',
+        material: '',
+        color: '',
+        controlSide: '',
+        brackets: '',
+        baseRailColor: '',
+        componentColor: '',
+        rollDirection: ''
+      }
+    ]);
+    setExpandedWindows((prev) => [...prev, true]);
   };
 
   const deleteWindow = (index) => {
-    const isBlank = Object.values(windows[index]).every(val => val === '');
-    if (!isBlank) return;
-    const updated = windows.filter((_, i) => i !== index);
-    const exp = expanded.filter((_, i) => i !== index);
+    const win = windows[index];
+    const isEmpty = Object.values(win).every((v) => !v);
+    if (!isEmpty) return alert('❌ Only empty window sections can be deleted.');
+    const updated = [...windows];
+    const toggled = [...expandedWindows];
+    updated.splice(index, 1);
+    toggled.splice(index, 1);
     setWindows(updated);
-    setExpanded(exp);
+    setExpandedWindows(toggled);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
     if (!customerInfo.customerName || !customerInfo.customerPhone || windows.length === 0) {
-      alert("❌ Please fill in customer name, phone, and at least one window.");
+      alert("❌ Missing customer name, phone or windows data");
       return;
     }
 
-    const payload = { ...customerInfo, windows };
+    const payload = {
+      ...customerInfo,
+      windows
+    };
 
     try {
-      const response = await fetch('/api/curtains-proxy', {
+      const response = await fetch('https://script.google.com/macros/s/AKfycbwyfc1yWqACSL8CvhT3WFbInDEgYal77aShA4yKaX6AGkN5yq5Er3lokIciS5gSySPg/exec', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        headers: { 'Content-Type': 'application/json' }
       });
+
       const result = await response.json();
       if (result.result === 'success') {
-        alert("✅ Submitted successfully!");
+        alert('✅ Form submitted successfully');
         window.location.reload();
       } else {
-        alert("❌ Submission failed: " + result.message);
+        alert('❌ Submission failed: ' + result.message);
       }
     } catch (err) {
-      alert("❌ Network error.");
+      alert('❌ Submission failed');
       console.error(err);
     }
   };
 
+  const toggleExpand = (index) => {
+    const updated = [...expandedWindows];
+    updated[index] = !updated[index];
+    setExpandedWindows(updated);
+  };
+
   return (
     <div className={styles.formContainer}>
-      <h2 className={styles.formTitle}>Indoor Blinds Form</h2>
+      <h2 className={styles.formTitle}>Indoor Blinds Measurement Form</h2>
 
       <h3 className={styles.sectionHeading}>Customer Info</h3>
-      {Object.entries(customerInfo).map(([key, value]) => (
-        <div key={key} className={styles.inputGroup}>
-          <label>{key.charAt(0).toUpperCase() + key.slice(1)}</label>
+      {['salesRep', 'customerName', 'customerAddress', 'customerPhone', 'customerEmail'].map((field) => (
+        <div key={field} className={styles.inputGroup}>
+          <label>{field.replace(/([A-Z])/g, ' $1')}:</label>
           <input
-            type={key === 'email' ? 'email' : key === 'phone' ? 'tel' : 'text'}
-            name={key}
-            value={value}
+            type="text"
+            name={field}
+            value={customerInfo[field]}
             onChange={handleCustomerChange}
-            required={key !== 'comments'}
+            required
           />
         </div>
       ))}
 
       <h3 className={styles.sectionHeading}>Window Measurements</h3>
-      {windows.map((window, index) => (
-        <div key={index} className={styles.windowSection}>
-          <div className={styles.windowHeader} onClick={() => {
-            const copy = [...expanded];
-            copy[index] = !copy[index];
-            setExpanded(copy);
-          }}>
-            <span>Window {index + 1}</span>
-            <button
-              className={styles.deleteBtn}
-              onClick={(e) => {
-                e.stopPropagation();
-                deleteWindow(index);
-              }}
-              title="Delete if blank"
-            >
-              ❌
-            </button>
+      {windows.map((win, i) => (
+        <div key={i} className={styles.windowSection}>
+          <div className={styles.windowHeader} onClick={() => toggleExpand(i)}>
+            <span>Window {i + 1}</span>
+            <span>
+              <button
+                className={styles.deleteBtn}
+                type="button"
+                title="Delete"
+                onClick={() => deleteWindow(i)}
+              >
+                🗑
+              </button>
+              {expandedWindows[i] ? '▲' : '▼'}
+            </span>
           </div>
-          {expanded[index] && (
+          {expandedWindows[i] && (
             <>
-              {['roomName', 'material', 'color', 'comments'].map(field => (
-                <div key={field} className={styles.inputGroup}>
-                  <label>{field}</label>
+              {[
+                { label: 'Location', name: 'location' },
+                { label: 'Material', name: 'material' },
+                { label: 'Colour', name: 'color' }
+              ].map(({ label, name }) => (
+                <div key={name} className={styles.inputGroup}>
+                  <label>{label}</label>
                   <input
                     type="text"
-                    name={field}
-                    value={window[field]}
-                    onChange={(e) => handleWindowChange(index, e)}
-                    required={field !== 'comments'}
-                  />
-                </div>
-              ))}
-              {['width', 'height'].map(field => (
-                <div key={field} className={styles.inputGroup}>
-                  <label>{field.toUpperCase()} (in mm) — Double check!</label>
-                  <input
-                    type="number"
-                    inputMode="numeric"
-                    name={field}
-                    className={styles.measurementInput}
-                    value={window[field]}
-                    onChange={(e) => {
-                      if (validateNumeric(e.target.value)) handleWindowChange(index, e);
-                    }}
+                    name={name}
+                    value={win[name]}
+                    onChange={(e) => handleWindowChange(i, e)}
                     required
                   />
                 </div>
               ))}
+
+              <div className={styles.inputGroup}>
+                <label>Width (mm)</label>
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  name="width"
+                  value={win.width}
+                  onChange={(e) => handleWindowChange(i, e)}
+                  required
+                  className={styles.measurementInput}
+                />
+              </div>
+              <div className={styles.inputGroup}>
+                <label>Drop (mm)</label>
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  name="drop"
+                  value={win.drop}
+                  onChange={(e) => handleWindowChange(i, e)}
+                  required
+                  className={styles.measurementInput}
+                />
+              </div>
+
               {[
+                { label: 'Control Side', name: 'controlSide', options: ['Left', 'Right'] },
                 {
-                  name: 'controlSide',
-                  options: ['Left', 'Right']
-                },
-                {
+                  label: 'Brackets',
                   name: 'brackets',
                   options: [
-                    'N/A', '55mm', 'Dual Opposite side', 'Dual Same Side to suit', 'Dual Same side',
-                    'Dual opposite Side to suit None', 'Single', 'Slim Combo Top Back',
-                    'Slim Combo Top Back to suit', 'Slim Combo Top Front to suit', 'Slim Combo Top front'
+                    'N/A', '55mm', 'Dual Opposite side', 'Dual Same Side to suit',
+                    'Dual Same side', 'Dual opposite Side to suit', 'None', 'Single',
+                    'Slim Combo Top Back', 'Slim Combo Top Back to suit',
+                    'Slim Combo Top Front to suit', 'Slim Combo Top front'
                   ]
                 },
                 {
+                  label: 'Base Rail Colour',
                   name: 'baseRailColor',
                   options: ['Anodised', 'Bone', 'Pure White', 'Sandstone', 'Satin Black']
                 },
                 {
+                  label: 'Component Colour',
                   name: 'componentColor',
                   options: ['Black Grey', 'Sandstone', 'White', 'Standard']
                 },
                 {
+                  label: 'Roll Direction',
                   name: 'rollDirection',
                   options: ['Over Roll', 'Standard']
                 }
-              ].map(({ name, options }) => (
+              ].map(({ label, name, options }) => (
                 <div key={name} className={styles.inputGroup}>
-                  <label>{name}</label>
-                  <select
-                    name={name}
-                    value={window[name]}
-                    onChange={(e) => handleWindowChange(index, e)}
-                    required
-                  >
+                  <label>{label}</label>
+                  <select name={name} value={win[name]} onChange={(e) => handleWindowChange(i, e)} required>
                     <option value="">-- Select --</option>
-                    {options.map(opt => (
+                    {options.map((opt) => (
                       <option key={opt} value={opt}>{opt}</option>
                     ))}
                   </select>
@@ -219,32 +243,26 @@ export default function IndoorBlindsForm() {
         </div>
       ))}
 
-      <button onClick={addWindow} type="button" className={styles.addBtn}>
+      <button type="button" onClick={addWindow} className={styles.addBtn}>
         ➕ Add Another Window
       </button>
 
-      <button
-        type="button"
-        className={styles.reviewBtn}
-        onClick={() => setShowModal(true)}
-      >
-        👁️ Preview Before Submit
+      <button type="button" onClick={() => setShowPreview(true)} className={styles.reviewBtn}>
+        👁 Preview Before Submit
       </button>
 
-      <button
-        onClick={handleSubmit}
-        type="button"
-        className={styles.submitBtn}
-      >
-        📤 Submit Form
+      <button type="submit" onClick={handleSubmit} className={styles.submitBtn}>
+        📤 Submit
       </button>
 
-      {showModal && (
-        <div className={styles.modal} onClick={() => setShowModal(false)}>
+      {showPreview && (
+        <div className={styles.modal} onClick={() => setShowPreview(false)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <h3>Review Data</h3>
-            <pre>{JSON.stringify({ ...customerInfo, windows }, null, 2)}</pre>
-            <button onClick={() => setShowModal(false)} className={styles.submitBtn}>
+            <h3>Customer Info</h3>
+            <pre>{JSON.stringify(customerInfo, null, 2)}</pre>
+            <h3>Windows</h3>
+            <pre>{JSON.stringify(windows, null, 2)}</pre>
+            <button onClick={() => setShowPreview(false)} className={styles.submitBtn}>
               Close Preview
             </button>
           </div>
