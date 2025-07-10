@@ -30,7 +30,10 @@ const initialWindowState = {
 export default function CurtainsForm() {
   const [customerInfo, setCustomerInfo] = useState({ ...initialCustomerState });
   const [windows, setWindows] = useState([{ ...initialWindowState }]);
+  const [collapsed, setCollapsed] = useState({});
   const [success, setSuccess] = useState(false);
+  const [isPreviewing, setIsPreviewing] = useState(false);
+  const [expandedWindows, setExpandedWindows] = useState({});
 
   const handleCustomerChange = (e) => {
     const { name, value } = e.target;
@@ -45,11 +48,32 @@ export default function CurtainsForm() {
   };
 
   const addWindow = () => {
+    const newIndex = windows.length;
     setWindows([...windows, { ...initialWindowState }]);
+    setCollapsed({ ...collapsed, [newIndex]: false });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const validate = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^04\d{8}$/;
+    const postcodeRegex = /\b\d{4}\b/;
+
+    if (!emailRegex.test(customerInfo.customerEmail)) {
+      alert('Please enter a valid email address.');
+      return false;
+    }
+    if (!phoneRegex.test(customerInfo.customerPhone)) {
+      alert('Please enter a valid Australian mobile number (starts with 04).');
+      return false;
+    }
+    if (!postcodeRegex.test(customerInfo.customerAddress)) {
+      alert('Please include a 4-digit postcode in the address.');
+      return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = async () => {
     const payload = { ...customerInfo, windows };
 
     try {
@@ -64,6 +88,8 @@ export default function CurtainsForm() {
         setSuccess(true);
         setCustomerInfo({ ...initialCustomerState });
         setWindows([{ ...initialWindowState }]);
+        setCollapsed({});
+        setIsPreviewing(false);
       } else {
         alert('❌ Submission failed: ' + (result.message || 'Unknown error'));
       }
@@ -71,6 +97,60 @@ export default function CurtainsForm() {
       alert('❌ Submission failed: ' + err.message);
     }
   };
+
+  const togglePreview = () => {
+    if (validate()) {
+      setIsPreviewing(true);
+    }
+  };
+
+  const toggleCollapse = (index) => {
+    setCollapsed((prev) => ({ ...prev, [index]: !prev[index] }));
+  };
+
+  const toggleWindow = (index) => {
+    setExpandedWindows((prev) => ({
+      ...prev,
+      [index]: !prev[index]
+    }));
+  };
+
+  const renderPreview = () => (
+    <div className={styles.formContainer}>
+      <h2 className={styles.heading}>Preview Your Submission</h2>
+
+      <h3 className={styles.sectionHeading}>Customer Info</h3>
+      <ul>
+        {Object.entries(customerInfo).map(([key, value]) => (
+          <li key={key}><strong>{key}:</strong> {value}</li>
+        ))}
+      </ul>
+
+      <h3 className={styles.sectionHeading}>Window Details</h3>
+      {windows.map((window, idx) => (
+        <div key={idx} className={styles.windowCard}>
+          <div
+            className={styles.previewToggle}
+            onClick={() => toggleWindow(idx)}
+          >
+            {expandedWindows[idx] ? '🔽' : '▶️'} Window {idx + 1}: {window.roomName || 'Untitled'}
+          </div>
+          <div className={`${styles.collapsibleContent} ${!expandedWindows[idx] ? styles.collapsed : ''}`}>
+            <ul>
+              {Object.entries(window).map(([key, value]) => (
+                <li key={key}><strong>{key}:</strong> {value}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      ))}
+
+      <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
+        <button onClick={() => setIsPreviewing(false)} className={styles.addWindowBtn}>🔙 Back to Edit</button>
+        <button onClick={handleSubmit} className={styles.submitBtn}>✅ Confirm Submit</button>
+      </div>
+    </div>
+  );
 
   if (success) {
     return (
@@ -80,8 +160,16 @@ export default function CurtainsForm() {
     );
   }
 
+  if (isPreviewing) return renderPreview();
+
   return (
-    <form onSubmit={handleSubmit} className={styles.formContainer}>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        togglePreview();
+      }}
+      className={styles.formContainer}
+    >
       <h2 className={styles.heading}>Curtains Measurement Form</h2>
 
       <h3 className={styles.sectionHeading}>Customer Info</h3>
@@ -101,54 +189,76 @@ export default function CurtainsForm() {
         </div>
       ))}
 
-      <h3 className={styles.sectionHeading}>Window Measurements</h3>
+      <h3 className={styles.sectionHeading}>Window Measurements (mm)</h3>
+
       {windows.map((window, idx) => (
         <div key={idx} className={styles.windowCard}>
-          <h4 className={styles.windowTitle}>Window {idx + 1}</h4>
+          <div
+            className={styles.previewToggle}
+            onClick={() => toggleCollapse(idx)}
+          >
+            {collapsed[idx] ? '▶️' : '🔽'} Window {idx + 1}: {window.roomName || 'Untitled'}
+          </div>
 
-          {['roomName', 'subcategory', 'fabric', 'color', 'width', 'height', 'customSplit', 'comments'].map((field) => (
-            <div key={field} className={styles.inputGroup}>
-              <label className={styles.label}>
-                {field.charAt(0).toUpperCase() + field.slice(1)}:
-              </label>
-              <input
-                type="text"
-                name={field}
-                value={window[field]}
-                onChange={(e) => handleWindowChange(idx, e)}
-                className={styles.input}
-                required={field !== 'comments'}
-              />
-            </div>
-          ))}
+          <div className={`${styles.collapsibleContent} ${collapsed[idx] ? styles.collapsed : ''}`}>
+            {['roomName', 'subcategory', 'fabric', 'color', 'customSplit', 'comments'].map((field) => (
+              <div key={field} className={styles.inputGroup}>
+                <label className={styles.label}>
+                  {field.charAt(0).toUpperCase() + field.slice(1)}:
+                </label>
+                <input
+                  type="text"
+                  name={field}
+                  value={window[field]}
+                  onChange={(e) => handleWindowChange(idx, e)}
+                  className={styles.input}
+                  required={field !== 'comments'}
+                />
+              </div>
+            ))}
 
-          {[
-            { name: 'headingType', options: ['Double Pinch Pleat', 'Wave Fold (S-fold)'] },
-            { name: 'track', options: ['Normal', 'Designer'] },
-            { name: 'trackColor', options: ['Black', 'White', 'Anodised Silver', 'N/A'] },
-            { name: 'control', options: ['Centre Opening', 'Full Right', 'Full Left'] },
-            { name: 'fixing', options: ['Top Fix', 'Double Extension Face Fix', 'Double Face Fix', 'Single Face Fix'] }
-          ].map(({ name, options }) => (
-            <div key={name} className={styles.inputGroup}>
-              <label className={styles.label}>
-                {name.charAt(0).toUpperCase() + name.slice(1)}:
-              </label>
-              <select
-                name={name}
-                value={window[name]}
-                onChange={(e) => handleWindowChange(idx, e)}
-                className={styles.select}
-                required
-              >
-                <option value="">-- Select --</option>
-                {options.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
-            </div>
-          ))}
+            {['width', 'height'].map((field) => (
+              <div key={field} className={styles.inputGroup}>
+                <label className={styles.label}>
+                  {field.charAt(0).toUpperCase() + field.slice(1)} (mm): <span style={{ color: '#d00' }}>* Please double-check</span>
+                </label>
+                <input
+                  type="number"
+                  name={field}
+                  value={window[field]}
+                  onChange={(e) => handleWindowChange(idx, e)}
+                  className={`${styles.input} ${styles.measurementInput}`}
+                  required
+                />
+              </div>
+            ))}
+
+            {[
+              { name: 'headingType', options: ['Double Pinch Pleat', 'Wave Fold (S-fold)'] },
+              { name: 'track', options: ['Normal', 'Designer'] },
+              { name: 'trackColor', options: ['Black', 'White', 'Anodised Silver', 'N/A'] },
+              { name: 'control', options: ['Centre Opening', 'Full Right', 'Full Left'] },
+              { name: 'fixing', options: ['Top Fix', 'Double Extension Face Fix', 'Double Face Fix', 'Single Face Fix'] }
+            ].map(({ name, options }) => (
+              <div key={name} className={styles.inputGroup}>
+                <label className={styles.label}>
+                  {name.charAt(0).toUpperCase() + name.slice(1)}:
+                </label>
+                <select
+                  name={name}
+                  value={window[name]}
+                  onChange={(e) => handleWindowChange(idx, e)}
+                  className={styles.select}
+                  required
+                >
+                  <option value="">-- Select --</option>
+                  {options.map((opt) => (
+                    <option key={opt} value={opt}>{opt}</option>
+                  ))}
+                </select>
+              </div>
+            ))}
+          </div>
         </div>
       ))}
 
@@ -157,7 +267,7 @@ export default function CurtainsForm() {
       </button>
 
       <button type="submit" className={styles.submitBtn}>
-        Submit
+        Preview Before Submit
       </button>
     </form>
   );
