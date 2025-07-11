@@ -18,8 +18,6 @@ export default function IndoorBlindsForm() {
       subcategory: '',
       fabric: '',
       color: '',
-      width: '',
-      height: '',
       control: '',
       fit: '',
       roll: '',
@@ -27,19 +25,36 @@ export default function IndoorBlindsForm() {
       baseRail: '',
       componentColour: '',
       brackets: '',
-      comments: ''
+      comments: '',
+      width: '',
+      height: ''
     }
   ]);
 
   const [collapsedSections, setCollapsedSections] = useState([]);
   const [showReview, setShowReview] = useState(false);
 
+  // 🕒 Set time/date on load
   useEffect(() => {
     const now = new Date();
-    const formattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const formattedDate = now.toISOString().split('T')[0];
-    setFormData(prev => ({ ...prev, time: formattedTime, date: formattedDate }));
+    setFormData(prev => ({
+      ...prev,
+      time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      date: now.toISOString().split('T')[0]
+    }));
   }, []);
+
+  // 🛡 Prevent losing data if navigating away
+  useEffect(() => {
+    const hasData = formData.customerName || windows.some(w => w.roomName);
+    const handleBeforeUnload = (e) => {
+      e.preventDefault();
+      e.returnValue = '';
+    };
+
+    if (hasData) window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [formData, windows]);
 
   const toggleCollapse = (index) => {
     setCollapsedSections(prev =>
@@ -62,40 +77,32 @@ export default function IndoorBlindsForm() {
   };
 
   const addWindow = () => {
-    setWindows(prev => [
-      ...prev,
-      {
-        roomName: '',
-        subcategory: '',
-        fabric: '',
-        color: '',
-        width: '',
-        height: '',
-        control: '',
-        fit: '',
-        roll: '',
-        motorised: '',
-        baseRail: '',
-        componentColour: '',
-        brackets: '',
-        comments: ''
-      }
-    ]);
+    setWindows(prev => [...prev, {
+      roomName: '',
+      subcategory: '',
+      fabric: '',
+      color: '',
+      control: '',
+      fit: '',
+      roll: '',
+      motorised: '',
+      baseRail: '',
+      componentColour: '',
+      brackets: '',
+      comments: '',
+      width: '',
+      height: ''
+    }]);
   };
 
   const deleteWindow = (index) => {
-    const current = windows[index];
-    const isBlank = Object.values(current).every(val => val === '');
-    if (!isBlank) return;
-    const updated = windows.filter((_, i) => i !== index);
-    setWindows(updated);
+    const blank = Object.values(windows[index]).every(val => val === '');
+    if (!blank) return;
+    setWindows(prev => prev.filter((_, i) => i !== index));
   };
 
   const validateMeasurements = () => {
-    return windows.every(w =>
-      /^\d+$/.test(w.width) &&
-      /^\d+$/.test(w.height)
-    );
+    return windows.every(w => /^\d+$/.test(w.width) && /^\d+$/.test(w.height));
   };
 
   const handleSubmit = async (e) => {
@@ -107,7 +114,7 @@ export default function IndoorBlindsForm() {
     }
 
     if (!validateMeasurements()) {
-      alert("Width and Height must be numeric (in mm). Please double-check.");
+      alert("Width and Height must be numeric (in mm).");
       return;
     }
 
@@ -141,8 +148,6 @@ export default function IndoorBlindsForm() {
           subcategory: '',
           fabric: '',
           color: '',
-          width: '',
-          height: '',
           control: '',
           fit: '',
           roll: '',
@@ -150,7 +155,9 @@ export default function IndoorBlindsForm() {
           baseRail: '',
           componentColour: '',
           brackets: '',
-          comments: ''
+          comments: '',
+          width: '',
+          height: ''
         }]);
         setShowReview(false);
       } else {
@@ -161,13 +168,27 @@ export default function IndoorBlindsForm() {
     }
   };
 
+  const dropdownOptions = {
+    control: ["Left", "Right"],
+    fit: ["Reveal", "Face"],
+    roll: ["Standard", "Reverse"],
+    motorised: ["Yes", "No"],
+    baseRail: ["Oval", "Flat", "Sealed"],
+    componentColour: ["White", "Black", "Grey", "Ivory"],
+    brackets: ["Standard", "Extension"]
+  };
+
   return (
     <form onSubmit={handleSubmit} className={styles.formContainer}>
       <h2 className={styles.formTitle}>Indoor Blinds Form</h2>
 
+      {/* 🧍 Customer Info Section */}
       <div className={styles.windowSection}>
         <h4 className={styles.windowHeader} onClick={() => toggleCollapse(-1)}>
           Customer Information
+          {!collapsedSections.includes(-1) && formData.customerName && (
+            <span style={{ marginLeft: '12px', fontWeight: 'bold' }}>{formData.customerName}</span>
+          )}
         </h4>
         {!collapsedSections.includes(-1) && (
           <>
@@ -176,9 +197,9 @@ export default function IndoorBlindsForm() {
                 <label>{field.replace(/([A-Z])/g, ' $1')}:</label>
                 <input
                   type={field === "customerPhone" ? "tel" : "text"}
-                  name={field}
                   inputMode={field === "customerPhone" ? "numeric" : "text"}
                   pattern={field === "customerPhone" ? "\\d{10}" : undefined}
+                  name={field}
                   value={formData[field]}
                   onChange={handleFormChange}
                   required
@@ -189,6 +210,7 @@ export default function IndoorBlindsForm() {
         )}
       </div>
 
+      {/* 🪟 Window Sections */}
       {windows.map((window, idx) => (
         <div key={idx} className={styles.windowSection}>
           <h4 className={styles.windowHeader} onClick={() => toggleCollapse(idx)}>
@@ -206,10 +228,7 @@ export default function IndoorBlindsForm() {
 
           {!collapsedSections.includes(idx) && (
             <>
-              {[
-                "roomName", "subcategory", "fabric", "color", "control", "fit", "roll",
-                "motorised", "baseRail", "componentColour", "brackets", "comments"
-              ].map(field => (
+              {["roomName", "subcategory", "fabric", "color", "comments"].map(field => (
                 <div key={field} className={styles.inputGroup}>
                   <label>{field.replace(/([A-Z])/g, ' $1')}:</label>
                   <input
@@ -219,6 +238,23 @@ export default function IndoorBlindsForm() {
                     onChange={(e) => handleWindowChange(idx, e)}
                     required={field !== "comments"}
                   />
+                </div>
+              ))}
+
+              {["control", "fit", "roll", "motorised", "baseRail", "componentColour", "brackets"].map(field => (
+                <div key={field} className={styles.inputGroup}>
+                  <label>{field.replace(/([A-Z])/g, ' $1')}:</label>
+                  <select
+                    name={field}
+                    value={window[field]}
+                    onChange={(e) => handleWindowChange(idx, e)}
+                    required
+                  >
+                    <option value="">-- Select --</option>
+                    {dropdownOptions[field].map(option => (
+                      <option key={option} value={option}>{option}</option>
+                    ))}
+                  </select>
                 </div>
               ))}
 
@@ -261,10 +297,10 @@ export default function IndoorBlindsForm() {
       {showReview && (
         <div className={styles.modal}>
           <div className={styles.modalContent}>
-            <h3>Review Information</h3>
+            <h3>Review Submission</h3>
             <pre>{JSON.stringify({ ...formData, windows }, null, 2)}</pre>
             <button onClick={() => setShowReview(false)} className={styles.addBtn}>
-              ❌ Close Preview
+              Close
             </button>
           </div>
         </div>
