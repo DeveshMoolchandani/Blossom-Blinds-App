@@ -20,14 +20,24 @@ export default async function handler(req, res) {
     try {
       data = JSON.parse(text);
     } catch (err) {
-      return res.status(500).json({ result: 'error', message: '❌ Invalid JSON from Google Script' });
+      console.error("❌ Invalid JSON from Google Script:", text);
+      return res.status(500).json({ result: 'error', message: 'Invalid JSON from Google Script' });
     }
 
-    return res.status(200).json(data);
+    // ✅ Normalize the response for frontend
+    if (data && data.result === 'success') {
+      return res.status(200).json({ result: 'success' });
+    } else {
+      return res.status(500).json({
+        result: 'error',
+        message: data?.message || 'Unknown error from script'
+      });
+    }
   } catch (error) {
+    console.error("❌ Proxy Error:", error);
     return res.status(500).json({
       result: 'error',
-      message: error.message || '❌ Unknown proxy error'
+      message: error.message || 'Unknown proxy error'
     });
   }
 }
