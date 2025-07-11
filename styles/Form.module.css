@@ -1,126 +1,128 @@
 .formContainer {
-  max-width: 900px;
-  margin: auto;
-  padding: 20px;
-  font-family: 'Arial', sans-serif;
-  font-size: 16px;
-  line-height: 1.6;
-  background-color: #fff;
-}
-
-.formTitle {
-  text-align: center;
-  font-size: 26px;
-  font-weight: bold;
-  margin-bottom: 30px;
-}
-
-.sectionHeading {
-  font-size: 20px;
-  font-weight: 600;
-  margin: 30px 0 10px;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 16px;
+  font-family: sans-serif;
 }
 
 .inputGroup {
-  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.2rem;
 }
 
 .inputGroup label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 4px;
+  font-size: 1rem;
+  margin-bottom: 0.4rem;
 }
 
 .inputGroup input,
 .inputGroup select {
-  width: 100%;
-  padding: 12px;
-  border-radius: 6px;
+  font-size: 1rem;
+  padding: 10px;
   border: 1px solid #ccc;
-  font-size: 16px;
+  border-radius: 6px;
 }
 
-.windowSection {
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  padding: 16px;
-  border-radius: 8px;
-  margin-bottom: 24px;
-}
-
-.windowHeader {
-  font-size: 18px;
+.measurementInput {
+  font-size: 1.1rem;
   font-weight: bold;
-  margin-bottom: 16px;
-  cursor: pointer;
+  background: #fffbe6;
+  border: 2px solid #ff9800;
+}
+
+/* Responsive Section Titles */
+.windowHeader {
+  font-size: 1.1rem;
+  font-weight: bold;
+  background: #f1f1f1;
+  padding: 12px;
+  margin-bottom: 0.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
+.windowSection {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 1.5rem;
+}
+
+/* Buttons */
 .addBtn,
+.submitBtn,
 .reviewBtn,
-.submitBtn {
-  display: block;
-  width: 100%;
-  padding: 14px;
-  font-size: 16px;
-  font-weight: 600;
-  border-radius: 6px;
+.deleteBtn {
+  display: inline-block;
+  font-size: 1rem;
+  padding: 10px 14px;
+  margin: 8px 4px 0 0;
   border: none;
-  margin-bottom: 20px;
+  border-radius: 6px;
+  background-color: #1976d2;
+  color: white;
   cursor: pointer;
+  width: 100%;
 }
 
 .addBtn {
-  background-color: #f0f0f0;
-  border: 1px solid #ccc;
-  color: #333;
-}
-
-.reviewBtn {
-  background-color: #ffe680;
-  color: #333;
-}
-
-.submitBtn {
-  background-color: #0070f3;
-  color: #fff;
-}
-
-.measurementInput {
-  border: 2px solid orange;
-  background-color: #fff9e6;
+  background-color: #4caf50;
 }
 
 .deleteBtn {
-  background: none;
+  background-color: #f44336;
+  color: white;
+  font-size: 1rem;
   border: none;
-  color: red;
-  font-size: 18px;
-  cursor: pointer;
-  margin-left: 12px;
+  padding: 4px 8px;
+  margin-left: auto;
 }
 
+/* Responsive Preview Modal */
 .modal {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0,0,0,0.4);
   display: flex;
-  align-items: center;
   justify-content: center;
-  z-index: 9999;
+  align-items: center;
+  z-index: 1000;
 }
 
 .modalContent {
   background: white;
-  padding: 30px;
-  max-width: 800px;
-  border-radius: 8px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  border-radius: 12px;
+  width: 90%;
+  max-height: 80vh;
   overflow-y: auto;
-  max-height: 90vh;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+@media (max-width: 480px) {
+  .inputGroup input,
+  .inputGroup select {
+    font-size: 1rem;
+    padding: 12px;
+  }
+
+  .submitBtn,
+  .addBtn {
+    font-size: 1rem;
+  }
+
+  .formTitle {
+    font-size: 1.4rem;
+    text-align: center;
+  }
+
+  .windowHeader {
+    font-size: 1rem;
+    flex-wrap: wrap;
+  }
 }

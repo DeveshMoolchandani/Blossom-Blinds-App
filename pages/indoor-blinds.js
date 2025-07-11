@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import styles from '../styles/Form.module.css';
 import { useRouter } from 'next/router';
 
-// Fabric-to-colour mapping
 const fabricToColours = {
   "ICON FR": ["CEYLON", "FLORA", "HARBOUR", "JET", "LEATHER", "LIQUORICE", "MARITIME", "OSPREY", "PAPYRUS", "SAIL", "SCULPTURE", "SEA MIST", "SOLAR", "STONEWASH", "TAURUS", "TO CONFIRM"],
   "LINESQUE LIGHT FILTER": ["CHESTNUT", "DELTA", "GRANITE", "HAZEL", "LEVI", "LILY", "OATCAKE", "OWL", "STONEWASH", "TO CONFIRM", "TRELLIS", "WICKER", "WINTER"],
@@ -17,7 +16,7 @@ const fabricToColours = {
   "ANSARI": ["ASH", "CHARCOAL", "COCONUT", "FOG", "FOSSIL", "LEAD", "SLATE", "STONE", "TO CONFIRM"],
   "BALMORAL BLOCKOUT": ["ARMOUR", "BIRCH", "BOURNEVILLE", "CHROME", "CONCRETE", "DOVE", "JET", "PEARL", "PLATINUM", "PUTTY", "PYRITE", "STEEL", "TO CONFIRM", "WHITE"],
   "BALMORAL LIGHT FILTER": ["DRIFTWOOD", "DUNE", "PAPERBARK", "PUMICE", "SAND", "SURF", "TO CONFIRM"],
-  "VIVE": ["ALLOY", "BIRCH", "BISTRO", "CHATEAU", "CLAY", "CLOUD", "COAL", "DUNE", "ICE", "LACE", "LIMESTONE", "LINEN", "LOFT", "MIST", "NIMBUS", "ODESSEY", "ORIENT", "PORCELAIN", "PURE", "SPIRIT DISCONTINUED", "STONE", "STORM", "SURF", "TERRACE", "TO CONFIRM", "TUNDRA", "WHISPER", "ZIRCON"],
+  "VIBE": ["ALLOY", "BIRCH", "BISTRO", "CHATEAU", "CLAY", "CLOUD", "COAL", "DUNE", "ICE", "LACE", "LIMESTONE", "LINEN", "LOFT", "MIST", "NIMBUS", "ODESSEY", "ORIENT", "PORCELAIN", "PURE", "SPIRIT DISCONTINUED", "STONE", "STORM", "SURF", "TERRACE", "TO CONFIRM", "TUNDRA", "WHISPER", "ZIRCON"],
   "FOCUS": ["ASH", "BAY", "CARBON", "CHALK", "CLOUD", "COAL", "DOVE", "DRIFT", "EBONY", "ESPRESSO", "FEATHER", "FIG - DISCONTINUED", "MAGNETIC", "MIST", "OYSTER", "POLAR", "POWDER - DISCONTINUED", "SANDSTONE -DISCONTINUED", "SHELL", "TEMPEST", "TO CONFIRM", "WHITE"],
   "METROSHADE BLOCKOUT": ["BLACK", "DOVE/WHITE", "ECRU", "ICE GREY", "MOONSTONE", "NOUGAT", "PEBBLE", "QUILL", "SEAL", "SLATE", "STORM", "TO CONFIRM", "WHITEWASH"],
   "METROSHADE LIGHT FILTER": ["DOVE/WHITE", "ECRU", "ICE GREY", "MOONSTONE", "NOUGAT", "QUILL", "TO CONFIRM"],
@@ -31,6 +30,8 @@ const fabricToColours = {
 const fabricOptions = Object.keys(fabricToColours).sort();
 
 export default function IndoorBlindsForm() {
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
     date: '',
     time: '',
@@ -60,7 +61,6 @@ export default function IndoorBlindsForm() {
     }
   ]);
 
-  const router = useRouter();
   const [collapsedSections, setCollapsedSections] = useState([]);
   const [showReview, setShowReview] = useState(false);
   const [formStarted, setFormStarted] = useState(false);
@@ -154,34 +154,7 @@ export default function IndoorBlindsForm() {
 
       if (result.result === 'success') {
         alert('✅ Form submitted successfully!');
-        setFormData({
-          date: '',
-          time: '',
-          salesRep: '',
-          customerName: '',
-          customerAddress: '',
-          customerPhone: '',
-          customerEmail: ''
-        });
-        setWindows([{
-          roomName: '',
-          subcategory: '',
-          fabric: '',
-          color: '',
-          width: '',
-          height: '',
-          control: '',
-          fit: '',
-          roll: '',
-          motorised: '',
-          baseRail: '',
-          componentColour: '',
-          brackets: '',
-          comments: ''
-        }]);
-        setCollapsedSections([]);
-        setShowReview(false);
-        setFormStarted(false);
+        window.location.reload();
       } else {
         alert(`❌ Submission failed: ${result.message}`);
       }
@@ -196,12 +169,7 @@ export default function IndoorBlindsForm() {
       return (
         <div key={field} className={styles.inputGroup}>
           <label>Fabric:</label>
-          <select
-            name="fabric"
-            value={window.fabric}
-            onChange={(e) => handleWindowChange(idx, e)}
-            required
-          >
+          <select name="fabric" value={window.fabric} onChange={(e) => handleWindowChange(idx, e)} required>
             <option value="">-- Select Fabric --</option>
             {fabricOptions.map(fab => (
               <option key={fab} value={fab}>{fab}</option>
@@ -209,18 +177,14 @@ export default function IndoorBlindsForm() {
           </select>
         </div>
       );
-    } else if (field === "color") {
+    }
+
+    if (field === "color") {
       const colours = fabricToColours[window.fabric] || [];
       return (
         <div key={field} className={styles.inputGroup}>
           <label>Colour:</label>
-          <select
-            name="color"
-            value={window.color}
-            onChange={(e) => handleWindowChange(idx, e)}
-            required
-            disabled={!window.fabric}
-          >
+          <select name="color" value={window.color} onChange={(e) => handleWindowChange(idx, e)} required disabled={!window.fabric}>
             <option value="">-- Select Colour --</option>
             {colours.map(col => (
               <option key={col} value={col}>{col}</option>
@@ -228,32 +192,85 @@ export default function IndoorBlindsForm() {
           </select>
         </div>
       );
-    } else {
+    }
+
+    const dropdowns = {
+      control: ["Left", "Right"],
+      fit: ["Recess", "Face"],
+      roll: ["Standard", "Over Roll"],
+      motorised: ["Yes", "No"],
+      baseRail: ["N/A", "Black Grey", "Sandstone", "White"],
+      componentColour: ["White", "Black", "Grey", "N/A"],
+      brackets: [
+        "N/A (Default)",
+        "55mm",
+        "Dual Opposite side",
+        "Dual Same Side to suit",
+        "Dual Same side",
+        "Dual opposite Side to suit",
+        "None",
+        "Single",
+        "Slim Combo Top Back",
+        "Slim Combo Top Back to suit",
+        "Slim Combo Top Front to suit",
+        "Slim Combo Top front"
+      ]
+    };
+
+    if (dropdowns[field]) {
       return (
         <div key={field} className={styles.inputGroup}>
           <label>{field.replace(/([A-Z])/g, ' $1')}:</label>
+          <select name={field} value={window[field]} onChange={(e) => handleWindowChange(idx, e)} required>
+            <option value="">-- Select {field} --</option>
+            {dropdowns[field].map(opt => (
+              <option key={opt} value={opt}>{opt}</option>
+            ))}
+          </select>
+        </div>
+      );
+    }
+
+    if (["width", "height"].includes(field)) {
+      return (
+        <div key={field} className={`${styles.inputGroup} ${styles.highlight}`}>
+          <label>{field} (mm):</label>
           <input
-            type="text"
+            type="number"
+            inputMode="numeric"
+            pattern="[0-9]*"
             name={field}
             value={window[field]}
             onChange={(e) => handleWindowChange(idx, e)}
-            required={field !== "comments"}
+            required
           />
         </div>
       );
     }
+
+    return (
+      <div key={field} className={styles.inputGroup}>
+        <label>{field.replace(/([A-Z])/g, ' $1')}:</label>
+        <input
+          type="text"
+          name={field}
+          value={window[field]}
+          onChange={(e) => handleWindowChange(idx, e)}
+          required={field !== "comments"}
+        />
+      </div>
+    );
   };
 
   return (
     <form onSubmit={handleSubmit} className={styles.formContainer}>
       <h2 className={styles.formTitle}>Indoor Blinds Form</h2>
 
+      {/* Customer Info */}
       <div className={styles.windowSection}>
         <h4 className={styles.windowHeader} onClick={() => toggleCollapse(-1)}>
           <span>Customer Information</span>
-          <span style={{ fontWeight: 'bold', marginLeft: '12px' }}>
-            {formData.customerName || ''}
-          </span>
+          <span style={{ fontWeight: 'bold', marginLeft: '12px' }}>{formData.customerName || ''}</span>
         </h4>
         {!collapsedSections.includes(-1) && (
           <>
@@ -261,8 +278,10 @@ export default function IndoorBlindsForm() {
               <div key={field} className={styles.inputGroup}>
                 <label>{field.replace(/([A-Z])/g, ' $1')}:</label>
                 <input
-                  type={field === "customerPhone" ? "tel" : "text"}
+                  type={field === "customerPhone" ? "tel" : field === "customerEmail" ? "email" : "text"}
                   name={field}
+                  inputMode={field === "customerPhone" ? "numeric" : undefined}
+                  pattern={field === "customerPhone" ? "^04\\d{8}$" : undefined}
                   value={formData[field]}
                   onChange={handleFormChange}
                   required
@@ -273,75 +292,26 @@ export default function IndoorBlindsForm() {
         )}
       </div>
 
+      {/* Windows */}
       {windows.map((window, idx) => (
         <div key={idx} className={styles.windowSection}>
           <h4 className={styles.windowHeader} onClick={() => toggleCollapse(idx)}>
             <span>{`Window ${idx + 1}`}</span>
-            <span style={{ fontWeight: 'bold', marginLeft: '12px' }}>
-              {window.roomName || ''}
-            </span>
-            <button
-              type="button"
-              onClick={() => deleteWindow(idx)}
-              className={styles.deleteBtn}
-              title="Delete window"
-            >✕</button>
+            <span style={{ fontWeight: 'bold', marginLeft: '12px' }}>{window.roomName || ''}</span>
+            <button type="button" onClick={() => deleteWindow(idx)} className={styles.deleteBtn} title="Delete window">✕</button>
           </h4>
 
           {!collapsedSections.includes(idx) && (
             <>
-              {["roomName", "subcategory", "fabric", "color", "control", "fit", "roll", "motorised", "baseRail", "componentColour", "brackets", "comments"]
+              {["roomName", "subcategory", "fabric", "color", "control", "fit", "roll", "motorised", "baseRail", "componentColour", "brackets", "width", "height", "comments"]
                 .map(field => renderInput(field, idx, window))}
-              {["width", "height"].map(field => (
-                <div key={field} className={styles.inputGroup}>
-                  <label>{field} (mm):</label>
-                  <input
-                    type="number"
-                    name={field}
-                    value={window[field]}
-                    onChange={(e) => handleWindowChange(idx, e)}
-                    required
-                  />
-                </div>
-              ))}
             </>
           )}
         </div>
       ))}
 
-      <button type="button" onClick={addWindow} className={styles.addBtn}>
-        ➕ Add Another Window
-      </button>
-
-      <button type="button" className={styles.reviewBtn} onClick={() => setShowReview(true)}>
-        📋 Review Before Submit
-      </button>
-
-      <button type="submit" className={styles.submitBtn}>
-        ✅ Submit
-      </button>
-
-      {showReview && (
-        <div className={styles.modal}>
-          <div className={styles.modalContent}>
-            <h3>Review Information</h3>
-            {Object.entries(formData).map(([key, value]) => (
-              <p key={key}><strong>{key.replace(/([A-Z])/g, ' $1')}:</strong> {value}</p>
-            ))}
-            {windows.map((win, i) => (
-              <div key={i}>
-                <h4>Window {i + 1}</h4>
-                {Object.entries(win).map(([k, v]) => (
-                  <p key={k}><strong>{k.replace(/([A-Z])/g, ' $1')}:</strong> {v}</p>
-                ))}
-              </div>
-            ))}
-            <button onClick={() => setShowReview(false)} className={styles.addBtn}>
-              ❌ Close Preview
-            </button>
-          </div>
-        </div>
-      )}
+      <button type="button" onClick={addWindow} className={styles.addBtn}>➕ Add Another Window</button>
+      <button type="submit" className={styles.submitBtn}>✅ Submit</button>
     </form>
   );
 }
