@@ -45,7 +45,6 @@ export default function IndoorBlindsForm() {
     setFormData(prev => ({ ...prev, time: formattedTime, date: formattedDate }));
   }, []);
 
-  // Block back navigation unless form is blank or submitted
   useEffect(() => {
     const handleRouteChange = (url) => {
       if (formStarted) {
@@ -139,6 +138,8 @@ export default function IndoorBlindsForm() {
       productType: "Indoor Blinds"
     };
 
+    console.log("📤 Submitting payload to proxy:", payload);
+
     try {
       const res = await fetch('/api/indoor-blinds-proxy', {
         method: 'POST',
@@ -147,6 +148,8 @@ export default function IndoorBlindsForm() {
       });
 
       const result = await res.json();
+      console.log("📥 Response from Google Script:", result);
+
       if (result.result === 'success') {
         alert('✅ Form submitted successfully!');
         setFormData({
@@ -182,6 +185,7 @@ export default function IndoorBlindsForm() {
       }
     } catch (err) {
       alert('❌ Network error — submission failed.');
+      console.error("❌ Submission error:", err);
     }
   };
 
@@ -233,19 +237,19 @@ export default function IndoorBlindsForm() {
 
           {!collapsedSections.includes(idx) && (
             <>
-              {[ "roomName", "subcategory", "fabric", "color", "control", "fit", "roll", "motorised", "baseRail", "componentColour", "brackets", "comments" ]
+              {["roomName", "subcategory", "fabric", "color", "control", "fit", "roll", "motorised", "baseRail", "componentColour", "brackets", "comments"]
                 .map(field => (
-                <div key={field} className={styles.inputGroup}>
-                  <label>{field.replace(/([A-Z])/g, ' $1')}:</label>
-                  <input
-                    type="text"
-                    name={field}
-                    value={window[field]}
-                    onChange={(e) => handleWindowChange(idx, e)}
-                    required={field !== "comments"}
-                  />
-                </div>
-              ))}
+                  <div key={field} className={styles.inputGroup}>
+                    <label>{field.replace(/([A-Z])/g, ' $1')}:</label>
+                    <input
+                      type="text"
+                      name={field}
+                      value={window[field]}
+                      onChange={(e) => handleWindowChange(idx, e)}
+                      required={field !== "comments"}
+                    />
+                  </div>
+                ))}
 
               {["width", "height"].map(field => (
                 <div key={field} className={styles.inputGroup}>
@@ -271,11 +275,7 @@ export default function IndoorBlindsForm() {
         ➕ Add Another Window
       </button>
 
-      <button
-        type="button"
-        className={styles.reviewBtn}
-        onClick={() => setShowReview(true)}
-      >
+      <button type="button" className={styles.reviewBtn} onClick={() => setShowReview(true)}>
         📋 Review Before Submit
       </button>
 
