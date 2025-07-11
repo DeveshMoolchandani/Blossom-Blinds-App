@@ -4,8 +4,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 🔍 Debug log: shows the payload being forwarded
-    console.log("📦 Forwarding payload to Google Apps Script:", req.body);
+    console.log("🟢 Indoor Blinds Proxy Payload:", req.body);  // 🔍 LOG THIS!
 
     const response = await fetch("https://script.google.com/macros/s/AKfycbwyfc1yWqACSL8CvhT3WFbInDEgYal77aShA4yKaX6AGkN5yq5Er3lokIciS5gSySPg/exec", {
       method: "POST",
@@ -16,19 +15,18 @@ export default async function handler(req, res) {
     });
 
     const text = await response.text();
-
     let data;
     try {
       data = JSON.parse(text);
-    } catch (err) {
-      return res.status(500).json({ result: 'error', message: '❌ Invalid JSON from Google Script' });
+    } catch {
+      return res.status(500).json({ result: 'error', message: 'Invalid JSON from Google Script' });
     }
 
     return res.status(200).json(data);
   } catch (error) {
     return res.status(500).json({
       result: 'error',
-      message: error.message || '❌ Unknown proxy error'
+      message: error.message || 'Unknown proxy error'
     });
   }
 }
