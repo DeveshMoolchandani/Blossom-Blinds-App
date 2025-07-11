@@ -2,9 +2,35 @@ import { useState, useEffect } from 'react';
 import styles from '../styles/Form.module.css';
 import { useRouter } from 'next/router';
 
-export default function IndoorBlindsForm() {
-  const router = useRouter();
+// Fabric-to-colour mapping
+const fabricToColours = {
+  "ICON FR": ["CEYLON", "FLORA", "HARBOUR", "JET", "LEATHER", "LIQUORICE", "MARITIME", "OSPREY", "PAPYRUS", "SAIL", "SCULPTURE", "SEA MIST", "SOLAR", "STONEWASH", "TAURUS", "TO CONFIRM"],
+  "LINESQUE LIGHT FILTER": ["CHESTNUT", "DELTA", "GRANITE", "HAZEL", "LEVI", "LILY", "OATCAKE", "OWL", "STONEWASH", "TO CONFIRM", "TRELLIS", "WICKER", "WINTER"],
+  "ZENO": ["BARRANCA", "CUSCO", "ICA", "LIMA", "MALA", "PUNO", "TARMA", "TO CONFIRM"],
+  "SKYE LIGHT FILTER": ["BLAZER", "CHIFFON", "CHROME", "EARL GREY", "OYSTER", "PORCELAIN", "RAVEN", "SAIL", "SWAN", "TO CONFIRM"],
+  "SKYE BLOCKOUT": ["BLAZER", "CHIFFON", "CHROME", "EARL GREY", "OYSTER", "PORCELAIN", "RAVEN", "SAIL", "SWAN", "TO CONFIRM"],
+  "LE REVE LIGHT FILTER": ["CHALK", "CONCRETE", "CRYSTAL", "GRAPHITE", "MARBLE", "MINK", "ONYX", "PEWTER", "SAND", "SHELL", "TO CONFIRM"],
+  "LE REVE BLOCKOUT": ["CHALK", "CONCRETE", "CRYSTAL", "GRAPHITE", "MARBLE", "MINK", "ONYX", "PEWTER", "SAND", "SHELL", "TO CONFIRM"],
+  "MANTRA LIGHT FILTER": ["COTTON", "PARCHMENT", "PEBBLE", "SEAGRASS", "SEED PEARL", "SESAME", "SHALE", "TO CONFIRM"],
+  "MANTRA BLOCKOUT": ["COTTON", "FLINT", "OPAL", "PARCHMENT", "PEBBLE", "SEAGRASS", "SEED PEARL", "SESAME", "SHALE", "SPICE", "TO CONFIRM"],
+  "KLEENSCREEN": ["ALLOY", "BARLEY", "BLACK", "BLACK PEARL", "CHARCOAL", "GRAPHITE", "GREY", "IVORY", "PEWTER", "PURE WHITE", "SHALE", "SILVER PEARL", "TO CONFIRM", "WHITE PEARL"],
+  "ANSARI": ["ASH", "CHARCOAL", "COCONUT", "FOG", "FOSSIL", "LEAD", "SLATE", "STONE", "TO CONFIRM"],
+  "BALMORAL BLOCKOUT": ["ARMOUR", "BIRCH", "BOURNEVILLE", "CHROME", "CONCRETE", "DOVE", "JET", "PEARL", "PLATINUM", "PUTTY", "PYRITE", "STEEL", "TO CONFIRM", "WHITE"],
+  "BALMORAL LIGHT FILTER": ["DRIFTWOOD", "DUNE", "PAPERBARK", "PUMICE", "SAND", "SURF", "TO CONFIRM"],
+  "VIVE": ["ALLOY", "BIRCH", "BISTRO", "CHATEAU", "CLAY", "CLOUD", "COAL", "DUNE", "ICE", "LACE", "LIMESTONE", "LINEN", "LOFT", "MIST", "NIMBUS", "ODESSEY", "ORIENT", "PORCELAIN", "PURE", "SPIRIT DISCONTINUED", "STONE", "STORM", "SURF", "TERRACE", "TO CONFIRM", "TUNDRA", "WHISPER", "ZIRCON"],
+  "FOCUS": ["ASH", "BAY", "CARBON", "CHALK", "CLOUD", "COAL", "DOVE", "DRIFT", "EBONY", "ESPRESSO", "FEATHER", "FIG - DISCONTINUED", "MAGNETIC", "MIST", "OYSTER", "POLAR", "POWDER - DISCONTINUED", "SANDSTONE -DISCONTINUED", "SHELL", "TEMPEST", "TO CONFIRM", "WHITE"],
+  "METROSHADE BLOCKOUT": ["BLACK", "DOVE/WHITE", "ECRU", "ICE GREY", "MOONSTONE", "NOUGAT", "PEBBLE", "QUILL", "SEAL", "SLATE", "STORM", "TO CONFIRM", "WHITEWASH"],
+  "METROSHADE LIGHT FILTER": ["DOVE/WHITE", "ECRU", "ICE GREY", "MOONSTONE", "NOUGAT", "QUILL", "TO CONFIRM"],
+  "SANCTUARY BLOCKOUT": ["BALTIC", "CERAMIC", "LAVA", "MARBLE", "MINERAL", "PLASTER", "SUEDE", "TO CONFIRM", "TRUFFLE", "WHITEWASH"],
+  "SANCTUARY LIGHT FILTER": ["BALTIC", "CERAMIC", "LAVA", "MARBLE", "MINERAL", "PLASTER", "SLATE", "SUEDE", "TO CONFIRM", "WHITEWASH"],
+  "TERRA": ["ARIA", "ELA", "FLINT", "HAZEL", "KAI", "MISTY", "RIDGE", "STELLA", "STORM", "TO CONFIRM", "WILLOW"],
+  "ETCH": ["FELT", "MONO", "PENCIL", "PLATE", "STEEL", "TISSUE", "TO CONFIRM", "ZINC"],
+  "ONESCREEN": ["BLACK", "CHARCOAL", "DUNE", "GREY", "GUNMETAL", "ICE", "LINEN BRONZE", "MERCURY", "SAND", "SILVER BLACK", "TO CONFIRM", "WALLABY", "WHITE"]
+};
 
+const fabricOptions = Object.keys(fabricToColours).sort();
+
+export default function IndoorBlindsForm() {
   const [formData, setFormData] = useState({
     date: '',
     time: '',
@@ -34,6 +60,7 @@ export default function IndoorBlindsForm() {
     }
   ]);
 
+  const router = useRouter();
   const [collapsedSections, setCollapsedSections] = useState([]);
   const [showReview, setShowReview] = useState(false);
   const [formStarted, setFormStarted] = useState(false);
@@ -60,14 +87,6 @@ export default function IndoorBlindsForm() {
     return () => router.events.off('routeChangeStart', handleRouteChange);
   }, [formStarted]);
 
-  const toggleCollapse = (index) => {
-    setCollapsedSections(prev =>
-      prev.includes(index)
-        ? prev.filter(i => i !== index)
-        : [...prev, index]
-    );
-  };
-
   const handleFormChange = (e) => {
     setFormStarted(true);
     const { name, value } = e.target;
@@ -79,43 +98,29 @@ export default function IndoorBlindsForm() {
     const { name, value } = e.target;
     const updated = [...windows];
     updated[index][name] = value;
+    if (name === 'fabric') updated[index]['color'] = '';
     setWindows(updated);
   };
 
   const addWindow = () => {
-    setWindows(prev => [
-      ...prev,
-      {
-        roomName: '',
-        subcategory: '',
-        fabric: '',
-        color: '',
-        width: '',
-        height: '',
-        control: '',
-        fit: '',
-        roll: '',
-        motorised: '',
-        baseRail: '',
-        componentColour: '',
-        brackets: '',
-        comments: ''
-      }
-    ]);
+    setWindows(prev => [...prev, { ...windows[0], roomName: '', fabric: '', color: '', comments: '' }]);
   };
 
   const deleteWindow = (index) => {
-    const current = windows[index];
-    const isBlank = Object.values(current).every(val => val === '');
-    if (!isBlank) return;
-    const updated = windows.filter((_, i) => i !== index);
-    setWindows(updated);
+    if (Object.values(windows[index]).every(v => !v)) {
+      setWindows(prev => prev.filter((_, i) => i !== index));
+    }
+  };
+
+  const toggleCollapse = (index) => {
+    setCollapsedSections(prev =>
+      prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]
+    );
   };
 
   const validateMeasurements = () => {
     return windows.every(w =>
-      /^\d+$/.test(w.width) &&
-      /^\d+$/.test(w.height)
+      /^\d+$/.test(w.width) && /^\d+$/.test(w.height)
     );
   };
 
@@ -138,8 +143,6 @@ export default function IndoorBlindsForm() {
       productType: "Indoor Blinds"
     };
 
-    console.log("📤 Submitting payload to proxy:", payload);
-
     try {
       const res = await fetch('/api/indoor-blinds-proxy', {
         method: 'POST',
@@ -148,7 +151,6 @@ export default function IndoorBlindsForm() {
       });
 
       const result = await res.json();
-      console.log("📥 Response from Google Script:", result);
 
       if (result.result === 'success') {
         alert('✅ Form submitted successfully!');
@@ -185,7 +187,60 @@ export default function IndoorBlindsForm() {
       }
     } catch (err) {
       alert('❌ Network error — submission failed.');
-      console.error("❌ Submission error:", err);
+      console.error(err);
+    }
+  };
+
+  const renderInput = (field, idx, window) => {
+    if (field === "fabric") {
+      return (
+        <div key={field} className={styles.inputGroup}>
+          <label>Fabric:</label>
+          <select
+            name="fabric"
+            value={window.fabric}
+            onChange={(e) => handleWindowChange(idx, e)}
+            required
+          >
+            <option value="">-- Select Fabric --</option>
+            {fabricOptions.map(fab => (
+              <option key={fab} value={fab}>{fab}</option>
+            ))}
+          </select>
+        </div>
+      );
+    } else if (field === "color") {
+      const colours = fabricToColours[window.fabric] || [];
+      return (
+        <div key={field} className={styles.inputGroup}>
+          <label>Colour:</label>
+          <select
+            name="color"
+            value={window.color}
+            onChange={(e) => handleWindowChange(idx, e)}
+            required
+            disabled={!window.fabric}
+          >
+            <option value="">-- Select Colour --</option>
+            {colours.map(col => (
+              <option key={col} value={col}>{col}</option>
+            ))}
+          </select>
+        </div>
+      );
+    } else {
+      return (
+        <div key={field} className={styles.inputGroup}>
+          <label>{field.replace(/([A-Z])/g, ' $1')}:</label>
+          <input
+            type="text"
+            name={field}
+            value={window[field]}
+            onChange={(e) => handleWindowChange(idx, e)}
+            required={field !== "comments"}
+          />
+        </div>
+      );
     }
   };
 
@@ -207,8 +262,6 @@ export default function IndoorBlindsForm() {
                 <label>{field.replace(/([A-Z])/g, ' $1')}:</label>
                 <input
                   type={field === "customerPhone" ? "tel" : "text"}
-                  inputMode={field === "customerPhone" ? "numeric" : "text"}
-                  pattern={field === "customerPhone" ? "\\d{10}" : undefined}
                   name={field}
                   value={formData[field]}
                   onChange={handleFormChange}
@@ -238,28 +291,13 @@ export default function IndoorBlindsForm() {
           {!collapsedSections.includes(idx) && (
             <>
               {["roomName", "subcategory", "fabric", "color", "control", "fit", "roll", "motorised", "baseRail", "componentColour", "brackets", "comments"]
-                .map(field => (
-                  <div key={field} className={styles.inputGroup}>
-                    <label>{field.replace(/([A-Z])/g, ' $1')}:</label>
-                    <input
-                      type="text"
-                      name={field}
-                      value={window[field]}
-                      onChange={(e) => handleWindowChange(idx, e)}
-                      required={field !== "comments"}
-                    />
-                  </div>
-                ))}
-
+                .map(field => renderInput(field, idx, window))}
               {["width", "height"].map(field => (
                 <div key={field} className={styles.inputGroup}>
                   <label>{field} (mm):</label>
                   <input
                     type="number"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
                     name={field}
-                    className={styles.measurementInput}
                     value={window[field]}
                     onChange={(e) => handleWindowChange(idx, e)}
                     required
