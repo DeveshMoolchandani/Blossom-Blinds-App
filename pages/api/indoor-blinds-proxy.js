@@ -4,9 +4,9 @@ export default async function handler(req, res) {
   }
 
   try {
-    console.log("🟢 Indoor Blinds Proxy Payload:", req.body);  // 🔍 LOG THIS!
+    console.log("📦 Forwarding Indoor Blinds payload to Google Apps Script:", req.body);
 
-    const response = await fetch("https://script.google.com/macros/s/AKfycbwyfc1yWqACSL8CvhT3WFbInDEgYal77aShA4yKaX6AGkN5yq5Er3lokIciS5gSySPg/exec", {
+    const response = await fetch("https://script.google.com/macros/s/AKfycbwQa6HIIV60r_cI4gjul6rvmBwsfPkDiIJzWWN3elajJ2PdI9chygnoiRmbjBd0B8o/exec", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -15,18 +15,19 @@ export default async function handler(req, res) {
     });
 
     const text = await response.text();
+
     let data;
     try {
       data = JSON.parse(text);
-    } catch {
-      return res.status(500).json({ result: 'error', message: 'Invalid JSON from Google Script' });
+    } catch (err) {
+      return res.status(500).json({ result: 'error', message: '❌ Invalid JSON from Google Script' });
     }
 
     return res.status(200).json(data);
   } catch (error) {
     return res.status(500).json({
       result: 'error',
-      message: error.message || 'Unknown proxy error'
+      message: error.message || '❌ Unknown proxy error'
     });
   }
 }
