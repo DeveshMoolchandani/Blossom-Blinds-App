@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import styles from '../styles/Form.module.css';
+import { useRouter } from 'next/router';
 
 export default function CurtainsForm() {
-  const [customerInfo, setCustomerInfo] = useState({
+  const router = useRouter();
+
+  const [formData, setFormData] = useState({
     date: '',
     time: '',
     salesRep: '',
@@ -13,102 +16,201 @@ export default function CurtainsForm() {
   });
 
   const [windows, setWindows] = useState([
-    { roomName: '', subcategory: '', fabric: '', color: '', width: '', height: '', customSplit: '', comments: '', headingType: '', track: '', trackColor: '', control: '', fixing: '' }
+    {
+      roomName: '',
+      subcategory: '',
+      fabric: '',
+      color: '',
+      width: '',
+      height: '',
+      customSplit: '',
+      headingType: '',
+      track: '',
+      trackColor: '',
+      control: '',
+      fixing: '',
+      comments: ''
+    }
   ]);
-  const [collapsed, setCollapsed] = useState([]);
-  const [showModal, setShowModal] = useState(false);
+
+  const [collapsedSections, setCollapsedSections] = useState([]);
+  const [showReview, setShowReview] = useState(false);
+  const [formStarted, setFormStarted] = useState(false);
 
   useEffect(() => {
     const now = new Date();
-    setCustomerInfo(info => ({
-      ...info,
-      date: now.toLocaleDateString('en-GB'),
-      time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    }));
-    setCollapsed([false]);
+    const formattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const formattedDate = now.toISOString().split('T')[0];
+    setFormData(prev => ({ ...prev, time: formattedTime, date: formattedDate }));
   }, []);
 
-  const handleCustomerChange = (e) => {
+  useEffect(() => {
+    const handleRouteChange = (url) => {
+      if (formStarted) {
+        const confirmLeave = confirm("⚠️ Leaving will clear all entered data. Are you sure?");
+        if (!confirmLeave) {
+          router.events.emit('routeChangeError');
+          throw 'Route change blocked.';
+        }
+      }
+    };
+    router.events.on('routeChangeStart', handleRouteChange);
+    return () => router.events.off('routeChangeStart', handleRouteChange);
+  }, [formStarted]);
+
+  const toggleCollapse = (index) => {
+    setCollapsedSections(prev =>
+      prev.includes(index)
+        ? prev.filter(i => i !== index)
+        : [...prev, index]
+    );
+  };
+
+  const handleFormChange = (e) => {
+    setFormStarted(true);
     const { name, value } = e.target;
-    setCustomerInfo(info => ({ ...info, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleWindowChange = (index, e) => {
+    setFormStarted(true);
     const { name, value } = e.target;
-    setWindows(prev => {
-      const copy = [...prev];
-      copy[index][name] = value;
-      return copy;
-    });
+    const updated = [...windows];
+    updated[index][name] = value;
+    setWindows(updated);
   };
 
   const addWindow = () => {
-    setWindows(prev => [...prev, {
-      roomName: '', subcategory: '', fabric: '', color: '', width: '', height: '', customSplit: '', comments: '', headingType: '', track: '', trackColor: '', control: '', fixing: ''
-    }]);
-    setCollapsed(prev => [...prev, false]);
+    setWindows(prev => [
+      ...prev,
+      {
+        roomName: '',
+        subcategory: '',
+        fabric: '',
+        color: '',
+        width: '',
+        height: '',
+        customSplit: '',
+        headingType: '',
+        track: '',
+        trackColor: '',
+        control: '',
+        fixing: '',
+        comments: ''
+      }
+    ]);
   };
 
-  const toggleCollapse = (idx) => {
-    setCollapsed(prev => prev.map((c, i) => (i === idx ? !c : c)));
+  const deleteWindow = (index) => {
+    const current = windows[index];
+    const isBlank = Object.values(current).every(val => val === '');
+    if (!isBlank) return;
+    const updated = windows.filter((_, i) => i !== index);
+    setWindows(updated);
+  };
+
+  const validateMeasurements = () => {
+    return windows.every(w =>
+      /^\d+$/.test(w.width) &&
+      /^\d+$/.test(w.height)
+    );
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!formData.customerName || !formData.customerPhone || windows.length === 0) {
+      alert("Please fill in Customer Name, Phone, and at least one window");
+      return;
+    }
+
+    if (!validateMeasurements()) {
+      alert("Width and Height must be numeric (in mm). Please double-check.");
+      return;
+    }
+
     const payload = {
-      ...customerInfo,
-      windows
+      ...formData,
+      windows,
+      productType: "Curtains"
     };
 
     try {
-      const response = await fetch('/api/curtains-proxy', {
+      const res = await fetch('/api/curtains-proxy', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
 
-      const result = await response.json();
+      const result = await res.json();
       if (result.result === 'success') {
-        alert('✅ Form submitted!');
-        setShowModal(false);
+        alert('✅ Form submitted successfully!');
+        setFormData({
+          date: '',
+          time: '',
+          salesRep: '',
+          customerName: '',
+          customerAddress: '',
+          customerPhone: '',
+          customerEmail: ''
+        });
+        setWindows([{
+          roomName: '',
+          subcategory: '',
+          fabric: '',
+          color: '',
+          width: '',
+          height: '',
+          customSplit: '',
+          headingType: '',
+          track: '',
+          trackColor: '',
+          control: '',
+          fixing: '',
+          comments: ''
+        }]);
+        setCollapsedSections([]);
+        setShowReview(false);
+        setFormStarted(false);
       } else {
-        alert('❌ Submission failed: ' + result.message);
+        alert(`❌ Submission failed: ${result.message}`);
       }
-    } catch (error) {
-      alert('❌ Submission error: ' + error.message);
+    } catch (err) {
+      alert('❌ Network error — submission failed.');
     }
-  };
-
-  const isEmptyWindow = (w) => Object.values(w).every(val => val === '');
-
-  const deleteWindow = (idx) => {
-    if (!isEmptyWindow(windows[idx])) return;
-    setWindows(windows.filter((_, i) => i !== idx));
-    setCollapsed(collapsed.filter((_, i) => i !== idx));
   };
 
   return (
     <form onSubmit={handleSubmit} className={styles.formContainer}>
-      <h2 className={styles.formTitle}>Curtains Measurement Form</h2>
+      <h2 className={styles.formTitle}>Curtains Form</h2>
 
-      <h3 className={styles.sectionHeading}>Customer Info</h3>
-      {Object.keys(customerInfo).map((field) => (
-        <div key={field} className={styles.inputGroup}>
-          <label>{field}:</label>
-          <input
-            type={field === 'customerPhone' ? 'tel' : 'text'}
-            name={field}
-            value={customerInfo[field]}
-            onChange={handleCustomerChange}
-            required={field !== 'customerEmail'}
-          />
-        </div>
-      ))}
+      <div className={styles.windowSection}>
+        <h4 className={styles.windowHeader} onClick={() => toggleCollapse(-1)}>
+          <span>Customer Information</span>
+          <span style={{ fontWeight: 'bold', marginLeft: '12px' }}>
+            {formData.customerName || ''}
+          </span>
+        </h4>
+        {!collapsedSections.includes(-1) && (
+          <>
+            {["salesRep", "customerName", "customerAddress", "customerPhone", "customerEmail"].map(field => (
+              <div key={field} className={styles.inputGroup}>
+                <label>{field.replace(/([A-Z])/g, ' $1')}:</label>
+                <input
+                  type={field === "customerPhone" ? "tel" : "text"}
+                  inputMode={field === "customerPhone" ? "numeric" : "text"}
+                  pattern={field === "customerPhone" ? "\\d{10}" : undefined}
+                  name={field}
+                  value={formData[field]}
+                  onChange={handleFormChange}
+                  required
+                />
+              </div>
+            ))}
+          </>
+        )}
+      </div>
 
-      <h3 className={styles.sectionHeading}>Window Measurements</h3>
       {windows.map((window, idx) => (
         <div key={idx} className={styles.windowSection}>
           <h4 className={styles.windowHeader} onClick={() => toggleCollapse(idx)}>
@@ -116,39 +218,43 @@ export default function CurtainsForm() {
             <span style={{ fontWeight: 'bold', marginLeft: '12px' }}>
               {window.roomName || ''}
             </span>
-            <button type="button" className={styles.deleteBtn} onClick={() => deleteWindow(idx)}>🗑</button>
+            <button
+              type="button"
+              onClick={() => deleteWindow(idx)}
+              className={styles.deleteBtn}
+              title="Delete window"
+            >✕</button>
           </h4>
 
-          {!collapsed[idx] && (
+          {!collapsedSections.includes(idx) && (
             <>
-              {[
-                'roomName', 'subcategory', 'fabric', 'color', 'width', 'height', 'customSplit', 'comments'
-              ].map((field) => (
+              {[ "roomName", "subcategory", "fabric", "color", "customSplit", "headingType", "track", "trackColor", "control", "fixing", "comments" ]
+                .map(field => (
                 <div key={field} className={styles.inputGroup}>
-                  <label>{field}:</label>
+                  <label>{field.replace(/([A-Z])/g, ' $1')}:</label>
                   <input
-                    type={['width', 'height'].includes(field) ? 'number' : 'text'}
+                    type="text"
                     name={field}
                     value={window[field]}
                     onChange={(e) => handleWindowChange(idx, e)}
-                    className={['width', 'height'].includes(field) ? styles.measurementInput : ''}
+                    required={field !== "comments"}
                   />
                 </div>
               ))}
 
-              {[
-                { name: 'headingType', options: ['Double Pinch Pleat', 'Wave Fold (S-fold)'] },
-                { name: 'track', options: ['Normal', 'Designer'] },
-                { name: 'trackColor', options: ['Black', 'White', 'Anodised Silver', 'N/A'] },
-                { name: 'control', options: ['Centre Opening', 'Full Right', 'Full Left'] },
-                { name: 'fixing', options: ['Top Fix', 'Double Extension Face Fix', 'Double Face Fix', 'Single Face Fix'] }
-              ].map(({ name, options }) => (
-                <div key={name} className={styles.inputGroup}>
-                  <label>{name}:</label>
-                  <select name={name} value={window[name]} onChange={(e) => handleWindowChange(idx, e)}>
-                    <option value="">-- Select --</option>
-                    {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                  </select>
+              {["width", "height"].map(field => (
+                <div key={field} className={styles.inputGroup}>
+                  <label>{field} (mm):</label>
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    name={field}
+                    className={styles.measurementInput}
+                    value={window[field]}
+                    onChange={(e) => handleWindowChange(idx, e)}
+                    required
+                  />
                 </div>
               ))}
             </>
@@ -156,17 +262,40 @@ export default function CurtainsForm() {
         </div>
       ))}
 
-      <button type="button" onClick={addWindow} className={styles.addBtn}>➕ Add Another Window</button>
-      <button type="button" className={styles.reviewBtn} onClick={() => setShowModal(true)}>👁 Review Before Submit</button>
-      <button type="submit" className={styles.submitBtn}>Submit</button>
+      <button type="button" onClick={addWindow} className={styles.addBtn}>
+        ➕ Add Another Window
+      </button>
 
-      {showModal && (
+      <button
+        type="button"
+        className={styles.reviewBtn}
+        onClick={() => setShowReview(true)}
+      >
+        📋 Review Before Submit
+      </button>
+
+      <button type="submit" className={styles.submitBtn}>
+        ✅ Submit
+      </button>
+
+      {showReview && (
         <div className={styles.modal}>
           <div className={styles.modalContent}>
-            <h3>📋 Review Information</h3>
-            <pre>{JSON.stringify({ ...customerInfo, windows }, null, 2)}</pre>
-            <button className={styles.submitBtn} onClick={handleSubmit}>✅ Confirm & Submit</button>
-            <button className={styles.addBtn} onClick={() => setShowModal(false)}>❌ Cancel</button>
+            <h3>Review Information</h3>
+            {Object.entries(formData).map(([key, value]) => (
+              <p key={key}><strong>{key.replace(/([A-Z])/g, ' $1')}:</strong> {value}</p>
+            ))}
+            {windows.map((win, i) => (
+              <div key={i}>
+                <h4>Window {i + 1}</h4>
+                {Object.entries(win).map(([k, v]) => (
+                  <p key={k}><strong>{k.replace(/([A-Z])/g, ' $1')}:</strong> {v}</p>
+                ))}
+              </div>
+            ))}
+            <button onClick={() => setShowReview(false)} className={styles.addBtn}>
+              ❌ Close Preview
+            </button>
           </div>
         </div>
       )}

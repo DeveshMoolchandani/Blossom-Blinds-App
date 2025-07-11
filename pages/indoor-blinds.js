@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
 import styles from '../styles/Form.module.css';
+import { useRouter } from 'next/router';
 
 export default function IndoorBlindsForm() {
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
     date: '',
     time: '',
@@ -18,6 +21,8 @@ export default function IndoorBlindsForm() {
       subcategory: '',
       fabric: '',
       color: '',
+      width: '',
+      height: '',
       control: '',
       fit: '',
       roll: '',
@@ -25,36 +30,36 @@ export default function IndoorBlindsForm() {
       baseRail: '',
       componentColour: '',
       brackets: '',
-      comments: '',
-      width: '',
-      height: ''
+      comments: ''
     }
   ]);
 
   const [collapsedSections, setCollapsedSections] = useState([]);
   const [showReview, setShowReview] = useState(false);
+  const [formStarted, setFormStarted] = useState(false);
 
-  // 🕒 Set time/date on load
   useEffect(() => {
     const now = new Date();
-    setFormData(prev => ({
-      ...prev,
-      time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      date: now.toISOString().split('T')[0]
-    }));
+    const formattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const formattedDate = now.toISOString().split('T')[0];
+    setFormData(prev => ({ ...prev, time: formattedTime, date: formattedDate }));
   }, []);
 
-  // 🛡 Prevent losing data if navigating away
+  // Block back navigation unless form is blank or submitted
   useEffect(() => {
-    const hasData = formData.customerName || windows.some(w => w.roomName);
-    const handleBeforeUnload = (e) => {
-      e.preventDefault();
-      e.returnValue = '';
+    const handleRouteChange = (url) => {
+      if (formStarted) {
+        const confirmLeave = confirm("⚠️ Leaving will clear all entered data. Are you sure?");
+        if (!confirmLeave) {
+          router.events.emit('routeChangeError');
+          throw 'Route change blocked.';
+        }
+      }
     };
 
-    if (hasData) window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [formData, windows]);
+    router.events.on('routeChangeStart', handleRouteChange);
+    return () => router.events.off('routeChangeStart', handleRouteChange);
+  }, [formStarted]);
 
   const toggleCollapse = (index) => {
     setCollapsedSections(prev =>
@@ -65,11 +70,13 @@ export default function IndoorBlindsForm() {
   };
 
   const handleFormChange = (e) => {
+    setFormStarted(true);
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleWindowChange = (index, e) => {
+    setFormStarted(true);
     const { name, value } = e.target;
     const updated = [...windows];
     updated[index][name] = value;
@@ -77,32 +84,40 @@ export default function IndoorBlindsForm() {
   };
 
   const addWindow = () => {
-    setWindows(prev => [...prev, {
-      roomName: '',
-      subcategory: '',
-      fabric: '',
-      color: '',
-      control: '',
-      fit: '',
-      roll: '',
-      motorised: '',
-      baseRail: '',
-      componentColour: '',
-      brackets: '',
-      comments: '',
-      width: '',
-      height: ''
-    }]);
+    setWindows(prev => [
+      ...prev,
+      {
+        roomName: '',
+        subcategory: '',
+        fabric: '',
+        color: '',
+        width: '',
+        height: '',
+        control: '',
+        fit: '',
+        roll: '',
+        motorised: '',
+        baseRail: '',
+        componentColour: '',
+        brackets: '',
+        comments: ''
+      }
+    ]);
   };
 
   const deleteWindow = (index) => {
-    const blank = Object.values(windows[index]).every(val => val === '');
-    if (!blank) return;
-    setWindows(prev => prev.filter((_, i) => i !== index));
+    const current = windows[index];
+    const isBlank = Object.values(current).every(val => val === '');
+    if (!isBlank) return;
+    const updated = windows.filter((_, i) => i !== index);
+    setWindows(updated);
   };
 
   const validateMeasurements = () => {
-    return windows.every(w => /^\d+$/.test(w.width) && /^\d+$/.test(w.height));
+    return windows.every(w =>
+      /^\d+$/.test(w.width) &&
+      /^\d+$/.test(w.height)
+    );
   };
 
   const handleSubmit = async (e) => {
@@ -114,7 +129,7 @@ export default function IndoorBlindsForm() {
     }
 
     if (!validateMeasurements()) {
-      alert("Width and Height must be numeric (in mm).");
+      alert("Width and Height must be numeric (in mm). Please double-check.");
       return;
     }
 
@@ -148,6 +163,8 @@ export default function IndoorBlindsForm() {
           subcategory: '',
           fabric: '',
           color: '',
+          width: '',
+          height: '',
           control: '',
           fit: '',
           roll: '',
@@ -155,11 +172,11 @@ export default function IndoorBlindsForm() {
           baseRail: '',
           componentColour: '',
           brackets: '',
-          comments: '',
-          width: '',
-          height: ''
+          comments: ''
         }]);
+        setCollapsedSections([]);
         setShowReview(false);
+        setFormStarted(false);
       } else {
         alert(`❌ Submission failed: ${result.message}`);
       }
@@ -168,27 +185,16 @@ export default function IndoorBlindsForm() {
     }
   };
 
-  const dropdownOptions = {
-    control: ["Left", "Right"],
-    fit: ["Reveal", "Face"],
-    roll: ["Standard", "Reverse"],
-    motorised: ["Yes", "No"],
-    baseRail: ["Oval", "Flat", "Sealed"],
-    componentColour: ["White", "Black", "Grey", "Ivory"],
-    brackets: ["Standard", "Extension"]
-  };
-
   return (
     <form onSubmit={handleSubmit} className={styles.formContainer}>
       <h2 className={styles.formTitle}>Indoor Blinds Form</h2>
 
-      {/* 🧍 Customer Info Section */}
       <div className={styles.windowSection}>
         <h4 className={styles.windowHeader} onClick={() => toggleCollapse(-1)}>
-          Customer Information
-          {!collapsedSections.includes(-1) && formData.customerName && (
-            <span style={{ marginLeft: '12px', fontWeight: 'bold' }}>{formData.customerName}</span>
-          )}
+          <span>Customer Information</span>
+          <span style={{ fontWeight: 'bold', marginLeft: '12px' }}>
+            {formData.customerName || ''}
+          </span>
         </h4>
         {!collapsedSections.includes(-1) && (
           <>
@@ -210,7 +216,6 @@ export default function IndoorBlindsForm() {
         )}
       </div>
 
-      {/* 🪟 Window Sections */}
       {windows.map((window, idx) => (
         <div key={idx} className={styles.windowSection}>
           <h4 className={styles.windowHeader} onClick={() => toggleCollapse(idx)}>
@@ -228,7 +233,8 @@ export default function IndoorBlindsForm() {
 
           {!collapsedSections.includes(idx) && (
             <>
-              {["roomName", "subcategory", "fabric", "color", "comments"].map(field => (
+              {[ "roomName", "subcategory", "fabric", "color", "control", "fit", "roll", "motorised", "baseRail", "componentColour", "brackets", "comments" ]
+                .map(field => (
                 <div key={field} className={styles.inputGroup}>
                   <label>{field.replace(/([A-Z])/g, ' $1')}:</label>
                   <input
@@ -238,23 +244,6 @@ export default function IndoorBlindsForm() {
                     onChange={(e) => handleWindowChange(idx, e)}
                     required={field !== "comments"}
                   />
-                </div>
-              ))}
-
-              {["control", "fit", "roll", "motorised", "baseRail", "componentColour", "brackets"].map(field => (
-                <div key={field} className={styles.inputGroup}>
-                  <label>{field.replace(/([A-Z])/g, ' $1')}:</label>
-                  <select
-                    name={field}
-                    value={window[field]}
-                    onChange={(e) => handleWindowChange(idx, e)}
-                    required
-                  >
-                    <option value="">-- Select --</option>
-                    {dropdownOptions[field].map(option => (
-                      <option key={option} value={option}>{option}</option>
-                    ))}
-                  </select>
                 </div>
               ))}
 
@@ -297,10 +286,20 @@ export default function IndoorBlindsForm() {
       {showReview && (
         <div className={styles.modal}>
           <div className={styles.modalContent}>
-            <h3>Review Submission</h3>
-            <pre>{JSON.stringify({ ...formData, windows }, null, 2)}</pre>
+            <h3>Review Information</h3>
+            {Object.entries(formData).map(([key, value]) => (
+              <p key={key}><strong>{key.replace(/([A-Z])/g, ' $1')}:</strong> {value}</p>
+            ))}
+            {windows.map((win, i) => (
+              <div key={i}>
+                <h4>Window {i + 1}</h4>
+                {Object.entries(win).map(([k, v]) => (
+                  <p key={k}><strong>{k.replace(/([A-Z])/g, ' $1')}:</strong> {v}</p>
+                ))}
+              </div>
+            ))}
             <button onClick={() => setShowReview(false)} className={styles.addBtn}>
-              Close
+              ❌ Close Preview
             </button>
           </div>
         </div>
