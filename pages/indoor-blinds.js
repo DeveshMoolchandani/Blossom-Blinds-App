@@ -47,6 +47,7 @@ const fabricToColours = {
 };
 
 const fabricOptions = Object.keys(fabricToColours).sort();
+
 export default function IndoorBlindsForm() {
   const router = useRouter();
 
@@ -62,7 +63,7 @@ export default function IndoorBlindsForm() {
   });
 
   const [windows, setWindows] = useState([{ ...blankWindow }]);
-  const [collapsedSections, setCollapsedSections] = useState([0]);
+  const [collapsedSections, setCollapsedSections] = useState([]);
   const [showReview, setShowReview] = useState(false);
   const [formStarted, setFormStarted] = useState(false);
 
@@ -70,12 +71,7 @@ export default function IndoorBlindsForm() {
     const now = new Date();
     const formattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const formattedDate = now.toISOString().split('T')[0];
-
-    setFormData(prev => ({
-      ...prev,
-      time: formattedTime,
-      date: formattedDate
-    }));
+    setFormData(prev => ({ ...prev, time: formattedTime, date: formattedDate }));
   }, []);
 
   useEffect(() => {
@@ -88,7 +84,6 @@ export default function IndoorBlindsForm() {
       setFormData(prev => ({ ...prev, formID }));
     }
   }, [formData.customerName]);
-
   const handleFormChange = (e) => {
     setFormStarted(true);
     const { name, value } = e.target;
@@ -105,13 +100,13 @@ export default function IndoorBlindsForm() {
   };
 
   const toggleCollapse = (index) => {
-    setCollapsedSections([index]);
+    setCollapsedSections(prev =>
+      prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]
+    );
   };
 
   const addWindow = () => {
-    const newIndex = windows.length;
     setWindows(prev => [...prev, { ...blankWindow }]);
-    setCollapsedSections([newIndex]);
   };
 
   const deleteWindow = (index) => {
@@ -130,24 +125,29 @@ export default function IndoorBlindsForm() {
   const generatePDF = () => {
     const doc = new jsPDF();
     doc.setFontSize(12);
-
     doc.text('Indoor Blinds Form Submission', 10, 10);
     let y = 20;
 
     Object.entries(formData).forEach(([key, value]) => {
-      doc.text(`${key}: ${value}`, 10, y);
+      doc.text(`${capitalizeLabel(key)}: ${value}`, 10, y);
       y += 7;
     });
 
-     windows.forEach((win, i) => {
+    windows.forEach((win, i) => {
       y += 10;
       doc.text(`Window ${i + 1}`, 10, y);
       y += 7;
       Object.entries(win).forEach(([key, value]) => {
-        doc.text(`${key}: ${value}`, 12, y);
+        doc.text(`${capitalizeLabel(key)}: ${value}`, 12, y);
         y += 6;
       });
     });
+
+    doc.save(`Indoor_Blinds_${formData.formID || 'Form'}.pdf`);
+  };
+
+  const capitalizeLabel = (text) => {
+    return text.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).trim();
   };
 
   const handleSubmit = async (e) => {
@@ -193,7 +193,7 @@ export default function IndoorBlindsForm() {
           customerAddress: '', customerPhone: '', customerEmail: '', formID: ''
         });
         setWindows([{ ...blankWindow }]);
-        setCollapsedSections([0]);
+        setCollapsedSections([]);
         setShowReview(false);
         setFormStarted(false);
       } else {
@@ -203,11 +203,11 @@ export default function IndoorBlindsForm() {
       alert('❌ Network error — submission failed.');
     }
   };
-
   return (
     <form onSubmit={handleSubmit} className={styles.formContainer}>
       <h2 className={styles.formTitle}>Indoor Blinds Form</h2>
 
+      {/* Customer Info */}
       <div className={styles.windowSection}>
         <h4 className={styles.windowHeader} onClick={() => toggleCollapse(-1)}>
           Customer Information — {formData.formID}
@@ -217,11 +217,10 @@ export default function IndoorBlindsForm() {
           <>
             {["salesRep", "customerName", "customerAddress", "customerPhone", "customerEmail"].map(field => (
               <div key={field} className={styles.inputGroup}>
-                <label>{field.replace(/([A-Z])/g, ' $1')}:</label>
+                <label>{capitalizeLabel(field)}:</label>
                 <input
                   type={field === "customerPhone" ? "tel" : "text"}
                   inputMode={field === "customerPhone" ? "numeric" : "text"}
-                  pattern={field === "customerPhone" ? "\\d{10}" : undefined}
                   name={field}
                   value={formData[field]}
                   onChange={handleFormChange}
@@ -229,7 +228,6 @@ export default function IndoorBlindsForm() {
                 />
               </div>
             ))}
-
             <div className={styles.inputGroup}>
               <label>Form ID:</label>
               <input type="text" value={formData.formID} readOnly className={styles.readOnlyInput} />
@@ -238,6 +236,7 @@ export default function IndoorBlindsForm() {
         )}
       </div>
 
+      {/* Window Sections */}
       {windows.map((window, idx) => (
         <div key={idx} className={styles.windowSection}>
           <h4 className={styles.windowHeader} onClick={() => toggleCollapse(idx)}>
@@ -252,7 +251,10 @@ export default function IndoorBlindsForm() {
 
           {!collapsedSections.includes(idx) && (
             <>
-              {["roomName", "subcategory", "fabric", "color", "control", "fit", "roll", "motorised", "bottomFinish", "baseRail", "componentColour", "brackets", "comments"].map(field => {
+              {[
+                "roomName", "subcategory", "fabric", "color", "control", "fit", "roll", "motorised",
+                "bottomFinish", "baseRail", "componentColour", "brackets", "comments"
+              ].map(field => {
                 if (field === "fabric") {
                   return (
                     <div key={field} className={styles.inputGroup}>
@@ -295,21 +297,6 @@ export default function IndoorBlindsForm() {
                   );
                 }
 
-                if (field === "baseRail") {
-                  return (
-                    <div key={field} className={styles.inputGroup}>
-                      <label>Base Rail Colour:</label>
-                      <input
-                        type="text"
-                        name={field}
-                        value={window[field]}
-                        onChange={(e) => handleWindowChange(idx, e)}
-                        required
-                      />
-                    </div>
-                  );
-                }
-
                 if (field === "comments") {
                   return (
                     <div key={field} className={styles.inputGroup}>
@@ -327,13 +314,18 @@ export default function IndoorBlindsForm() {
 
                 return (
                   <div key={field} className={styles.inputGroup}>
-                    <label>{field.replace(/([A-Z])/g, ' $1')}:</label>
+                    <label>{capitalizeLabel(field)}:</label>
                     <input
                       type="text"
                       name={field}
                       value={window[field]}
                       onChange={(e) => handleWindowChange(idx, e)}
                       required={field !== "comments"}
+                      className={
+                        field === "width" || field === "height"
+                          ? styles.measurementHighlight
+                          : ''
+                      }
                     />
                   </div>
                 );
@@ -341,16 +333,16 @@ export default function IndoorBlindsForm() {
 
               {["width", "height"].map(field => (
                 <div key={field} className={styles.inputGroup}>
-                  <label>{field} (mm):</label>
+                  <label>{capitalizeLabel(field)} (mm):</label>
                   <input
                     type="number"
                     inputMode="numeric"
                     pattern="[0-9]*"
                     name={field}
-                    className={styles.measurementInput}
                     value={window[field]}
                     onChange={(e) => handleWindowChange(idx, e)}
                     required
+                    className={styles.measurementHighlight}
                   />
                 </div>
               ))}
@@ -359,22 +351,24 @@ export default function IndoorBlindsForm() {
         </div>
       ))}
 
+      {/* Action Buttons */}
       <button type="button" onClick={addWindow} className={styles.addBtn}>➕ Add Window</button>
       <button type="button" onClick={() => setShowReview(true)} className={styles.reviewBtn}>📋 Review Before Submit</button>
       <button type="submit" className={styles.submitBtn}>✅ Submit</button>
 
+      {/* Review Modal */}
       {showReview && (
         <div className={styles.modal}>
           <div className={styles.modalContent}>
             <h3>Review Information</h3>
             {Object.entries(formData).map(([key, value]) => (
-              <p key={key}><strong>{key}:</strong> {value}</p>
+              <p key={key}><strong>{capitalizeLabel(key)}:</strong> {value}</p>
             ))}
             {windows.map((win, i) => (
               <div key={i}>
                 <h4>Window {i + 1}</h4>
                 {Object.entries(win).map(([k, v]) => (
-                  <p key={k}><strong>{k}:</strong> {v}</p>
+                  <p key={k}><strong>{capitalizeLabel(k)}:</strong> {v}</p>
                 ))}
               </div>
             ))}

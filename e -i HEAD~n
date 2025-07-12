@@ -1,0 +1,209 @@
+[33mcommit 99ac5cab9c52f4a26e5848f6f6573177405aa468[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Sat Jul 12 16:38:19 2025 +1000
+
+    Add jspdf for PDF generation
+
+[33mcommit b4a72b9aca5eae65ffd67d0ea9bb4187ed0d7b71[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Sat Jul 12 16:36:20 2025 +1000
+
+    Fix missing closing bracket in generatePDF
+
+[33mcommit 97c93ac3bea87ccf5a7e645b97a76ca65301b24e[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Sat Jul 12 16:28:03 2025 +1000
+
+    Add full IndoorBlindsForm features: PDF, unique ID, bottom finish, review modal
+
+[33mcommit 8b94c8dc61a1f3a7fb1fe2ac98016e64a31c621f[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Fri Jul 11 16:40:46 2025 +1000
+
+    � Fix proxy response handling for submission success
+
+[33mcommit 6d57e3125afcc57cf710cf1d9107a2414aa8635c[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Fri Jul 11 16:36:31 2025 +1000
+
+    ✨ Mobile updates: blank form add, delete button, collapse toggle
+
+[33mcommit 0d24ebf46d750e614226483b281487b417d0c13f[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Fri Jul 11 16:19:02 2025 +1000
+
+    � Mobile UI improvements: responsive layout, dropdowns, validations
+
+[33mcommit e36254b1a42891cf3f27614155fb5e7d71fe4598[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Fri Jul 11 16:00:04 2025 +1000
+
+    Initial commit
+
+[33mcommit 9a290026ae6773b5c6d666b01865d823238a479c[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Fri Jul 11 14:06:26 2025 +1000
+
+    Update: New Apps Script URL for Curtains
+
+[33mcommit 4d5be02b48c989f222034623a0750979dff81447[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Fri Jul 11 14:05:42 2025 +1000
+
+    Update: New Apps Script URL for Indoor Blinds
+
+[33mcommit e12166df262b89df38c1ca68720fe72f9fa71ad2[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Fri Jul 11 13:37:19 2025 +1000
+
+    Debug: Log Indoor Blinds proxy payload
+
+[33mcommit ba74be3f16d02c45babbf01c439450424048c59b[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Fri Jul 11 13:28:15 2025 +1000
+
+    Update: Fix Indoor Blinds submission
+
+[33mcommit c4d94c40ed007c60c8e18976f5256486f812616f[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Fri Jul 11 13:09:00 2025 +1000
+
+    ✅ Final Curtains & Indoor Blinds Forms: Fix collapse, validation, review UI, and correct sheet submission
+
+[33mcommit f3828eaa022b2daae619c0e4c83e8841e6a9c3b2[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Fri Jul 11 12:05:38 2025 +1000
+
+    ✅ Fix: Indoor Blinds now submit to correct sheet
+
+[33mcommit f9a799bc9fe9c43ab7ecefda26e8644e96142574[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Fri Jul 11 11:00:24 2025 +1000
+
+    ✅ Fix: Indoor Blinds submission to correct sheet, dropdowns, collapse, and safeguards
+
+[33mcommit e53740280814cdca2bbeb913e97b62d40dc30e65[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Fri Jul 11 10:45:21 2025 +1000
+
+    ✅ Final Indoor Blinds Form: Sheet routing, collapses, validation, and UI fixes
+
+[33mcommit 9b406ad79b48091daa776848f8da0915a60c5aff[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Fri Jul 11 10:19:25 2025 +1000
+
+    ✅ Fix: Build success with corrected CSS paths
+
+[33mcommit 9e55899ec49d134d6ec6d89ba42d1d657705776f[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Fri Jul 11 02:49:24 2025 +1000
+
+    ✅ Final Indoor Blinds form: collapse, validation, preview, delete
+
+[33mcommit 5a6ce350c3f1c92340165475afb96291e3857a31[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Fri Jul 11 02:45:36 2025 +1000
+
+    ✅ Updated Curtains form: Collapse toggle + Room name display + Validation
+
+[33mcommit a3a1fc63fec18ffff20e0a1c733cd47acc354708[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Fri Jul 11 02:34:47 2025 +1000
+
+    ✅ Curtains form: collapsible, validations, preview, delete feature
+
+[33mcommit 5c0afa51751f6937891f6ec2b921f64c7ce3645c[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Fri Jul 11 02:27:22 2025 +1000
+
+    ✅ Indoor Blinds: Collapse, validation, numeric input, preview, delete
+
+[33mcommit dcf0d99eeb383fab3293db0fe490bb3c638e6847[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Fri Jul 11 02:26:43 2025 +1000
+
+    ✅ Curtains Form: Full UI update, validation, collapse, delete, preview
+
+[33mcommit 5a62323e229316730a6677122d1342929926110d[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Fri Jul 11 02:15:59 2025 +1000
+
+    ✅ Final Curtains form with full functionality and fixes
+
+[33mcommit 94081f15b6b92224f3daeea011387a73b9e00b1e[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Fri Jul 11 02:15:05 2025 +1000
+
+    ✅ Final Indoor Blinds form with full Curtains functionality
+
+[33mcommit 2fd03a70daf2d3038b66198c7d8af36bb0df5a10[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Fri Jul 11 01:59:17 2025 +1000
+
+    ✅ Fix: Update Curtains to use shared Form.module.css
+
+[33mcommit d05d85511000e97c3e0e95dbe9b01b4d93c3db1b[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Fri Jul 11 01:52:14 2025 +1000
+
+    ✅ Fix: Indoor Blinds styles and delete button
+
+[33mcommit 3d14a46eb87f55b2c2795b0aa91916913fdcd881[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Fri Jul 11 01:50:04 2025 +1000
+
+    ✅ Corrected CSS import path to Form.module.css
+
+[33mcommit fd62a9eccbcc1aa62575b77f08148606d7987910[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Fri Jul 11 01:32:46 2025 +1000
+
+    ✅ Fixed CSS import paths
+
+[33mcommit 289998f91918a1a427e057cc2f65228b5c6f4f2b[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Fri Jul 11 01:26:17 2025 +1000
+
+    ✅ Moved Form.module.css to correct folder
+
+[33mcommit 4ff87be93abbe4c33a354e191706b63f5d61e447[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Fri Jul 11 01:20:26 2025 +1000
+
+    ✅ Migrate to shared Form.module.css
+
+[33mcommit 5eca53fbd2d3c695190e8374959348d0c56f979c[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Fri Jul 11 01:19:04 2025 +1000
+
+    ✅ Final forms for Curtains and Indoor Blinds
+
+[33mcommit 3c47109df05ee31f6c0ab1f45029b52929f12f80[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Fri Jul 11 01:01:58 2025 +1000
+
+    ✅ Final test-ready indoor blinds form
+
+[33mcommit db65356f691a343c1a134e8de6570c35d070afa2[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Fri Jul 11 00:52:13 2025 +1000
+
+    ✅ Add proxy for Indoor Blinds submission
+
+[33mcommit 5b31c918d3b0e3c1008dd4733a46afc57617e17f[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Fri Jul 11 00:44:13 2025 +1000
+
+    ✅ Final Indoor Blinds form with full Curtains functionality
+
+[33mcommit 6dba68cc6c7c4da5be23cdc9ed23ee49fd9a9299[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Fri Jul 11 00:36:45 2025 +1000
+
+    ✅ Updated proxy URL
+
+[33mcommit cd3860d88add46fcdbde7ae98d20e233e9dd7ff4[m
+Author: Devesh <devesh.moolchandani@gmail.comgit config --global user.email>
+Date:   Fri Jul 11 00:19:30 2025 +1000
+
+    ✅ Add Indoor Blinds 
