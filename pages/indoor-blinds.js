@@ -106,6 +106,30 @@ export default function IndoorBlindsForm() {
   const [showReview, setShowReview] = useState(false);
   const initialLoad = useRef(true);
 
+// Load saved state on first mount
+useEffect(() => {
+  const savedForm = localStorage.getItem('indoorForm:data');
+  const savedWindows = localStorage.getItem('indoorForm:windows');
+
+  if (savedForm && savedWindows) {
+    setFormData(JSON.parse(savedForm));
+    setWindows(JSON.parse(savedWindows));
+    setIsDirty(true);
+  }
+}, []);
+
+
+// Persist state when it changes
+useEffect(() => {
+  if (!initialLoad.current) {
+   localStorage.setItem('indoorForm:data', JSON.stringify(formData));
+localStorage.setItem('indoorForm:windows', JSON.stringify(windows));
+  } else {
+    initialLoad.current = false;
+  }
+}, [formData, windows]);
+
+
   useEffect(() => {
     const now = new Date();
     setFormData(prev => ({
@@ -126,16 +150,34 @@ export default function IndoorBlindsForm() {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [isDirty]);
 
+
   useEffect(() => {
-    const handleRouteChange = (url) => {
-      if (isDirty && !confirm("⚠️ You have unsaved changes. Are you sure you want to leave this page?")) {
-        router.events.emit('routeChangeError');
-        throw 'Route change cancelled';
-      }
-    };
-    router.events.on('routeChangeStart', handleRouteChange);
-    return () => router.events.off('routeChangeStart', handleRouteChange);
-  }, [isDirty]);
+  const handleWindowClose = (e) => {
+    if (!isDirty) return;
+    e.preventDefault();
+    e.returnValue = '';
+  };
+
+ const handleBrowseAway = (url) => {
+  if (!isDirty) return;
+  const confirmLeave = window.confirm("⚠️ You have unsaved changes. Are you sure you want to leave this page?");
+  if (!confirmLeave) {
+    router.push(router.asPath);
+  }
+};
+
+
+
+  window.addEventListener("beforeunload", handleWindowClose);
+  router.events.on("routeChangeStart", handleBrowseAway);
+
+  return () => {
+    window.removeEventListener("beforeunload", handleWindowClose);
+    router.events.off("routeChangeStart", handleBrowseAway);
+  };
+}, [isDirty]);
+
+
 
   useEffect(() => {
     if (formData.customerName) {
@@ -198,6 +240,9 @@ export default function IndoorBlindsForm() {
         alert("✅ Submitted successfully");
         const doc = generatePDF(formData, windows);
         doc.save(`${formData.formID || 'indoor-blinds'}.pdf`);
+
+       localStorage.removeItem('indoorForm:data');
+localStorage.removeItem('indoorForm:windows');
 
         setFormData({
           date: '', time: '', salesRep: '', customerName: '',
