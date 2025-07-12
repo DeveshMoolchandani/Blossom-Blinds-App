@@ -139,7 +139,7 @@ export default function IndoorBlindsForm() {
       y += 7;
     });
 
-    windows.forEach((win, i) => {
+     windows.forEach((win, i) => {
       y += 10;
       doc.text(`Window ${i + 1}`, 10, y);
       y += 7;
@@ -147,6 +147,9 @@ export default function IndoorBlindsForm() {
         doc.text(`${key}: ${value}`, 12, y);
         y += 6;
       });
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
