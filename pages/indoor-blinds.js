@@ -75,9 +75,7 @@ function generatePDF(formData, windows) {
     }
   };
 
-  Object.entries(formData).forEach(([k, v]) => {
-    addField(k.replace(/([A-Z])/g, ' $1'), v);
-  });
+  Object.entries(formData).forEach(([k, v]) => addField(k.replace(/([A-Z])/g, ' $1'), v));
 
   windows.forEach((w, i) => {
     y += 6;
@@ -85,10 +83,7 @@ function generatePDF(formData, windows) {
     doc.setFontSize(13);
     doc.text(`Window ${i + 1}`, 10, y);
     y += 7;
-
-    Object.entries(w).forEach(([k, v]) => {
-      addField(k.replace(/([A-Z])/g, ' $1'), v);
-    });
+    Object.entries(w).forEach(([k, v]) => addField(k.replace(/([A-Z])/g, ' $1'), v));
   });
 
   return doc;
@@ -106,85 +101,73 @@ export default function IndoorBlindsForm() {
   const [showReview, setShowReview] = useState(false);
   const initialLoad = useRef(true);
 
-// Load saved state on first mount
-useEffect(() => {
-  const savedForm = localStorage.getItem('indoorForm:data');
-  const savedWindows = localStorage.getItem('indoorForm:windows');
-
-  if (savedForm && savedWindows) {
-    setFormData(JSON.parse(savedForm));
-    setWindows(JSON.parse(savedWindows));
-    setIsDirty(true);
-  }
-}, []);
-
-
-// Persist state when it changes
-useEffect(() => {
-  if (!initialLoad.current) {
-   localStorage.setItem('indoorForm:data', JSON.stringify(formData));
-localStorage.setItem('indoorForm:windows', JSON.stringify(windows));
-  } else {
-    initialLoad.current = false;
-  }
-}, [formData, windows]);
-
-
+  // Load saved state
   useEffect(() => {
-    const now = new Date();
-    setFormData(prev => ({
-      ...prev,
-      date: now.toISOString().split('T')[0],
-      time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    }));
+    const savedForm = localStorage.getItem('indoorForm:data');
+    const savedWindows = localStorage.getItem('indoorForm:windows');
+    if (savedForm && savedWindows) {
+      setFormData(JSON.parse(savedForm));
+      setWindows(JSON.parse(savedWindows));
+      setIsDirty(true);
+    }
+  }, []);
+
+  // Save state
+  useEffect(() => {
+    if (!initialLoad.current) {
+      localStorage.setItem('indoorForm:data', JSON.stringify(formData));
+      localStorage.setItem('indoorForm:windows', JSON.stringify(windows));
+    } else {
+      initialLoad.current = false;
+    }
+  }, [formData, windows]);
+
+  // Auto-fill date/time
+  useEffect(() => {
+    if (!formData.date || !formData.time) {
+      const now = new Date();
+      setFormData(prev => ({
+        ...prev,
+        date: now.toISOString().split('T')[0],
+        time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      }));
+    }
   }, []);
 
   useEffect(() => {
-    const handleBeforeUnload = (e) => {
-      if (isDirty) {
-        e.preventDefault();
-        e.returnValue = '';
-      }
-    };
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [isDirty]);
-
-
-  useEffect(() => {
-  const handleWindowClose = (e) => {
+  const handleBeforeUnload = (e) => {
     if (!isDirty) return;
     e.preventDefault();
     e.returnValue = '';
   };
 
- const handleBrowseAway = (url) => {
-  if (!isDirty) return;
-  const confirmLeave = window.confirm("⚠️ You have unsaved changes. Are you sure you want to leave this page?");
-  if (!confirmLeave) {
-    router.push(router.asPath);
-  }
-};
+  const handleRouteChangeStart = (url) => {
+    if (!isDirty) return;
+    const confirmLeave = window.confirm(
+      "⚠️ You have unsaved changes. Are you sure you want to leave this page?"
+    );
+    if (!confirmLeave) {
+      router.push(router.asPath); // 🔄 Cancel navigation and stay on page
+    }
+  };
 
-
-
-  window.addEventListener("beforeunload", handleWindowClose);
-  router.events.on("routeChangeStart", handleBrowseAway);
+  window.addEventListener("beforeunload", handleBeforeUnload);
+  router.events.on("routeChangeStart", handleRouteChangeStart);
 
   return () => {
-    window.removeEventListener("beforeunload", handleWindowClose);
-    router.events.off("routeChangeStart", handleBrowseAway);
+    window.removeEventListener("beforeunload", handleBeforeUnload);
+    router.events.off("routeChangeStart", handleRouteChangeStart);
   };
 }, [isDirty]);
 
 
-
+  // Auto-generate formID
   useEffect(() => {
     if (formData.customerName) {
       const prefix = formData.customerName.trim().slice(0, 3).toUpperCase().padEnd(3, 'X');
-      const stored = localStorage.getItem(`formIDCount_${prefix}`);
+      const stored = localStorage.getItem(`indoorForm:formIDCount:${prefix}`);
       const count = stored ? parseInt(stored) + 1 : 1;
-      localStorage.setItem(`formIDCount_${prefix}`, count);
+      localStorage.setItem(`indoorForm:formIDCount:${prefix}`, count);
       const id = `${prefix}${String(count).padStart(3, '0')}`;
       setFormData(prev => ({ ...prev, formID: id }));
     }
@@ -206,13 +189,25 @@ localStorage.setItem('indoorForm:windows', JSON.stringify(windows));
   };
 
   const addWindow = () => setWindows(prev => [...prev, blankWindowTemplate]);
-  const deleteWindow = (index) => setWindows(windows.filter((_, i) => i !== index));
+
+  const deleteWindow = (index) => {
+    const windowData = windows[index];
+    const hasData = Object.values(windowData).some(val => val && val.trim?.() !== '');
+    if (hasData) {
+      const confirmDelete = window.confirm("⚠️ This window has data. Are you sure you want to delete it?");
+      if (!confirmDelete) return;
+    }
+    setWindows(windows.filter((_, i) => i !== index));
+    setIsDirty(true);
+  };
+
   const toggleCollapse = (i) =>
     setCollapsedSections(prev =>
       prev.includes(i) ? prev.filter(x => x !== i) : [...prev, i]
     );
 
-  const capitalize = str => str.replace(/([A-Z])/g, ' $1').replace(/^./, c => c.toUpperCase());
+  const capitalize = str =>
+    str.replace(/([A-Z])/g, ' $1').replace(/^./, c => c.toUpperCase());
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -241,8 +236,8 @@ localStorage.setItem('indoorForm:windows', JSON.stringify(windows));
         const doc = generatePDF(formData, windows);
         doc.save(`${formData.formID || 'indoor-blinds'}.pdf`);
 
-       localStorage.removeItem('indoorForm:data');
-localStorage.removeItem('indoorForm:windows');
+        localStorage.removeItem('indoorForm:data');
+        localStorage.removeItem('indoorForm:windows');
 
         setFormData({
           date: '', time: '', salesRep: '', customerName: '',
@@ -258,7 +253,6 @@ localStorage.removeItem('indoorForm:windows');
       alert("❌ Network error");
     }
   };
-
   return (
     <form onSubmit={handleSubmit} className={styles.formContainer}>
       <h2 className={styles.formTitle}>Indoor Blinds Form</h2>
@@ -283,13 +277,23 @@ localStorage.removeItem('indoorForm:windows');
         </div>
       </div>
 
-      {/* Windows Accordion */}
+      {/* Windows Section */}
       {windows.map((w, i) => (
         <div key={i} className={styles.windowSection}>
           <div className={styles.windowHeader} onClick={() => toggleCollapse(i)}>
             Window {i + 1}
-            <button type="button" onClick={() => deleteWindow(i)} className={styles.deleteBtn}>✕</button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                deleteWindow(i);
+              }}
+              className={styles.deleteBtn}
+            >
+              ✕
+            </button>
           </div>
+
           <AnimatePresence initial={false}>
             {!collapsedSections.includes(i) && (
               <motion.div
