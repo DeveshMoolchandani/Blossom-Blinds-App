@@ -1,179 +1,138 @@
 .formContainer {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  font-family: sans-serif;
+  max-width: 700px;
+  margin: auto;
+  padding: 2rem;
+  background-color: #fdfdfd;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  font-family: Arial, sans-serif;
 }
 
-/* Title */
 .formTitle {
   text-align: center;
-  font-size: 1.5rem;
-  margin-bottom: 20px;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
 }
 
-/* Input Group */
 .inputGroup {
+  margin-bottom: 1rem;
   display: flex;
   flex-direction: column;
-  margin-bottom: 1.2rem;
 }
 
 .inputGroup label {
-  font-size: 1rem;
+  font-weight: bold;
   margin-bottom: 4px;
-  font-weight: 500;
 }
 
 .inputGroup input,
-.inputGroup select {
+.inputGroup select,
+.inputGroup textarea {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
   font-size: 1rem;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  outline: none;
 }
 
-.inputGroup input:focus,
-.inputGroup select:focus {
-  border-color: #1976d2;
+.inputGroup textarea {
+  resize: vertical;
 }
 
-/* Highlight for measurement */
-.highlight input {
-  background-color: #fffbe6;
-  border: 2px solid #ff9800;
-  font-weight: bold;
+.measurementInput {
+  max-width: 150px;
 }
 
-/* Window Sections */
+.readOnlyInput {
+  background-color: #f1f1f1;
+}
+
 .windowSection {
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  padding: 16px;
+  border: 1px solid #ddd;
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1.2rem;
   background-color: #fafafa;
 }
 
-/* Header for each window or section */
 .windowHeader {
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
   font-weight: bold;
-  background: #f5f5f5;
-  padding: 10px 12px;
-  margin: -16px -16px 16px -16px;
-  border-bottom: 1px solid #ddd;
-  font-size: 1rem;
-}
-
-/* Buttons */
-.addBtn,
-.submitBtn,
-.reviewBtn {
-  display: block;
-  width: 100%;
-  margin: 10px 0;
-  padding: 12px;
-  font-size: 1rem;
-  background-color: #1976d2;
-  color: white;
-  border: none;
-  border-radius: 6px;
+  font-size: 1.1rem;
   cursor: pointer;
-  text-align: center;
+  margin-bottom: 0.5rem;
 }
 
-.addBtn {
-  background-color: #4caf50;
-}
-
-.reviewBtn {
-  background-color: #ff9800;
-}
-
-.submitBtn {
-  background-color: #1976d2;
-}
-
-/* Delete Button */
 .deleteBtn {
   background: none;
   border: none;
-  color: #f44336;
-  font-size: 1.2rem;
-  margin-left: auto;
+  font-size: 1rem;
+  color: #b30000;
   cursor: pointer;
-  padding: 4px 8px;
-  line-height: 1;
+  margin-left: 10px;
+  padding: 2px 6px;
 }
 
-/* Collapse Toggle Button (for next step) */
-.collapseBtn {
-  background: none;
+.deleteBtn:hover {
+  color: #ff0000;
+  background-color: #ffe6e6;
+  border-radius: 4px;
+}
+
+.addBtn,
+.reviewBtn,
+.submitBtn {
+  display: inline-block;
+  margin: 0.5rem 0.5rem 1.5rem 0;
+  padding: 10px 14px;
+  font-size: 1rem;
+  font-weight: bold;
   border: none;
+  border-radius: 4px;
   cursor: pointer;
-  font-size: 1.2rem;
-  margin-right: 10px;
 }
 
-/* Modal Preview */
+.addBtn {
+  background-color: #eef;
+  color: #003366;
+}
+
+.reviewBtn {
+  background-color: #ffe4b3;
+  color: #8a5b00;
+}
+
+.submitBtn {
+  background-color: #ccf2cc;
+  color: #004d00;
+}
+
 .modal {
   position: fixed;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 999;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 1000;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .modalContent {
-  background: #fff;
-  padding: 20px;
-  width: 90%;
-  max-height: 80vh;
+  background: white;
+  padding: 2rem;
+  border-radius: 6px;
+  max-height: 90%;
   overflow-y: auto;
-  border-radius: 10px;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.25);
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .modalContent h3 {
-  font-size: 1.2rem;
-  margin-bottom: 16px;
-}
-
-.modalContent p {
-  font-size: 0.95rem;
-  margin-bottom: 8px;
-}
-
-.modalContent h4 {
-  margin-top: 16px;
-  font-size: 1rem;
-  font-weight: bold;
-}
-
-/* Responsive tweaks */
-@media (max-width: 480px) {
-  .formTitle {
-    font-size: 1.3rem;
-  }
-
-  .inputGroup input,
-  .inputGroup select {
-    font-size: 1rem;
-    padding: 12px;
-  }
-
-  .windowHeader {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .deleteBtn {
-    align-self: flex-end;
-    margin-top: 6px;
-  }
+  margin-top: 0;
+  text-align: center;
 }
