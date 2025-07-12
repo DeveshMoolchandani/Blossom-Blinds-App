@@ -47,16 +47,19 @@ export default function CurtainsForm() {
   useEffect(() => {
     const handleRouteChange = (url) => {
       if (formStarted) {
-        const confirmLeave = confirm("⚠️ Leaving will clear all entered data. Are you sure?");
+        const confirmLeave = window.confirm("⚠️ Leaving will clear all entered data. Are you sure?");
         if (!confirmLeave) {
           router.events.emit('routeChangeError');
           throw 'Route change blocked.';
         }
       }
     };
+
     router.events.on('routeChangeStart', handleRouteChange);
-    return () => router.events.off('routeChangeStart', handleRouteChange);
-  }, [formStarted]);
+    return () => {
+      router.events.off('routeChangeStart', handleRouteChange);
+    };
+  }, [formStarted, router]);
 
   const toggleCollapse = (index) => {
     setCollapsedSections(prev =>
@@ -228,8 +231,11 @@ export default function CurtainsForm() {
 
           {!collapsedSections.includes(idx) && (
             <>
-              {[ "roomName", "subcategory", "fabric", "color", "customSplit", "headingType", "track", "trackColor", "control", "fixing", "comments" ]
-                .map(field => (
+              {[
+                "roomName", "subcategory", "fabric", "color",
+                "customSplit", "headingType", "track", "trackColor",
+                "control", "fixing", "comments"
+              ].map(field => (
                 <div key={field} className={styles.inputGroup}>
                   <label>{field.replace(/([A-Z])/g, ' $1')}:</label>
                   <input
