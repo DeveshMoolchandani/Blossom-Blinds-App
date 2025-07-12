@@ -58,15 +58,6 @@
   transition: border 0.3s ease, box-shadow 0.3s ease;
 }
 
-.inputGroup input:focus,
-.inputGroup select:focus,
-.inputGroup textarea:focus {
-  border-color: #0070f3;
-  outline: 2px solid #0070f3;
-  outline-offset: 1px;
-  box-shadow: 0 0 0 2px rgba(0, 112, 243, 0.2);
-}
-
 .readOnlyInput {
   background-color: #f2f2f2;
   color: #777;
@@ -192,15 +183,6 @@
   }
 }
 
-/* Focus Ring for Accessibility */
-input:focus,
-select:focus,
-textarea:focus,
-button:focus {
-  outline: 2px solid #007bff;
-  outline-offset: 2px;
-}
-
 /* Mobile Tweaks */
 @media (max-width: 480px) {
   .formTitle {
@@ -224,4 +206,13 @@ button:focus {
     flex-direction: column;
     align-items: flex-start;
   }
+}
+
+/* ✅ Focus Styles (Fixed for CSS Modules) */
+.formContainer input:focus,
+.formContainer select:focus,
+.formContainer textarea:focus,
+.formContainer button:focus {
+  outline: 2px solid #2684FF;
+  box-shadow: 0 0 0 3px rgba(38, 132, 255, 0.3);
 }
