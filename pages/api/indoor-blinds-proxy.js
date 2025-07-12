@@ -6,7 +6,8 @@ export default async function handler(req, res) {
   try {
     console.log("📦 Forwarding Indoor Blinds payload to Google Apps Script:", req.body);
 
-    const response = await fetch("https://script.google.com/macros/s/AKfycbwQa6HIIV60r_cI4gjul6rvmBwsfPkDiIJzWWN3elajJ2PdI9chygnoiRmbjBd0B8o/exec", {
+    const sheetUrl = "https://script.google.com/macros/s/AKfycbyoJqooQOmPZJvCN5w2zNOoN8O9ynBrIdrtRZHEjD9JWUwzNll2i1N_7I6_ZEanwhg2/exec";
+
       method: "POST",
       headers: {
         "Content-Type": "application/json",
