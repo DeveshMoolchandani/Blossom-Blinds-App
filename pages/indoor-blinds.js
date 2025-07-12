@@ -27,11 +27,28 @@ const blankWindow = {
 };
 
 const fabricToColours = {
-  // [Same large mapping as before]
   "ICON FR": ["CEYLON", "FLORA", "HARBOUR", "JET", "LEATHER", "LIQUORICE", "MARITIME", "OSPREY", "PAPYRUS", "SAIL", "SCULPTURE", "SEA MIST", "SOLAR", "STONEWASH", "TAURUS", "TO CONFIRM", "OTHER"],
   "LINESQUE LIGHT FILTER": ["CHESTNUT", "DELTA", "GRANITE", "HAZEL", "LEVI", "LILY", "OATCAKE", "OWL", "STONEWASH", "TO CONFIRM", "TRELLIS", "WICKER", "WINTER", "OTHER"],
   "ZENO": ["BARRANCA", "CUSCO", "ICA", "LIMA", "MALA", "PUNO", "TARMA", "TO CONFIRM", "OTHER"],
-  // ... rest of fabricToColours stays unchanged ...
+  "SKYE LIGHT FILTER": ["BLAZER", "CHIFFON", "CHROME", "EARL GREY", "OYSTER", "PORCELAIN", "RAVEN", "SAIL", "SWAN", "TO CONFIRM", "OTHER"],
+  "SKYE BLOCKOUT": ["BLAZER", "CHIFFON", "CHROME", "EARL GREY", "OYSTER", "PORCELAIN", "RAVEN", "SAIL", "SWAN", "TO CONFIRM", "OTHER"],
+  "LE REVE LIGHT FILTER": ["CHALK", "CONCRETE", "CRYSTAL", "GRAPHITE", "MARBLE", "MINK", "ONYX", "PEWTER", "SAND", "SHELL", "TO CONFIRM", "OTHER"],
+  "LE REVE BLOCKOUT": ["CHALK", "CONCRETE", "CRYSTAL", "GRAPHITE", "MARBLE", "MINK", "ONYX", "PEWTER", "SAND", "SHELL", "TO CONFIRM", "OTHER"],
+  "MANTRA LIGHT FILTER": ["COTTON", "PARCHMENT", "PEBBLE", "SEAGRASS", "SEED PEARL", "SESAME", "SHALE", "TO CONFIRM", "OTHER"],
+  "MANTRA BLOCKOUT": ["COTTON", "FLINT", "OPAL", "PARCHMENT", "PEBBLE", "SEAGRASS", "SEED PEARL", "SESAME", "SHALE", "SPICE", "TO CONFIRM", "OTHER"],
+ "KLEENSCREEN": ["ALLOY", "BARLEY", "BLACK", "BLACK PEARL", "CHARCOAL", "GRAPHITE", "GREY", "IVORY", "PEWTER", "PURE WHITE", "SHALE", "SILVER PEARL", "TO CONFIRM", "WHITE PEARL", "OTHER"],
+  "ANSARI": ["ASH", "CHARCOAL", "COCONUT", "FOG", "FOSSIL", "LEAD", "SLATE", "STONE", "TO CONFIRM", "OTHER"],
+  "BALMORAL BLOCKOUT": ["ARMOUR", "BIRCH", "BOURNEVILLE", "CHROME", "CONCRETE", "DOVE", "JET", "PEARL", "PLATINUM", "PUTTY", "PYRITE", "STEEL", "TO CONFIRM", "WHITE", "OTHER"],
+  "BALMORAL LIGHT FILTER": ["DRIFTWOOD", "DUNE", "PAPERBARK", "PUMICE", "SAND", "SURF", "TO CONFIRM", "OTHER"],
+  "VIBE": ["ALLOY", "BIRCH", "BISTRO", "CHATEAU", "CLAY", "CLOUD", "COAL", "DUNE", "ICE", "LACE", "LIMESTONE", "LINEN", "LOFT", "MIST", "NIMBUS", "ODESSEY", "ORIENT", "PORCELAIN", "PURE", "SPIRIT DISCONTINUED", "STONE", "STORM", "SURF", "TERRACE", "TO CONFIRM", "TUNDRA", "WHISPER", "ZIRCON", "OTHER"],
+  "FOCUS": ["ASH", "BAY", "CARBON", "CHALK", "CLOUD", "COAL", "DOVE", "DRIFT", "EBONY", "ESPRESSO", "FEATHER", "FIG - DISCONTINUED", "MAGNETIC", "MIST", "OYSTER", "POLAR", "POWDER - DISCONTINUED", "SANDSTONE -DISCONTINUED", "SHELL", "TEMPEST", "TO CONFIRM", "WHITE", "OTHER"],
+  "METROSHADE BLOCKOUT": ["BLACK", "DOVE/WHITE", "ECRU", "ICE GREY", "MOONSTONE", "NOUGAT", "PEBBLE", "QUILL", "SEAL", "SLATE", "STORM", "TO CONFIRM", "WHITEWASH", "OTHER"],
+  "METROSHADE LIGHT FILTER": ["DOVE/WHITE", "ECRU", "ICE GREY", "MOONSTONE", "NOUGAT", "QUILL", "TO CONFIRM", "OTHER"],
+  "SANCTUARY BLOCKOUT": ["BALTIC", "CERAMIC", "LAVA", "MARBLE", "MINERAL", "PLASTER", "SUEDE", "TO CONFIRM", "TRUFFLE", "WHITEWASH", "OTHER"],
+  "SANCTUARY LIGHT FILTER": ["BALTIC", "CERAMIC", "LAVA", "MARBLE", "MINERAL", "PLASTER", "SLATE", "SUEDE", "TO CONFIRM", "WHITEWASH", "OTHER"],
+  "TERRA": ["ARIA", "ELA", "FLINT", "HAZEL", "KAI", "MISTY", "RIDGE", "STELLA", "STORM", "TO CONFIRM", "WILLOW", "OTHER"],
+  "ETCH": ["FELT", "MONO", "PENCIL", "PLATE", "STEEL", "TISSUE", "TO CONFIRM", "ZINC", "OTHER"],
+  "ONESCREEN": ["BLACK", "CHARCOAL", "DUNE", "GREY", "GUNMETAL", "ICE", "LINEN BRONZE", "MERCURY", "SAND", "SILVER BLACK", "TO CONFIRM", "WALLABY", "WHITE", "OTHER"]
 };
 
 const fabricOptions = Object.keys(fabricToColours).sort();
@@ -82,7 +99,6 @@ export default function IndoorBlindsForm() {
     customerAddress: '',
     customerPhone: '',
     customerEmail: '',
-    formID: ''
   });
 
   const [windows, setWindows] = useState([blankWindowTemplate]);
@@ -145,21 +161,6 @@ export default function IndoorBlindsForm() {
     };
   }, [isDirty, router]);
 
-  useEffect(() => {
-    if (
-      typeof window !== 'undefined' &&
-      formData.customerName &&
-      !formData.formID &&
-      formData.customerName.trim().length >= 3
-    ) {
-      const prefix = formData.customerName.trim().slice(0, 3).toUpperCase().padEnd(3, 'X');
-      const stored = localStorage.getItem(`indoorForm:formIDCount:${prefix}`);
-      const count = stored ? parseInt(stored) + 1 : 1;
-      localStorage.setItem(`indoorForm:formIDCount:${prefix}`, count);
-      const newFormID = `${prefix}${String(count).padStart(3, '0')}`;
-      setFormData(prev => ({ ...prev, formID: newFormID }));
-    }
-  }, [formData.customerName]);
 
   const handleFormChange = e => {
     const { name, value } = e.target;
@@ -209,7 +210,9 @@ export default function IndoorBlindsForm() {
     const postcode = /\b\d{4}\b/;
     if (!postcode.test(formData.customerAddress)) return alert("❌ Address must include a valid postcode");
 
-    const payload = { ...formData, windows, productType: "Indoor Blinds" };
+    const { formID, ...formWithoutID } = formData;
+const payload = { ...formWithoutID, windows, productType: "Indoor Blinds" };
+
 
     try {
       const res = await fetch('/api/indoor-blinds-proxy', {
@@ -222,7 +225,6 @@ export default function IndoorBlindsForm() {
       if (result.result === 'success') {
         alert("✅ Submitted successfully");
         const doc = generatePDF(formData, windows);
-        doc.save(`${formData.formID || 'indoor-blinds'}.pdf`);
         localStorage.removeItem('indoorForm:data');
         localStorage.removeItem('indoorForm:windows');
         setFormData({
@@ -233,7 +235,6 @@ export default function IndoorBlindsForm() {
           customerAddress: '',
           customerPhone: '',
           customerEmail: '',
-          formID: ''
         });
         setWindows([blankWindowTemplate]);
         setShowReview(false);
@@ -250,7 +251,7 @@ export default function IndoorBlindsForm() {
       <h2 className={styles.formTitle}>Indoor Blinds Form</h2>
 
       <div className={styles.windowSection}>
-        <h4 className={styles.windowHeader}>Customer Information — {formData.formID}</h4>
+        <h4 className={styles.windowHeader}>Customer Information</h4>
         {["salesRep", "customerName", "customerAddress", "customerPhone", "customerEmail"].map(field => (
           <div key={field} className={styles.inputGroup}>
             <label>{capitalize(field)}</label>
@@ -263,11 +264,7 @@ export default function IndoorBlindsForm() {
             />
           </div>
         ))}
-        <div className={styles.inputGroup}>
-          <label>Form ID:</label>
-          <input value={formData.formID} readOnly className={styles.readOnlyInput} />
-        </div>
-      </div>
+      
 
       {windows.map((w, i) => (
         <div key={i} className={styles.windowSection}>
@@ -416,7 +413,6 @@ export default function IndoorBlindsForm() {
                 customerAddress: '',
                 customerPhone: '',
                 customerEmail: '',
-                formID: ''
               });
               setWindows([blankWindowTemplate]);
               setIsDirty(false);
