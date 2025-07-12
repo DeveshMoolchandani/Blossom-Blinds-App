@@ -4,21 +4,14 @@ import { useRouter } from 'next/router';
 import jsPDF from 'jspdf';
 
 const blankWindow = {
-  roomName: '',
-  subcategory: '',
-  fabric: '',
-  color: '',
-  width: '',
-  height: '',
-  control: '',
-  fit: '',
-  roll: '',
-  motorised: '',
-  bottomFinish: '',
-  baseRail: '',
-  componentColour: '',
-  brackets: '',
-  comments: ''
+ control: ["Left", "Right", "Centre", "Motorised", "Spring", "Wand", "Cord", "Chain", "Other"],
+  fit: ["Face", "Reveal", "Ceiling", "Other"],
+  roll: ["Front", "Back", "Reverse", "Other"],
+  motorised: ["Yes", "No", "Battery", "Hardwired", "Remote", "App Controlled", "Other"],
+  bottomFinish: ["Plain", "Scalloped", "Wave", "Trim", "Rail", "Other"],
+  baseRail: ["White", "Black", "Silver", "Bronze", "Custom", "Other"],
+  componentColour: ["White", "Black", "Ivory", "Grey", "Brown", "Other"],
+  brackets: ["Standard", "Extension", "Double", "Face Fix", "Top Fix", "Other"]
 };
 
 const fabricToColours = {
@@ -150,59 +143,78 @@ export default function IndoorBlindsForm() {
     return text.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).trim();
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (!formData.customerName || !formData.customerPhone || windows.length === 0) {
-      alert("Please fill in Customer Name, Phone, and at least one window");
+  const auPhoneRegex = /^(\+61|0)[2-478]( ?\d){8}$/;
+  if (!auPhoneRegex.test(formData.customerPhone.trim())) {
+    alert("❌ Please enter a valid Australian phone number.");
+    return;
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(formData.customerEmail.trim())) {
+    alert("❌ Please enter a valid email address.");
+    return;
+  }
+
+  const postcodeRegex = /\b\d{4}\b/;
+  if (!postcodeRegex.test(formData.customerAddress.trim())) {
+    alert("❌ Address should include a valid 4-digit Australian postcode.");
+    return;
+  }
+
+  if (!formData.customerName || !formData.customerPhone || windows.length === 0) {
+    alert("Please fill in Customer Name, Phone, and at least one window");
+    return;
+  }
+
+  if (!validateMeasurements()) {
+    alert("Width and Height must be numeric (in mm). Please double-check.");
+    return;
+  }
+
+  for (let win of windows) {
+    if ((win.fabric === 'OTHER' || win.color === 'OTHER') && !win.comments.trim()) {
+      alert("If you select 'Other' for fabric or colour, comments field is required.");
       return;
     }
+  }
 
-    if (!validateMeasurements()) {
-      alert("Width and Height must be numeric (in mm). Please double-check.");
-      return;
-    }
-
-    for (let win of windows) {
-      if ((win.fabric === 'OTHER' || win.color === 'OTHER') && !win.comments.trim()) {
-        alert("If you select 'Other' for fabric or colour, comments field is required.");
-        return;
-      }
-    }
-
-    const payload = {
-      ...formData,
-      windows,
-      productType: "Indoor Blinds"
-    };
-
-    try {
-      const res = await fetch('/api/indoor-blinds-proxy', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      const result = await res.json();
-
-      if (result.result === 'success') {
-        alert('✅ Form submitted successfully!');
-        generatePDF();
-        setFormData({
-          date: '', time: '', salesRep: '', customerName: '',
-          customerAddress: '', customerPhone: '', customerEmail: '', formID: ''
-        });
-        setWindows([{ ...blankWindow }]);
-        setCollapsedSections([]);
-        setShowReview(false);
-        setFormStarted(false);
-      } else {
-        alert(`❌ Submission failed: ${result.message}`);
-      }
-    } catch (err) {
-      alert('❌ Network error — submission failed.');
-    }
+  const payload = {
+    ...formData,
+    windows,
+    productType: "Indoor Blinds"
   };
+
+  try {
+    const res = await fetch('/api/indoor-blinds-proxy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await res.json();
+
+    if (result.result === 'success') {
+      alert('✅ Form submitted successfully!');
+      generatePDF();
+      setFormData({
+        date: '', time: '', salesRep: '', customerName: '',
+        customerAddress: '', customerPhone: '', customerEmail: '', formID: ''
+      });
+      setWindows([{ ...blankWindow }]);
+      setCollapsedSections([]);
+      setShowReview(false);
+      setFormStarted(false);
+    } else {
+      alert(`❌ Submission failed: ${result.message}`);
+    }
+  } catch (err) {
+    alert('❌ Network error — submission failed.');
+  }
+};
+
   return (
     <form onSubmit={handleSubmit} className={styles.formContainer}>
       <h2 className={styles.formTitle}>Indoor Blinds Form</h2>
@@ -313,22 +325,37 @@ export default function IndoorBlindsForm() {
                 }
 
                 return (
-                  <div key={field} className={styles.inputGroup}>
-                    <label>{capitalizeLabel(field)}:</label>
-                    <input
-                      type="text"
-                      name={field}
-                      value={window[field]}
-                      onChange={(e) => handleWindowChange(idx, e)}
-                      required={field !== "comments"}
-                      className={
-                        field === "width" || field === "height"
-                          ? styles.measurementHighlight
-                          : ''
-                      }
-                    />
-                  </div>
-                );
+  <div key={field} className={styles.inputGroup}>
+    <label>{capitalizeLabel(field)}:</label>
+    {blankWindow[field] ? (
+      <select
+        name={field}
+        value={window[field] || ''}
+        onChange={(e) => handleWindowChange(idx, e)}
+        required
+      >
+        <option value="">-- Select {capitalizeLabel(field)} --</option>
+        {blankWindow[field].map(option => (
+          <option key={option} value={option}>{option}</option>
+        ))}
+      </select>
+    ) : (
+      <input
+        type="text"
+        name={field}
+        value={window[field]}
+        onChange={(e) => handleWindowChange(idx, e)}
+        required={field !== "comments"}
+        className={
+          field === "width" || field === "height"
+            ? styles.measurementHighlight
+            : ''
+        }
+      />
+    )}
+  </div>
+);
+
               })}
 
               {["width", "height"].map(field => (

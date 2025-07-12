@@ -4,7 +4,7 @@
   padding: 2rem;
   background-color: #fff;
   border-radius: 10px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   font-family: 'Segoe UI', sans-serif;
 }
 
@@ -16,7 +16,7 @@
   color: #333;
 }
 
-.fieldset {
+.windowSection {
   border: 1px solid #e2e2e2;
   padding: 1.5rem;
   margin-bottom: 2rem;
@@ -24,11 +24,16 @@
   background-color: #fafafa;
 }
 
-.legend {
+.windowHeader {
   font-weight: 600;
   font-size: 1.2rem;
   color: #444;
   margin-bottom: 1rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .inputGroup {
@@ -46,7 +51,7 @@
 .inputGroup input,
 .inputGroup select,
 .inputGroup textarea {
-  padding: 0.6rem 0.75rem;
+  padding: 0.65rem 0.8rem;
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 1rem;
@@ -76,6 +81,20 @@
   color: #0057b7;
 }
 
+/* Responsive Grid */
+.gridTwoCol {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 600px) {
+  .gridTwoCol {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Buttons */
 .buttonGroup {
   display: flex;
   flex-wrap: wrap;
@@ -87,13 +106,14 @@
 .addBtn,
 .reviewBtn,
 .submitBtn {
-  padding: 0.7rem 1.5rem;
+  padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 6px;
   font-weight: 600;
   cursor: pointer;
   font-size: 1rem;
   transition: background 0.2s ease;
+  min-width: 140px;
 }
 
 .addBtn {
@@ -124,25 +144,26 @@
 }
 
 .deleteBtn {
-  float: right;
-  margin-left: 1rem;
   background: transparent;
   border: none;
   color: #d00;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   cursor: pointer;
+  margin-left: 1rem;
 }
 
+/* Modal */
 .modal {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0,0,0,0.6);
+  background-color: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 1rem;
   z-index: 1000;
 }
 
@@ -150,8 +171,32 @@
   background: white;
   padding: 2rem;
   border-radius: 10px;
-  max-width: 700px;
-  width: 90%;
+  width: 100%;
+  max-width: 600px;
   max-height: 80vh;
   overflow-y: auto;
+}
+
+/* Mobile Tweaks */
+@media (max-width: 480px) {
+  .formTitle {
+    font-size: 1.6rem;
+  }
+
+  .modalContent {
+    padding: 1.5rem;
+  }
+
+  .addBtn,
+  .reviewBtn,
+  .submitBtn {
+    font-size: 0.95rem;
+    padding: 0.65rem 1.2rem;
+  }
+
+  .windowHeader {
+    font-size: 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
