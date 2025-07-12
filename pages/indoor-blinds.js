@@ -3,6 +3,24 @@ import styles from '../styles/Form.module.css';
 import { useRouter } from 'next/router';
 import jsPDF from 'jspdf';
 
+const blankWindowTemplate = {
+  roomName: '',
+  subcategory: '',
+  fabric: '',
+  color: '',
+  control: '',
+  fit: '',
+  roll: '',
+  motorised: '',
+  bottomFinish: '',
+  baseRail: '',
+  componentColour: '',
+  brackets: '',
+  comments: '',
+  width: '',
+  height: ''
+};
+
 const blankWindow = {
   control: ["Left", "Right"],
   fit: ["Face", "Recess"],
@@ -46,26 +64,77 @@ const fabricToColours = {
   "LE REVE LIGHT FILTER": ["CHALK", "CONCRETE", "CRYSTAL", "GRAPHITE", "MARBLE", "MINK", "ONYX", "PEWTER", "SAND", "SHELL", "TO CONFIRM", "OTHER"],
   "LE REVE BLOCKOUT": ["CHALK", "CONCRETE", "CRYSTAL", "GRAPHITE", "MARBLE", "MINK", "ONYX", "PEWTER", "SAND", "SHELL", "TO CONFIRM", "OTHER"],
   "MANTRA LIGHT FILTER": ["COTTON", "PARCHMENT", "PEBBLE", "SEAGRASS", "SEED PEARL", "SESAME", "SHALE", "TO CONFIRM", "OTHER"],
-  "MANTRA BLOCKOUT": ["COTTON", "FLINT", "OPAL", "PARCHMENT", "PEBBLE", "SEAGRASS", "SEED PEARL", "SESAME", "SHALE", "SPICE", "TO CONFIRM", "OTHER"]
+  "MANTRA BLOCKOUT": ["COTTON", "FLINT", "OPAL", "PARCHMENT", "PEBBLE", "SEAGRASS", "SEED PEARL", "SESAME", "SHALE", "SPICE", "TO CONFIRM", "OTHER"],
+ "KLEENSCREEN": ["ALLOY", "BARLEY", "BLACK", "BLACK PEARL", "CHARCOAL", "GRAPHITE", "GREY", "IVORY", "PEWTER", "PURE WHITE", "SHALE", "SILVER PEARL", "TO CONFIRM", "WHITE PEARL", "OTHER"],
+  "ANSARI": ["ASH", "CHARCOAL", "COCONUT", "FOG", "FOSSIL", "LEAD", "SLATE", "STONE", "TO CONFIRM", "OTHER"],
+  "BALMORAL BLOCKOUT": ["ARMOUR", "BIRCH", "BOURNEVILLE", "CHROME", "CONCRETE", "DOVE", "JET", "PEARL", "PLATINUM", "PUTTY", "PYRITE", "STEEL", "TO CONFIRM", "WHITE", "OTHER"],
+  "BALMORAL LIGHT FILTER": ["DRIFTWOOD", "DUNE", "PAPERBARK", "PUMICE", "SAND", "SURF", "TO CONFIRM", "OTHER"],
+  "VIBE": ["ALLOY", "BIRCH", "BISTRO", "CHATEAU", "CLAY", "CLOUD", "COAL", "DUNE", "ICE", "LACE", "LIMESTONE", "LINEN", "LOFT", "MIST", "NIMBUS", "ODESSEY", "ORIENT", "PORCELAIN", "PURE", "SPIRIT DISCONTINUED", "STONE", "STORM", "SURF", "TERRACE", "TO CONFIRM", "TUNDRA", "WHISPER", "ZIRCON", "OTHER"],
+  "FOCUS": ["ASH", "BAY", "CARBON", "CHALK", "CLOUD", "COAL", "DOVE", "DRIFT", "EBONY", "ESPRESSO", "FEATHER", "FIG - DISCONTINUED", "MAGNETIC", "MIST", "OYSTER", "POLAR", "POWDER - DISCONTINUED", "SANDSTONE -DISCONTINUED", "SHELL", "TEMPEST", "TO CONFIRM", "WHITE", "OTHER"],
+  "METROSHADE BLOCKOUT": ["BLACK", "DOVE/WHITE", "ECRU", "ICE GREY", "MOONSTONE", "NOUGAT", "PEBBLE", "QUILL", "SEAL", "SLATE", "STORM", "TO CONFIRM", "WHITEWASH", "OTHER"],
+  "METROSHADE LIGHT FILTER": ["DOVE/WHITE", "ECRU", "ICE GREY", "MOONSTONE", "NOUGAT", "QUILL", "TO CONFIRM", "OTHER"],
+  "SANCTUARY BLOCKOUT": ["BALTIC", "CERAMIC", "LAVA", "MARBLE", "MINERAL", "PLASTER", "SUEDE", "TO CONFIRM", "TRUFFLE", "WHITEWASH", "OTHER"],
+  "SANCTUARY LIGHT FILTER": ["BALTIC", "CERAMIC", "LAVA", "MARBLE", "MINERAL", "PLASTER", "SLATE", "SUEDE", "TO CONFIRM", "WHITEWASH", "OTHER"],
+  "TERRA": ["ARIA", "ELA", "FLINT", "HAZEL", "KAI", "MISTY", "RIDGE", "STELLA", "STORM", "TO CONFIRM", "WILLOW", "OTHER"],
+  "ETCH": ["FELT", "MONO", "PENCIL", "PLATE", "STEEL", "TISSUE", "TO CONFIRM", "ZINC", "OTHER"],
+  "ONESCREEN": ["BLACK", "CHARCOAL", "DUNE", "GREY", "GUNMETAL", "ICE", "LINEN BRONZE", "MERCURY", "SAND", "SILVER BLACK", "TO CONFIRM", "WALLABY", "WHITE", "OTHER"]
 };
 
 const fabricOptions = Object.keys(fabricToColours).sort();
 
+// PDF GENERATOR
+function generatePDF(formData, windows) {
+  const doc = new jsPDF();
+  const margin = 10;
+  let y = margin;
+
+  doc.setFontSize(16);
+  doc.text("Indoor Blinds Form", margin, y);
+  y += 10;
+
+  doc.setFontSize(12);
+  const addLine = (label, value) => {
+    doc.text(`${label}: ${value || ''}`, margin, y);
+    y += 7;
+    if (y > 280) {
+      doc.addPage();
+      y = margin;
+    }
+  };
+
+  addLine("Form ID", formData.formID);
+  addLine("Date", formData.date);
+  addLine("Time", formData.time);
+  addLine("Sales Rep", formData.salesRep);
+  addLine("Customer Name", formData.customerName);
+  addLine("Customer Address", formData.customerAddress);
+  addLine("Customer Phone", formData.customerPhone);
+  addLine("Customer Email", formData.customerEmail);
+
+  windows.forEach((w, i) => {
+    y += 5;
+    doc.setFontSize(14);
+    doc.text(`Window ${i + 1}`, margin, y);
+    y += 8;
+    doc.setFontSize(11);
+    Object.entries(w).forEach(([k, v]) => {
+      addLine(k.replace(/([A-Z])/g, ' $1'), v);
+    });
+  });
+
+  return doc;
+}
+
+// COMPONENT
 export default function IndoorBlindsForm() {
   const router = useRouter();
 
   const [formData, setFormData] = useState({
-    date: '',
-    time: '',
-    salesRep: '',
-    customerName: '',
-    customerAddress: '',
-    customerPhone: '',
-    customerEmail: '',
-    formID: ''
+    date: '', time: '', salesRep: '', customerName: '',
+    customerAddress: '', customerPhone: '', customerEmail: '', formID: ''
   });
 
-  const [windows, setWindows] = useState([{}]);
+  const [windows, setWindows] = useState([blankWindowTemplate]);
   const [collapsedSections, setCollapsedSections] = useState([]);
   const [showReview, setShowReview] = useState(false);
 
@@ -100,50 +169,25 @@ export default function IndoorBlindsForm() {
     setWindows(updated);
   };
 
-  const addWindow = () => {
-    setWindows(prev => [...prev, {}]);
-  };
+  const addWindow = () => setWindows(prev => [...prev, blankWindowTemplate]);
+  const deleteWindow = (index) => setWindows(windows.filter((_, i) => i !== index));
+  const toggleCollapse = (i) => setCollapsedSections(prev => prev.includes(i) ? prev.filter(x => x !== i) : [...prev, i]);
 
-  const deleteWindow = (index) => {
-    const updated = windows.filter((_, i) => i !== index);
-    setWindows(updated);
-  };
-
-  const toggleCollapse = (i) => {
-    setCollapsedSections(prev =>
-      prev.includes(i) ? prev.filter(x => x !== i) : [...prev, i]
-    );
-  };
-
-  const capitalize = (str) =>
-    str.replace(/([A-Z])/g, ' $1').replace(/^./, c => c.toUpperCase());
+  const capitalize = (str) => str.replace(/([A-Z])/g, ' $1').replace(/^./, c => c.toUpperCase());
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const auPhone = /^(\+61|0)[2-478]( ?\d){8}$/;
-    if (!auPhone.test(formData.customerPhone)) {
-      alert("❌ Invalid Australian phone number");
-      return;
-    }
+    if (!auPhone.test(formData.customerPhone)) return alert("❌ Invalid Australian phone number");
 
     const email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email.test(formData.customerEmail)) {
-      alert("❌ Invalid email address");
-      return;
-    }
+    if (!email.test(formData.customerEmail)) return alert("❌ Invalid email address");
 
     const postcode = /\b\d{4}\b/;
-    if (!postcode.test(formData.customerAddress)) {
-      alert("❌ Australian address must include postcode");
-      return;
-    }
+    if (!postcode.test(formData.customerAddress)) return alert("❌ Address must include a valid postcode");
 
-    const payload = {
-      ...formData,
-      windows,
-      productType: "Indoor Blinds"
-    };
+    const payload = { ...formData, windows, productType: "Indoor Blinds" };
 
     try {
       const res = await fetch('/api/indoor-blinds-proxy', {
@@ -151,19 +195,26 @@ export default function IndoorBlindsForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
+
       const result = await res.json();
       if (result.result === 'success') {
         alert("✅ Submitted successfully");
+
+        // ✅ Generate PDF
+        const doc = generatePDF(formData, windows);
+        doc.save(`${formData.formID || 'indoor-blinds'}.pdf`);
+
+        // ✅ Reset form
         setFormData({
           date: '', time: '', salesRep: '', customerName: '',
           customerAddress: '', customerPhone: '', customerEmail: '', formID: ''
         });
-        setWindows([{}]);
+        setWindows([blankWindowTemplate]);
         setShowReview(false);
       } else {
-        alert("❌ Submission failed");
+        alert("❌ Submission failed: " + result.message);
       }
-    } catch {
+    } catch (err) {
       alert("❌ Network error");
     }
   };
@@ -172,10 +223,9 @@ export default function IndoorBlindsForm() {
     <form onSubmit={handleSubmit} className={styles.formContainer}>
       <h2 className={styles.formTitle}>Indoor Blinds Form</h2>
 
+      {/* CUSTOMER FIELDS */}
       <div className={styles.windowSection}>
-        <h4 className={styles.windowHeader}>
-          Customer Information — {formData.formID}
-        </h4>
+        <h4 className={styles.windowHeader}>Customer Information — {formData.formID}</h4>
         {["salesRep", "customerName", "customerAddress", "customerPhone", "customerEmail"].map(field => (
           <div key={field} className={styles.inputGroup}>
             <label>{capitalize(field)}</label>
@@ -194,6 +244,7 @@ export default function IndoorBlindsForm() {
         </div>
       </div>
 
+      {/* WINDOWS */}
       {windows.map((w, i) => (
         <div key={i} className={styles.windowSection}>
           <h4 className={styles.windowHeader} onClick={() => toggleCollapse(i)}>
@@ -209,9 +260,7 @@ export default function IndoorBlindsForm() {
                       <label>Fabric</label>
                       <select name="fabric" value={w.fabric || ''} onChange={(e) => handleWindowChange(i, e)} required>
                         <option value="">-- Select Fabric --</option>
-                        {fabricOptions.map(opt => (
-                          <option key={opt} value={opt}>{opt}</option>
-                        ))}
+                        {fabricOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                         <option value="OTHER">OTHER</option>
                       </select>
                     </div>
@@ -225,9 +274,7 @@ export default function IndoorBlindsForm() {
                       <label>Colour</label>
                       <select name="color" value={w.color || ''} onChange={(e) => handleWindowChange(i, e)} disabled={!w.fabric} required>
                         <option value="">-- Select Colour --</option>
-                        {options.map(col => (
-                          <option key={col} value={col}>{col}</option>
-                        ))}
+                        {options.map(col => <option key={col} value={col}>{col}</option>)}
                         <option value="OTHER">OTHER</option>
                       </select>
                     </div>
@@ -249,9 +296,7 @@ export default function IndoorBlindsForm() {
                     {blankWindow[field] ? (
                       <select name={field} value={w[field] || ''} onChange={(e) => handleWindowChange(i, e)} required>
                         <option value="">-- Select {capitalize(field)} --</option>
-                        {blankWindow[field].map(opt => (
-                          <option key={opt} value={opt}>{opt}</option>
-                        ))}
+                        {blankWindow[field].map(opt => <option key={opt} value={opt}>{opt}</option>)}
                       </select>
                     ) : (
                       <input type="text" name={field} value={w[field] || ''} onChange={(e) => handleWindowChange(i, e)} />
@@ -265,6 +310,8 @@ export default function IndoorBlindsForm() {
                   <label>{capitalize(field)} (mm)</label>
                   <input
                     type="number"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     name={field}
                     value={w[field] || ''}
                     onChange={(e) => handleWindowChange(i, e)}
