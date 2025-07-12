@@ -161,17 +161,19 @@ export default function IndoorBlindsForm() {
 }, [isDirty]);
 
 
-  // Auto-generate formID
-  useEffect(() => {
-    if (formData.customerName) {
-      const prefix = formData.customerName.trim().slice(0, 3).toUpperCase().padEnd(3, 'X');
-      const stored = localStorage.getItem(`indoorForm:formIDCount:${prefix}`);
-      const count = stored ? parseInt(stored) + 1 : 1;
-      localStorage.setItem(`indoorForm:formIDCount:${prefix}`, count);
-      const id = `${prefix}${String(count).padStart(3, '0')}`;
-      setFormData(prev => ({ ...prev, formID: id }));
-    }
-  }, [formData.customerName]);
+  // Generate Form ID just before submission
+let formID = formData.formID;
+if (!formID && formData.customerName) {
+  const prefix = formData.customerName.trim().slice(0, 3).toUpperCase().padEnd(3, 'X');
+  const stored = localStorage.getItem(`indoorForm:formIDCount:${prefix}`);
+  const count = stored ? parseInt(stored) + 1 : 1;
+  localStorage.setItem(`indoorForm:formIDCount:${prefix}`, count);
+  formID = `${prefix}${String(count).padStart(3, '0')}`;
+}
+
+// Include ID in both state and payload
+setFormData(prev => ({ ...prev, formID }));
+const payload = { ...formData, windows, formID, productType: "Indoor Blinds" };
 
   const handleFormChange = e => {
     const { name, value } = e.target;
@@ -375,11 +377,29 @@ export default function IndoorBlindsForm() {
         </div>
       ))}
 
-      <div className={styles.buttonGroup}>
-        <button type="button" onClick={addWindow} className={styles.addBtn}>➕ Add Window</button>
-        <button type="button" onClick={() => setShowReview(true)} className={styles.reviewBtn}>📋 Review</button>
-        <button type="submit" className={styles.submitBtn}>✅ Submit</button>
-      </div>
+<div className={styles.buttonGroup}>
+  <button type="button" onClick={addWindow} className={styles.addBtn}>➕ Add Window</button>
+  <button type="button" onClick={() => setShowReview(true)} className={styles.reviewBtn}>📋 Review</button>
+  <button type="submit" className={styles.submitBtn}>✅ Submit</button>
+  <button
+    type="button"
+    className={styles.reviewBtn}
+    onClick={() => {
+      if (confirm("⚠️ This will clear all form data. Proceed?")) {
+        localStorage.removeItem('indoorForm:data');
+        localStorage.removeItem('indoorForm:windows');
+        setFormData({
+          date: '', time: '', salesRep: '', customerName: '',
+          customerAddress: '', customerPhone: '', customerEmail: '', formID: ''
+        });
+        setWindows([blankWindowTemplate]);
+        setIsDirty(false);
+      }
+    }}
+  >
+    🗑️ Reset Form
+  </button>
+</div>
 
       {showReview && (
         <div className={styles.modal}>
