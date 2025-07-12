@@ -8,11 +8,12 @@ export default async function handler(req, res) {
 
     const sheetUrl = "https://script.google.com/macros/s/AKfycbyoJqooQOmPZJvCN5w2zNOoN8O9ynBrIdrtRZHEjD9JWUwzNll2i1N_7I6_ZEanwhg2/exec";
 
+    const response = await fetch(sheetUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(req.body)
+      body: JSON.stringify(req.body),
     });
 
     const text = await response.text();
@@ -25,7 +26,6 @@ export default async function handler(req, res) {
       return res.status(500).json({ result: 'error', message: 'Invalid JSON from Google Script' });
     }
 
-    // ✅ Normalize the response for frontend
     if (data && data.result === 'success') {
       return res.status(200).json({ result: 'success' });
     } else {
@@ -34,6 +34,7 @@ export default async function handler(req, res) {
         message: data?.message || 'Unknown error from script'
       });
     }
+
   } catch (error) {
     console.error("❌ Proxy Error:", error);
     return res.status(500).json({
