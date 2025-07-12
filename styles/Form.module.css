@@ -55,14 +55,16 @@
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 1rem;
-  transition: border 0.3s ease;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
 }
 
 .inputGroup input:focus,
 .inputGroup select:focus,
 .inputGroup textarea:focus {
   border-color: #0070f3;
-  outline: none;
+  outline: 2px solid #0070f3;
+  outline-offset: 1px;
+  box-shadow: 0 0 0 2px rgba(0, 112, 243, 0.2);
 }
 
 .readOnlyInput {
@@ -175,6 +177,28 @@
   max-width: 600px;
   max-height: 80vh;
   overflow-y: auto;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Focus Ring for Accessibility */
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
 }
 
 /* Mobile Tweaks */
@@ -192,6 +216,7 @@
   .submitBtn {
     font-size: 0.95rem;
     padding: 0.65rem 1.2rem;
+    width: 100%;
   }
 
   .windowHeader {
