@@ -47,6 +47,7 @@ const fabricToColours = {
   "TERRA": ["ARIA", "ELA", "FLINT", "HAZEL", "KAI", "MISTY", "RIDGE", "STELLA", "STORM", "TO CONFIRM", "WILLOW", "OTHER"],
   "ETCH": ["FELT", "MONO", "PENCIL", "PLATE", "STEEL", "TISSUE", "TO CONFIRM", "ZINC", "OTHER"],
   "ONESCREEN": ["BLACK", "CHARCOAL", "DUNE", "GREY", "GUNMETAL", "ICE", "LINEN BRONZE", "MERCURY", "SAND", "SILVER BLACK", "TO CONFIRM", "WALLABY", "WHITE", "OTHER"]
+"other":[other],
 };
 
 const IndoorBlindsForm = () => {
@@ -57,10 +58,31 @@ const IndoorBlindsForm = () => {
 
   const [windows, setWindows] = useState([blankWindowTemplate]);
   const [collapsedSections, setCollapsedSections] = useState([]);
+  const [showReview, setShowReview] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
+
+  useEffect(() => {
+    const now = new Date();
+    const formattedDate = now.toISOString().split('T')[0];
+    const formattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    setFormData(prev => ({ ...prev, date: formattedDate, time: formattedTime }));
+  }, []);
+
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (isDirty) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isDirty]);
 
   const handleFormChange = e => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    setIsDirty(true);
   };
 
   const handleWindowChange = (index, e) => {
@@ -69,12 +91,15 @@ const IndoorBlindsForm = () => {
     updated[index][name] = value;
     if (name === 'fabric') updated[index]['color'] = '';
     setWindows(updated);
+    setIsDirty(true);
   };
 
   const addWindow = () => setWindows(prev => [...prev, blankWindowTemplate]);
 
   const deleteWindow = (index) => {
-    if (Object.values(windows[index]).every(v => !v)) {
+    const windowData = windows[index];
+    const isEmpty = Object.values(windowData).every(val => !val);
+    if (isEmpty) {
       setWindows(prev => prev.filter((_, i) => i !== index));
     } else {
       alert("❌ You cannot delete a filled window form.");
@@ -87,20 +112,63 @@ const IndoorBlindsForm = () => {
     );
   };
 
+  const handleReset = () => {
+    if (confirm("Are you sure you want to reset the entire form?")) {
+      setFormData({
+        date: '', time: '', salesRep: '', customerName: '',
+        customerAddress: '', customerPhone: '', customerEmail: ''
+      });
+      setWindows([blankWindowTemplate]);
+      setIsDirty(false);
+      setShowReview(false);
+    }
+  };
+
+  const generatePDF = () => {
+    const doc = new jsPDF();
+    let y = 10;
+
+    doc.setFontSize(14);
+    doc.text("Indoor Blinds Form", 10, y);
+    y += 10;
+
+    for (const [label, value] of Object.entries(formData)) {
+      doc.setFontSize(10);
+      doc.text(`${label}: ${value}`, 10, y);
+      y += 6;
+    }
+
+    windows.forEach((win, i) => {
+      doc.setFontSize(12);
+      doc.text(`Window ${i + 1}`, 10, y);
+      y += 6;
+      for (const [key, val] of Object.entries(win)) {
+        doc.setFontSize(9);
+        doc.text(`${key}: ${val}`, 12, y);
+        y += 5;
+      }
+    });
+
+    doc.save(`indoor-blinds.pdf`);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    const auPhone = /^\(0[2-8]\)\s\d{4}\s\d{4}$/;
+
+    const auPhone = /^(?:\+61|0)[2-478]\d{8}$/;
     const email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const postcode = /\b\d{4}\b/;
 
-    if (!auPhone.test(formData.customerPhone)) return alert("❌ Invalid Australian phone number");
-    if (!email.test(formData.customerEmail)) return alert("❌ Invalid email address");
-    if (!postcode.test(formData.customerAddress)) return alert("❌ Address must include a valid postcode");
+    if (!auPhone.test(formData.customerPhone.replace(/\s/g, '')))
+      return alert("❌ Invalid Australian phone number");
+    if (!email.test(formData.customerEmail))
+      return alert("❌ Invalid email address");
+    if (!postcode.test(formData.customerAddress))
+      return alert("❌ Address must include a valid postcode");
 
-    const doc = new jsPDF();
-    doc.text("Indoor Blinds Form", 10, 10);
-    doc.save(`indoor-blinds.pdf`);
-    alert("✅ Form submitted and PDF generated");
+    alert("✅ Form submitted!");
+    generatePDF();
+    setIsDirty(false);
   };
 
   const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1).replace(/([A-Z])/g, ' $1');
@@ -125,78 +193,105 @@ const IndoorBlindsForm = () => {
         ))}
       </div>
 
-      {windows.map((w, i) => (
-        <div key={i} className={styles.windowSection}>
-          <h4 className={styles.windowHeader} onClick={() => toggleCollapse(i)}>
-            {w.roomName || `Window ${i + 1}`}
-            {Object.values(w).every(val => !val) && (
-              <button type="button" onClick={() => deleteWindow(i)} className={styles.deleteBtn}>✕</button>
-            )}
-          </h4>
-          {!collapsedSections.includes(i) && (
-            <>
-              {Object.keys(blankWindowTemplate).map(field => {
-                if (field === 'color') {
-                  const colorOptions = fabricToColours[w.fabric] || [];
-                  return (
-                    <div key={field} className={styles.inputGroup}>
-                      <label>Colour</label>
-                      <select name="color" value={w.color || ''} onChange={(e) => handleWindowChange(i, e)} required>
-                        <option value="">-- Select Colour --</option>
-                        {colorOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                      </select>
-                    </div>
-                  );
-                }
+      {windows.map((w, i) => {
+        const isEmpty = Object.values(w).every(val => !val);
 
-                if (field === 'fabric') {
-                  return (
-                    <div key={field} className={styles.inputGroup}>
-                      <label>Fabric</label>
-                      <select name="fabric" value={w.fabric || ''} onChange={(e) => handleWindowChange(i, e)} required>
-                        <option value="">-- Select Fabric --</option>
-                        {Object.keys(fabricToColours).map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                      </select>
-                    </div>
-                  );
-                }
+        return (
+          <div key={i} className={styles.windowSection}>
+            <h4 className={styles.windowHeader} onClick={() => toggleCollapse(i)}>
+              {w.roomName || `Window ${i + 1}`}
+              {isEmpty && (
+                <button type="button" onClick={() => deleteWindow(i)} className={styles.deleteBtn}>✕</button>
+              )}
+            </h4>
 
-                if (blankWindow[field]) {
+            {!collapsedSections.includes(i) && (
+              <>
+                {Object.keys(blankWindowTemplate).map(field => {
+                  if (field === 'color') {
+                    const colorOptions = fabricToColours[w.fabric] || [];
+                    return (
+                      <div key={field} className={styles.inputGroup}>
+                        <label>Colour</label>
+                        <select name="color" value={w.color || ''} onChange={(e) => handleWindowChange(i, e)} required>
+                          <option value="">-- Select Colour --</option>
+                          {colorOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                        </select>
+                      </div>
+                    );
+                  }
+
+                  if (field === 'fabric') {
+                    return (
+                      <div key={field} className={styles.inputGroup}>
+                        <label>Fabric</label>
+                        <select name="fabric" value={w.fabric || ''} onChange={(e) => handleWindowChange(i, e)} required>
+                          <option value="">-- Select Fabric --</option>
+                          {Object.keys(fabricToColours).map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                        </select>
+                      </div>
+                    );
+                  }
+
+                  if (blankWindow[field]) {
+                    return (
+                      <div key={field} className={styles.inputGroup}>
+                        <label>{capitalize(field)}</label>
+                        <select name={field} value={w[field] || ''} onChange={(e) => handleWindowChange(i, e)} required>
+                          <option value="">-- Select {capitalize(field)} --</option>
+                          {blankWindow[field].map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                        </select>
+                      </div>
+                    );
+                  }
+
                   return (
                     <div key={field} className={styles.inputGroup}>
                       <label>{capitalize(field)}</label>
-                      <select name={field} value={w[field] || ''} onChange={(e) => handleWindowChange(i, e)} required>
-                        <option value="">-- Select {capitalize(field)} --</option>
-                        {blankWindow[field].map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                      </select>
+                      <input
+                        type={['width', 'height'].includes(field) ? 'number' : 'text'}
+                        inputMode={['width', 'height'].includes(field) ? 'numeric' : 'text'}
+                        name={field}
+                        value={w[field] || ''}
+                        onChange={(e) => handleWindowChange(i, e)}
+                        required={['width', 'height'].includes(field)}
+                        className={['width', 'height'].includes(field) ? styles.measurementHighlight : ''}
+                      />
                     </div>
                   );
-                }
-
-                return (
-                  <div key={field} className={styles.inputGroup}>
-                    <label>{capitalize(field)}</label>
-                    <input
-                      type={['width', 'height'].includes(field) ? 'number' : 'text'}
-                      inputMode={['width', 'height'].includes(field) ? 'numeric' : 'text'}
-                      name={field}
-                      value={w[field] || ''}
-                      onChange={(e) => handleWindowChange(i, e)}
-                      required={['width', 'height'].includes(field)}
-                      className={['width', 'height'].includes(field) ? styles.measurementHighlight : ''}
-                    />
-                  </div>
-                );
-              })}
-            </>
-          )}
-        </div>
-      ))}
+                })}
+              </>
+            )}
+          </div>
+        );
+      })}
 
       <div className={styles.buttonGroup}>
         <button type="button" onClick={addWindow} className={styles.addBtn}>➕ Add Window</button>
+        <button type="button" onClick={() => setShowReview(true)} className={styles.reviewBtn}>📋 Preview</button>
+        <button type="button" onClick={handleReset} className={styles.reviewBtn}>🔁 Reset Form</button>
         <button type="submit" className={styles.submitBtn}>✅ Submit</button>
       </div>
+
+      {showReview && (
+        <div className={styles.modal}>
+          <div className={styles.modalContent}>
+            <h3>Review Info</h3>
+            {Object.entries(formData).map(([k, v]) => (
+              <p key={k}><strong>{capitalize(k)}:</strong> {v}</p>
+            ))}
+            {windows.map((w, idx) => (
+              <div key={idx}>
+                <h4>Window {idx + 1}</h4>
+                {Object.entries(w).map(([k, v]) => (
+                  <p key={k}><strong>{capitalize(k)}:</strong> {v}</p>
+                ))}
+              </div>
+            ))}
+            <button onClick={() => setShowReview(false)} className={styles.addBtn}>❌ Close Preview</button>
+          </div>
+        </div>
+      )}
     </form>
   );
 };
