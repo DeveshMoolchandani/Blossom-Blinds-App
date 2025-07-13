@@ -17,15 +17,33 @@ const blankWindow = {
   bottomFinish: ["N/A", "D30", "D30 Silent", "Flat", "Heavy Duty", "Oval", "S-1", "S-5", "S-6", "S-7", "S-8", "S-9"],
   baseRail: ["N/A", "Anodised", "Bone", "Pure White", "Sandstone", "Satin Black"],
   componentColour: ["N/A", "Black", "White", "Grey", "Sandstone"],
-  brackets: ["N/A", "─ Slim Combo ─", "Slim Combo Top Back", "Slim Combo Top Back to suit",
-    "Slim Combo Top Front to suit", "Slim Combo Top front", "─ Dual ─", "Dual Opposite side",
-    "Dual Same Side to suit", "Dual Same side", "Dual opposite Side to suit", "─ Other ─",
-    "Single", "55mm", "None"]
+  brackets: ["N/A", "─ Slim Combo ─", "Slim Combo Top Back", "Slim Combo Top Back to suit", "Slim Combo Top Front to suit", "Slim Combo Top front", "─ Dual ─", "Dual Opposite side", "Dual Same Side to suit", "Dual Same side", "Dual opposite Side to suit", "─ Other ─", "Single", "55mm", "None"]
 };
 
 const fabricToColours = {
-  "ANSARI": ["ASH", "CHARCOAL", "FOG", "FOSSIL", "LEAD", "SLATE", "STONE", "TO CONFIRM", "OTHER"],
-  "OTHER": ["TO CONFIRM", "OTHER"]
+  "ANSARI": ["ASH", "CHARCOAL", "COCONUT", "FOG", "FOSSIL", "LEAD", "SLATE", "STONE", "TO CONFIRM", "OTHER"],
+  "BALMORAL BLOCKOUT": ["ARMOUR", "BIRCH", "BOURNEVILLE", "CHROME", "CONCRETE", "DOVE", "JET", "PEARL", "PLATINUM", "PUTTY", "PYRITE", "STEEL", "TO CONFIRM", "WHITE", "OTHER"],
+  "BALMORAL LIGHT FILTER": ["DRIFTWOOD", "DUNE", "PAPERBARK", "PUMICE", "SAND", "SURF", "TO CONFIRM", "OTHER"],
+  "ETCH": ["FELT", "MONO", "PENCIL", "PLATE", "STEEL", "TISSUE", "TO CONFIRM", "ZINC", "OTHER"],
+  "FOCUS": ["ASH", "BAY", "CARBON", "CHALK", "CLOUD", "COAL", "DOVE", "DRIFT", "EBONY", "ESPRESSO", "FEATHER", "FIG - DISCONTINUED", "MAGNETIC", "MIST", "OYSTER", "POLAR", "POWDER - DISCONTINUED", "SANDSTONE -DISCONTINUED", "SHELL", "TEMPEST", "TO CONFIRM", "WHITE", "OTHER"],
+  "ICON FR": ["CEYLON", "FLORA", "HARBOUR", "JET", "LEATHER", "LIQUORICE", "MARITIME", "OSPREY", "PAPYRUS", "SAIL", "SCULPTURE", "SEA MIST", "SOLAR", "STONEWASH", "TAURUS", "TO CONFIRM", "OTHER"],
+  "KLEENSCREEN": ["ALLOY", "BARLEY", "BLACK", "BLACK PEARL", "CHARCOAL", "GRAPHITE", "GREY", "IVORY", "PEWTER", "PURE WHITE", "SHALE", "SILVER PEARL", "TO CONFIRM", "WHITE PEARL", "OTHER"],
+  "LE REVE BLOCKOUT": ["CHALK", "CONCRETE", "CRYSTAL", "GRAPHITE", "MARBLE", "MINK", "ONYX", "PEWTER", "SAND", "SHELL", "TO CONFIRM", "OTHER"],
+  "LE REVE LIGHT FILTER": ["CHALK", "CONCRETE", "CRYSTAL", "GRAPHITE", "MARBLE", "MINK", "ONYX", "PEWTER", "SAND", "SHELL", "TO CONFIRM", "OTHER"],
+  "LINESQUE LIGHT FILTER": ["CHESTNUT", "DELTA", "GRANITE", "HAZEL", "LEVI", "LILY", "OATCAKE", "OWL", "STONEWASH", "TO CONFIRM", "TRELLIS", "WICKER", "WINTER", "OTHER"],
+  "MANTRA BLOCKOUT": ["COTTON", "FLINT", "OPAL", "PARCHMENT", "PEBBLE", "SEAGRASS", "SEED PEARL", "SESAME", "SHALE", "SPICE", "TO CONFIRM", "OTHER"],
+  "MANTRA LIGHT FILTER": ["COTTON", "PARCHMENT", "PEBBLE", "SEAGRASS", "SEED PEARL", "SESAME", "SHALE", "TO CONFIRM", "OTHER"],
+  "METROSHADE BLOCKOUT": ["BLACK", "DOVE/WHITE", "ECRU", "ICE GREY", "MOONSTONE", "NOUGAT", "PEBBLE", "QUILL", "SEAL", "SLATE", "STORM", "TO CONFIRM", "WHITEWASH", "OTHER"],
+  "METROSHADE LIGHT FILTER": ["DOVE/WHITE", "ECRU", "ICE GREY", "MOONSTONE", "NOUGAT", "QUILL", "TO CONFIRM", "OTHER"],
+  "ONESCREEN": ["BLACK", "CHARCOAL", "DUNE", "GREY", "GUNMETAL", "ICE", "LINEN BRONZE", "MERCURY", "SAND", "SILVER BLACK", "TO CONFIRM", "WALLABY", "WHITE", "OTHER"],
+  "SANCTUARY BLOCKOUT": ["BALTIC", "CERAMIC", "LAVA", "MARBLE", "MINERAL", "PLASTER", "SUEDE", "TO CONFIRM", "TRUFFLE", "WHITEWASH", "OTHER"],
+  "SANCTUARY LIGHT FILTER": ["BALTIC", "CERAMIC", "LAVA", "MARBLE", "MINERAL", "PLASTER", "SLATE", "SUEDE", "TO CONFIRM", "WHITEWASH", "OTHER"],
+  "SKYE BLOCKOUT": ["BLAZER", "CHIFFON", "CHROME", "EARL GREY", "OYSTER", "PORCELAIN", "RAVEN", "SAIL", "SWAN", "TO CONFIRM", "OTHER"],
+  "SKYE LIGHT FILTER": ["BLAZER", "CHIFFON", "CHROME", "EARL GREY", "OYSTER", "PORCELAIN", "RAVEN", "SAIL", "SWAN", "TO CONFIRM", "OTHER"],
+  "TERRA": ["ARIA", "ELA", "FLINT", "HAZEL", "KAI", "MISTY", "RIDGE", "STELLA", "STORM", "TO CONFIRM", "WILLOW", "OTHER"],
+  "VIBE": ["ALLOY", "BIRCH", "BISTRO", "CHATEAU", "CLAY", "CLOUD", "COAL", "DUNE", "ICE", "LACE", "LIMESTONE", "LINEN", "LOFT", "MIST", "NIMBUS", "ODESSEY", "ORIENT", "PORCELAIN", "PURE", "SPIRIT DISCONTINUED", "STONE", "STORM", "SURF", "TERRACE", "TO CONFIRM", "TUNDRA", "WHISPER", "ZIRCON", "OTHER"],
+  "ZENO": ["BARRANCA", "CUSCO", "ICA", "LIMA", "MALA", "PUNO", "TARMA", "TO CONFIRM", "OTHER"],
+  "OTHER": ["TO CONFIRM", "OTHER"],
 };
 
 const fabricOptions = [...Object.keys(fabricToColours).filter(f => f !== "OTHER").sort(), "OTHER"];
@@ -40,18 +58,27 @@ export default function IndoorBlindsForm() {
   const [showPreview, setShowPreview] = useState(false);
 
   useEffect(() => {
-    console.log("✅ IndoorBlindsForm rendered");
     const now = new Date();
     setFormData(prev => ({
       ...prev,
       date: now.toISOString().split('T')[0],
       time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }));
+
+    const handleBeforeUnload = (e) => {
+      if (isDirty()) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, []);
 
-  const isDirty = () =>
-    Object.values(formData).some(v => v.trim() !== '') ||
-    windows.some(w => Object.values(w).some(v => v.trim() !== ''));
+  const isDirty = () => {
+    return Object.values(formData).some(v => v.trim() !== '') ||
+      windows.some(w => Object.values(w).some(v => v.trim() !== ''));
+  };
 
   const handleWindowChange = (index, e) => {
     const { name, value } = e.target;
@@ -67,9 +94,7 @@ export default function IndoorBlindsForm() {
   };
 
   const toggleCollapse = (index) => {
-    setCollapsedSections(prev =>
-      prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]
-    );
+    setCollapsedSections(prev => prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]);
   };
 
   const addWindow = () => {
@@ -78,12 +103,14 @@ export default function IndoorBlindsForm() {
 
   const deleteWindow = (index) => {
     const isEmpty = Object.values(windows[index]).every(val => val.trim() === '');
-    if (!isEmpty) return alert("❌ Cannot delete a filled form.");
+    if (!isEmpty) {
+      alert("❌ Cannot delete a filled form.");
+      return;
+    }
     setWindows(windows.filter((_, i) => i !== index));
   };
 
   const handleHomeClick = () => {
-    console.log("🏠 Home button clicked");
     if (isDirty()) {
       const confirmLeave = window.confirm("⚠️ You have unsaved data. Go home anyway?");
       if (!confirmLeave) return;
@@ -93,9 +120,7 @@ export default function IndoorBlindsForm() {
 
   const handleReset = () => {
     if (confirm("Reset the form?")) {
-      setFormData({
-        date: '', time: '', salesRep: '', customerName: '', customerAddress: '', customerPhone: '', customerEmail: ''
-      });
+      setFormData({ date: '', time: '', salesRep: '', customerName: '', customerAddress: '', customerPhone: '', customerEmail: '' });
       setWindows([JSON.parse(JSON.stringify(blankWindowTemplate))]);
     }
   };
@@ -105,8 +130,8 @@ export default function IndoorBlindsForm() {
     doc.setFontSize(14);
     doc.text("Indoor Blinds Form", 10, 10);
     let y = 20;
-    Object.entries(formData).forEach(([k, v]) => {
-      doc.text(`${k}: ${v}`, 10, y);
+    Object.entries(formData).forEach(([key, val]) => {
+      doc.text(`${key}: ${val}`, 10, y);
       y += 6;
     });
     windows.forEach((w, idx) => {
@@ -133,7 +158,8 @@ export default function IndoorBlindsForm() {
     const payload = { ...formData, windows, productType: "Indoor Blinds" };
 
     try {
-      const res = await fetch("https://script.google.com/macros/s/AKfycbyoJqooQOmPZJvCN5w2zNOoN8O9ynBrIdrtRZHEjD9JWUwzNll2i1N_7I6_ZEanwhg2/exec", {
+      const res = await fetch("https://script.google.com/macros/s/AKfycbxxVJ41FbxFSIjukeI_3TZNkauBUaXa2x1g2jhJLycv9Z-a8joVAqEW6iUyydQyMTDN/exec", {
+
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
@@ -152,22 +178,12 @@ export default function IndoorBlindsForm() {
     }
   };
 
-  const capitalize = s =>
-    s.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+  const capitalize = s => s.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
 
   return (
     <form onSubmit={handleSubmit} className={styles.formContainer}>
       <div className={styles.buttonGroup}>
-        <button
-          type="button"
-          onClick={() => {
-            console.log("🏠 Home button clicked");
-            handleHomeClick();
-          }}
-          className={styles.reviewBtn}
-        >
-          🏠 Home
-        </button>
+        <button type="button" onClick={handleHomeClick} className={styles.reviewBtn}>🏠 Home</button>
         <button type="button" onClick={() => setShowPreview(true)} className={styles.reviewBtn}>📋 Preview</button>
         <button type="button" onClick={handleReset} className={styles.reviewBtn}>🔁 Reset Form</button>
       </div>
