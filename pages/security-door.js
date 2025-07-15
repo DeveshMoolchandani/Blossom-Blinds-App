@@ -125,8 +125,9 @@ export default function SecurityDoorsPage() {
     const payload = {
       ...formData,
       windows,
-      productType: "Security Doors"
+      productType: "Security Door"
     };
+      console.log("🚀 Payload:", payload);
 
     try {
       const res = await fetch('/api/roller-shutters-proxy', {
