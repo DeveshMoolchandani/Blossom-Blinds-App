@@ -1,3 +1,4 @@
+// Trigger Vercel redeploy - Devesh
 import fetch from 'node-fetch';
 
 export default async function handler(req, res) {
@@ -5,7 +6,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ message: 'Method Not Allowed' });
   }
 
-  const sheetUrl = "https://script.google.com/macros/s/REPLACE_WITH_YOUR_CURTAIN_SCRIPT_ID/exec";
+const sheetUrl = "https://script.google.com/macros/s/AKfycbzDNOMJI61FAnoz1_gzS8vIQvDaOmwLrcpkTvEhPQLye43rVjfLXTvwknhg-RF5rAZN/exec";
   const isDev = process.env.NODE_ENV !== 'production';
 
   try {
