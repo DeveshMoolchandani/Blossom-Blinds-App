@@ -1,3 +1,4 @@
+// Trigger redeploy - Devesh
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import jsPDF from 'jspdf';
@@ -158,8 +159,7 @@ export default function IndoorBlindsForm() {
     const payload = { ...formData, windows, productType: "Indoor Blinds" };
 
     try {
-      const res = await fetch("https://script.google.com/macros/s/AKfycbxxVJ41FbxFSIjukeI_3TZNkauBUaXa2x1g2jhJLycv9Z-a8joVAqEW6iUyydQyMTDN/exec", {
-
+const res = await fetch("/api/indoor-blinds", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
