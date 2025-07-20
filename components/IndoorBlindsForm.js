@@ -3,6 +3,10 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import jsPDF from 'jspdf';
 import styles from '../styles/Form.module.css';
+import CONFIG from '../lib/config';
+
+const sheetUrl = CONFIG.GOOGLE_SCRIPT_URL;
+
 
 const blankWindowTemplate = {
  roomName: '',
@@ -124,6 +128,8 @@ export default function IndoorBlindsForm() {
   const handleSubmit = async e => {
     e.preventDefault();
     const payload = { ...formData, windows, productType: "Indoor Blinds" };
+      // ✅ Add this here
+  console.log("🚀 Sending payload:", payload);
     try {
       const res = await fetch('/api/indoor-blinds', {
         method: 'POST',
