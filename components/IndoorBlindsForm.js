@@ -185,15 +185,16 @@ export default function IndoorBlindsForm() {
                   const colorOptions = fabricToColours[w.fabric] || [];
                   return (
                     <div key={field} className={styles.inputGroup}>
-                      <label>Color:</label>
-                      <select name="color" value={w.color} onChange={e => handleWindowChange(i, e)} required>
-                        <option value="">-- Select Color --</option>
-                        {colorOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                      </select>
-                    </div>
+  <label>Color:</label>
+  <select name="color" value={w.color} onChange={e => handleWindowChange(i, e)} required>
+    <option value="">-- Select Color --</option>
+    {colorOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+  </select>
+</div>
+
                   );
                 } else if (field === 'control' || field === 'fit' || field === 'roll') {
-                  const options = field === 'control' ? controlOptions : field === 'fit' ? fitOptions : rollOptions;
+                  const options = blankWindow[field];
                   return (
                     <div key={field} className={styles.inputGroup}>
                       <label>{capitalize(field)}:</label>
