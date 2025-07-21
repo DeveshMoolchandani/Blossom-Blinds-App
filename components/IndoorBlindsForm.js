@@ -1,9 +1,10 @@
-// Trigger redeploy - Devesh
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable'; // ✅ ADD THIS LINE
 import styles from '../styles/Form.module.css';
 import CONFIG from '../lib/config';
+
 
 const sheetUrl = CONFIG.GOOGLE_SCRIPT_URL;
 
@@ -126,27 +127,31 @@ export default function IndoorBlindsForm() {
   };
 
   const handleSubmit = async e => {
-    e.preventDefault();
-    const payload = { ...formData, windows, productType: "Indoor Blinds" };
-      // ✅ Add this here
+  e.preventDefault();
+  const payload = { ...formData, windows, productType: "Indoor Blinds" };
   console.log("🚀 Sending payload:", payload);
-    try {
-      const res = await fetch('/api/indoor-blinds', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      const result = await res.json();
-      if (result.result === 'success') {
-        generatePDF();
-        alert("✅ Submitted successfully");
-      } else {
-        alert(`❌ Submission failed: ${result.message}`);
-      }
-    } catch {
-      alert("❌ Network error");
+
+  try {
+    const res = await fetch('/api/indoor-blinds', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await res.json(); // ✅ Better
+    console.log("📦 Parsed API response JSON:", result);
+
+    if (result.result === 'success') {
+      generatePDF();
+      alert("✅ Submitted successfully");
+    } else {
+      alert(`❌ Submission failed: ${result.message}`);
     }
-  };
+  } catch (err) {
+    console.error("❌ Frontend fetch failed:", err);
+    alert("❌ Network error: " + err.message);
+  }
+};
 
   return (
     <form onSubmit={handleSubmit} className={styles.formContainer}>
