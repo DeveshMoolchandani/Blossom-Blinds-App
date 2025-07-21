@@ -44,6 +44,10 @@ export default function PlantationShuttersPage() {
 
   const [collapsedSections, setCollapsedSections] = useState([]);
   const [formStarted, setFormStarted] = useState(false);
+  const [discount, setDiscount] = useState(0); // %
+  const [totalPrice, setTotalPrice] = useState(0); // $
+
+  const PRICE_PER_M2 = 540;
 
   useEffect(() => {
     const now = new Date();
@@ -68,15 +72,24 @@ export default function PlantationShuttersPage() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const calculateTotalPrice = (winList = windows, discountPercent = discount) => {
+    const subtotal = winList.reduce((acc, w) => {
+      const sqm = parseFloat(w.squareMetre);
+      return acc + (isNaN(sqm) ? 0 : sqm * PRICE_PER_M2);
+    }, 0);
+    const discounted = subtotal * (1 - discountPercent / 100);
+    setTotalPrice(discounted.toFixed(2));
+  };
+
   const handleWindowChange = (index, e) => {
     setFormStarted(true);
     const { name, value } = e.target;
     const updated = [...windows];
     updated[index][name] = value;
 
-    // Auto-calculate square metre if width and drop are filled
     const width = parseFloat(updated[index].width);
     const drop = parseFloat(updated[index].drop);
+
     if (!isNaN(width) && !isNaN(drop)) {
       updated[index].squareMetre = ((width / 1000) * (drop / 1000)).toFixed(2);
     } else {
@@ -84,34 +97,36 @@ export default function PlantationShuttersPage() {
     }
 
     setWindows(updated);
+    calculateTotalPrice(updated, discount);
   };
 
   const addWindow = () => {
-    setWindows(prev => [
-      ...prev,
-      {
-        location: '',
-        width: '',
-        drop: '',
-        squareMetre: '',
-        colour: '',
-        mountingMethod: '',
-        inOrOut: '',
-        panelQty: '',
-        bladeSize: '',
-        midRailHeight: '',
-        layoutCode: '',
-        hingeColour: '',
-        tiltrodType: '',
-        frameType: '',
-        left: '',
-        right: '',
-        top: '',
-        bottom: '',
-        lightBlock: '',
-        comments: ''
-      }
-    ]);
+    const newWindow = {
+      location: '',
+      width: '',
+      drop: '',
+      squareMetre: '',
+      colour: '',
+      mountingMethod: '',
+      inOrOut: '',
+      panelQty: '',
+      bladeSize: '',
+      midRailHeight: '',
+      layoutCode: '',
+      hingeColour: '',
+      tiltrodType: '',
+      frameType: '',
+      left: '',
+      right: '',
+      top: '',
+      bottom: '',
+      lightBlock: '',
+      comments: ''
+    };
+
+    const updated = [...windows, newWindow];
+    setWindows(updated);
+    calculateTotalPrice(updated, discount);
   };
 
   const deleteWindow = (index) => {
@@ -121,7 +136,9 @@ export default function PlantationShuttersPage() {
       const confirmDelete = window.confirm("⚠️ This window has data. Are you sure you want to delete?");
       if (!confirmDelete) return;
     }
-    setWindows(windows.filter((_, i) => i !== index));
+    const updated = windows.filter((_, i) => i !== index);
+    setWindows(updated);
+    calculateTotalPrice(updated, discount);
   };
 
   const generatePDF = () => {
@@ -149,6 +166,16 @@ export default function PlantationShuttersPage() {
       });
     });
 
+    // Price summary
+    autoTable(doc, {
+      startY: doc.lastAutoTable.finalY + 10,
+      head: [['Summary', 'Value']],
+      body: [
+        ['Discount (%)', discount + '%'],
+        ['Total Price ($)', '$' + totalPrice]
+      ]
+    });
+
     doc.save("plantation-shutters-form.pdf");
   };
 
@@ -162,6 +189,8 @@ export default function PlantationShuttersPage() {
     const payload = {
       ...formData,
       windows,
+      discount,
+      totalPrice,
       productType: "Plantation Shutters"
     };
 
@@ -269,6 +298,31 @@ export default function PlantationShuttersPage() {
           )}
         </div>
       ))}
+
+      <div className={styles.inputGroup}>
+        <label>Discount (%):</label>
+        <input
+          type="number"
+          value={discount}
+          min="0"
+          max="100"
+          onChange={(e) => {
+            const val = parseFloat(e.target.value);
+            const safeVal = isNaN(val) ? 0 : val;
+            setDiscount(safeVal);
+            calculateTotalPrice(windows, safeVal);
+          }}
+        />
+      </div>
+
+      <div className={styles.inputGroup}>
+        <label>Total Price ($):</label>
+        <input
+          type="text"
+          value={totalPrice}
+          readOnly
+        />
+      </div>
 
       <button type="button" onClick={addWindow} className={styles.addBtn}>➕ Add Window</button>
       <button type="submit" className={styles.submitBtn}>✅ Submit</button>
