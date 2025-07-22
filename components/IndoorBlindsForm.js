@@ -162,6 +162,7 @@ const payload = {
   totalPrice
 };
 
+console.log("🔍 SUBMITTING PAYLOAD:", payload); // ✅ Add this for debug
 
     const response = await fetch('/api/submit', {
       method: 'POST',
