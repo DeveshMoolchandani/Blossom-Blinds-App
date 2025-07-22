@@ -154,11 +154,14 @@ export default function IndoorBlindsForm() {
   e.preventDefault();
 
   try {
-    const payload = {
-      ...formData,
-      windows,
-      productType: 'Indoor Blinds'
-    };
+const payload = {
+  ...formData,
+  windows,
+  productType: 'Indoor Blinds',
+  discount,
+  totalPrice
+};
+
 
     const response = await fetch('/api/submit', {
       method: 'POST',
