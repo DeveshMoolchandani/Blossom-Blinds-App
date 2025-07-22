@@ -150,11 +150,39 @@ export default function IndoorBlindsForm() {
     updateTotalPrice(updated);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert("✅ Form submitted!");
-    generatePDF();
-  };
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    const payload = {
+      ...formData,
+      windows,
+      productType: 'Indoor Blinds'
+    };
+
+    const response = await fetch('/api/submit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      alert("✅ Form submitted successfully!");
+      generatePDF(); // Keep PDF generation on success
+    } else {
+      console.error("❌ Submission error:", result.message);
+      alert("❌ Submission failed: " + (result.message || "Unknown error"));
+    }
+  } catch (err) {
+    console.error("❌ Network or server error:", err);
+    alert("❌ Submission failed. Please check your internet or try again.");
+  }
+};
+
 
   const generatePDF = () => {
     const doc = new jsPDF();
