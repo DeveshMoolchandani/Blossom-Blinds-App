@@ -9,18 +9,18 @@ export default async function handler(req, res) {
       const response = await axios.post(endpoint, req.body);
 
       if (response.data.result === "success") {
-        return res.status(200).send('✅ Google Sheet submission successful');
+        return res.status(200).json({ result: "success" });
       } else {
         console.error("❌ Google Apps Script returned error:", response.data.message);
-        return res.status(500).send(`❌ Submission error: ${response.data.message}`);
+        return res.status(500).json({ result: "error", message: response.data.message || "Unknown script error" });
       }
 
     } catch (error) {
       console.error("❌ Submission error (catch block):", error.response?.data || error.message);
-      return res.status(500).send('❌ Submission failed (network or script error)');
+      return res.status(500).json({ result: "error", message: error.message || "Network error" });
     }
 
   } else {
-    return res.status(405).send('Method Not Allowed');
+    return res.status(405).json({ result: "error", message: "Method Not Allowed" });
   }
 }
