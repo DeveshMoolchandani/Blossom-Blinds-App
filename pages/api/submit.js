@@ -1,26 +1,26 @@
+// pages/api/submit.js
 import axios from 'axios';
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
-    const endpoint = "https://script.google.com/macros/s/AKfycbwgyBAg3rHnCVVJJoQzn8CYuq5pvzzL_aP4a2Y7Z7BjOtIAWD_XJDjr01iVFCvPvY8l/exec";
+    const endpoint = "https://script.google.com/macros/s/AKfycbzP309gzQrQAcxMW3NkfsXoR5ieipdYZ6JZ75O6DtJJfVg1EXpV97DvgQVBH2u--e8J/exec";
 
     try {
       const response = await axios.post(endpoint, req.body);
-      const result = response.data;
 
-      if (result.result === 'success') {
-        res.status(200).json({ success: true });
+      if (response.data.result === "success") {
+        return res.status(200).send('✅ Google Sheet submission successful');
       } else {
-        res.status(500).json({
-          success: false,
-          message: result.message || 'Unknown failure from Google Apps Script',
-        });
+        console.error("❌ Google Apps Script returned error:", response.data.message);
+        return res.status(500).send(`❌ Submission error: ${response.data.message}`);
       }
+
     } catch (error) {
-      console.error('❌ Axios error:', error.message);
-      res.status(500).json({ success: false, message: 'Failed to reach Google Apps Script' });
+      console.error("❌ Submission error (catch block):", error.response?.data || error.message);
+      return res.status(500).send('❌ Submission failed (network or script error)');
     }
+
   } else {
-    res.status(405).send('Method Not Allowed');
+    return res.status(405).send('Method Not Allowed');
   }
 }
