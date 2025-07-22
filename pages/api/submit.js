@@ -8,16 +8,18 @@ export default async function handler(req, res) {
     try {
       const response = await axios.post(endpoint, req.body);
 
-      if (response.data.result === "success") {
+      if (response.data?.result === "success") {
         return res.status(200).json({ result: "success" });
       } else {
-        console.error("❌ Google Apps Script returned error:", response.data.message);
-        return res.status(500).json({ result: "error", message: response.data.message || "Unknown script error" });
+        const msg = response.data?.message || "Unknown error from Google Script";
+        console.error("❌ Google Apps Script returned error:", msg);
+        return res.status(500).json({ result: "error", message: msg });
       }
 
     } catch (error) {
-      console.error("❌ Submission error (catch block):", error.response?.data || error.message);
-      return res.status(500).json({ result: "error", message: error.message || "Network error" });
+      const errorMsg = error?.response?.data?.message || error.message || "Unknown network or script error";
+      console.error("❌ Submission error (catch block):", errorMsg);
+      return res.status(500).json({ result: "error", message: errorMsg });
     }
 
   } else {
