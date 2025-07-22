@@ -1,77 +1,101 @@
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
 import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable'; // ✅ ADD THIS LINE
+import autoTable from 'jspdf-autotable';
 import styles from '../styles/Form.module.css';
-import CONFIG from '../lib/config';
-
-
-const sheetUrl = CONFIG.GOOGLE_SCRIPT_URL;
-
-
-const blankWindowTemplate = {
- roomName: '',
-  width: '',
-  height: '',
-  fabric: '',
-  color: '',
-  control: '',
-  fit: '',
-  roll: '',
-  comments: ''
-};
-
-const blankWindow = {
-  control: ["Left", "Right"],
-  fit: ["Face", "Recess"],
-  roll: ["Standard", "Reverse"],
-};
-
-const fabricToColours = {
-  "ANSARI": ["ASH", "CHARCOAL", "COCONUT", "FOG", "FOSSIL", "LEAD", "SLATE", "STONE", "TO CONFIRM", "OTHER"],
-  "BALMORAL BLOCKOUT": ["ARMOUR", "BIRCH", "BOURNEVILLE", "CHROME", "CONCRETE", "DOVE", "JET", "PEARL", "PLATINUM", "PUTTY", "PYRITE", "STEEL", "TO CONFIRM", "WHITE", "OTHER"],
-  "BALMORAL LIGHT FILTER": ["DRIFTWOOD", "DUNE", "PAPERBARK", "PUMICE", "SAND", "SURF", "TO CONFIRM", "OTHER"],
-  "ETCH": ["FELT", "MONO", "PENCIL", "PLATE", "STEEL", "TISSUE", "TO CONFIRM", "ZINC", "OTHER"],
-  "FOCUS": ["ASH", "BAY", "CARBON", "CHALK", "CLOUD", "COAL", "DOVE", "DRIFT", "EBONY", "ESPRESSO", "FEATHER", "FIG - DISCONTINUED", "MAGNETIC", "MIST", "OYSTER", "POLAR", "POWDER - DISCONTINUED", "SANDSTONE -DISCONTINUED", "SHELL", "TEMPEST", "TO CONFIRM", "WHITE", "OTHER"],
-  "ICON FR": ["CEYLON", "FLORA", "HARBOUR", "JET", "LEATHER", "LIQUORICE", "MARITIME", "OSPREY", "PAPYRUS", "SAIL", "SCULPTURE", "SEA MIST", "SOLAR", "STONEWASH", "TAURUS", "TO CONFIRM", "OTHER"],
-  "KLEENSCREEN": ["ALLOY", "BARLEY", "BLACK", "BLACK PEARL", "CHARCOAL", "GRAPHITE", "GREY", "IVORY", "PEWTER", "PURE WHITE", "SHALE", "SILVER PEARL", "TO CONFIRM", "WHITE PEARL", "OTHER"],
-  "LE REVE BLOCKOUT": ["CHALK", "CONCRETE", "CRYSTAL", "GRAPHITE", "MARBLE", "MINK", "ONYX", "PEWTER", "SAND", "SHELL", "TO CONFIRM", "OTHER"],
-  "LE REVE LIGHT FILTER": ["CHALK", "CONCRETE", "CRYSTAL", "GRAPHITE", "MARBLE", "MINK", "ONYX", "PEWTER", "SAND", "SHELL", "TO CONFIRM", "OTHER"],
-  "LINESQUE LIGHT FILTER": ["CHESTNUT", "DELTA", "GRANITE", "HAZEL", "LEVI", "LILY", "OATCAKE", "OWL", "STONEWASH", "TO CONFIRM", "TRELLIS", "WICKER", "WINTER", "OTHER"],
-  "MANTRA BLOCKOUT": ["COTTON", "FLINT", "OPAL", "PARCHMENT", "PEBBLE", "SEAGRASS", "SEED PEARL", "SESAME", "SHALE", "SPICE", "TO CONFIRM", "OTHER"],
-  "MANTRA LIGHT FILTER": ["COTTON", "PARCHMENT", "PEBBLE", "SEAGRASS", "SEED PEARL", "SESAME", "SHALE", "TO CONFIRM", "OTHER"],
-  "METROSHADE BLOCKOUT": ["BLACK", "DOVE/WHITE", "ECRU", "ICE GREY", "MOONSTONE", "NOUGAT", "PEBBLE", "QUILL", "SEAL", "SLATE", "STORM", "TO CONFIRM", "WHITEWASH", "OTHER"],
-  "METROSHADE LIGHT FILTER": ["DOVE/WHITE", "ECRU", "ICE GREY", "MOONSTONE", "NOUGAT", "QUILL", "TO CONFIRM", "OTHER"],
-  "ONESCREEN": ["BLACK", "CHARCOAL", "DUNE", "GREY", "GUNMETAL", "ICE", "LINEN BRONZE", "MERCURY", "SAND", "SILVER BLACK", "TO CONFIRM", "WALLABY", "WHITE", "OTHER"],
-  "SANCTUARY BLOCKOUT": ["BALTIC", "CERAMIC", "LAVA", "MARBLE", "MINERAL", "PLASTER", "SUEDE", "TO CONFIRM", "TRUFFLE", "WHITEWASH", "OTHER"],
-  "SANCTUARY LIGHT FILTER": ["BALTIC", "CERAMIC", "LAVA", "MARBLE", "MINERAL", "PLASTER", "SLATE", "SUEDE", "TO CONFIRM", "WHITEWASH", "OTHER"],
-  "SKYE BLOCKOUT": ["BLAZER", "CHIFFON", "CHROME", "EARL GREY", "OYSTER", "PORCELAIN", "RAVEN", "SAIL", "SWAN", "TO CONFIRM", "OTHER"],
-  "SKYE LIGHT FILTER": ["BLAZER", "CHIFFON", "CHROME", "EARL GREY", "OYSTER", "PORCELAIN", "RAVEN", "SAIL", "SWAN", "TO CONFIRM", "OTHER"],
-  "TERRA": ["ARIA", "ELA", "FLINT", "HAZEL", "KAI", "MISTY", "RIDGE", "STELLA", "STORM", "TO CONFIRM", "WILLOW", "OTHER"],
-  "VIBE": ["ALLOY", "BIRCH", "BISTRO", "CHATEAU", "CLAY", "CLOUD", "COAL", "DUNE", "ICE", "LACE", "LIMESTONE", "LINEN", "LOFT", "MIST", "NIMBUS", "ODESSEY", "ORIENT", "PORCELAIN", "PURE", "SPIRIT DISCONTINUED", "STONE", "STORM", "SURF", "TERRACE", "TO CONFIRM", "TUNDRA", "WHISPER", "ZIRCON", "OTHER"],
-  "ZENO": ["BARRANCA", "CUSCO", "ICA", "LIMA", "MALA", "PUNO", "TARMA", "TO CONFIRM", "OTHER"],
-  "OTHER": ["TO CONFIRM", "OTHER"],
-};
-
-const fabricOptions = [...Object.keys(fabricToColours).filter(f => f !== "OTHER").sort(), "OTHER"];
+import fabricGroupMap from '../lib/fabricGroups';
+import fabricToColours from '../lib/fabricColors';
+import pricingData from '../data/blinds_pricing_data.json';
 
 export default function IndoorBlindsForm() {
   const [formData, setFormData] = useState({
-    date: '', time: '', salesRep: '', customerName: '', customerAddress: '', customerPhone: '', customerEmail: ''
+    date: '',
+    time: '',
+    salesRep: '',
+    customerName: '',
+    customerAddress: '',
+    customerPhone: '',
+    customerEmail: ''
   });
-  const [windows, setWindows] = useState([JSON.parse(JSON.stringify(blankWindowTemplate))]);
+
+  const blankWindow = {
+    room: '',
+    width: '',
+    drop: '',
+    fabric: '',
+    color: '',
+    control: '',
+    fit: '',
+    roll: '',
+    comments: '',
+    price: 0
+  };
+
+  const [windows, setWindows] = useState([JSON.parse(JSON.stringify(blankWindow))]);
   const [collapsedSections, setCollapsedSections] = useState([]);
+  const [discount, setDiscount] = useState(40);
+  const [totalPrice, setTotalPrice] = useState(0);
 
   useEffect(() => {
     const now = new Date();
     setFormData(prev => ({
       ...prev,
-      date: now.toISOString().split('T')[0],
-      time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      date: now.toISOString().split('T')[0]
     }));
   }, []);
 
-  const handleFormChange = e => {
+  const sortOptions = (options) => {
+    return options
+      .filter(opt => opt !== 'TO CONFIRM' && opt !== 'OTHER')
+      .sort((a, b) => a.localeCompare(b))
+      .concat(['TO CONFIRM', 'OTHER']);
+  };
+
+  const fabricOptions = sortOptions(Object.keys(fabricGroupMap));
+
+  const getColorOptions = (fabric) => {
+    if (!fabric) return [];
+    const match = Object.keys(fabricToColours).find(
+      key => key.toLowerCase() === fabric.toLowerCase()
+    );
+    return match ? sortOptions(fabricToColours[match]) : [];
+  };
+
+  const getGroupForFabric = (fabric) => {
+    return fabricGroupMap[fabric] || null;
+  };
+
+  const getNearestSize = (val, field, group) => {
+    const numbers = pricingData
+      .filter(entry => entry.Group === group)
+      .map(entry => Number(entry[field]))
+      .sort((a, b) => a - b);
+
+    return numbers.find(n => n >= val) || numbers[numbers.length - 1];
+  };
+
+  const getPrice = (width, drop, fabric, color) => {
+    const group = getGroupForFabric(fabric);
+    if (!group || color === 'OTHER') return 0;
+
+    const nearestWidth = getNearestSize(width, 'Width', group);
+    const nearestDrop = getNearestSize(drop, 'Drop', group);
+
+    const match = pricingData.find(entry =>
+      entry.Group === group &&
+      Number(entry.Width) === nearestWidth &&
+      Number(entry.Drop) === nearestDrop
+    );
+
+    return match ? Number(match["Retail Price (After 40% Discount)"]) : 0;
+  };
+
+  const updateTotalPrice = (winArr) => {
+    const total = winArr.reduce((acc, win) => acc + (parseFloat(win.price) || 0), 0);
+    setTotalPrice(total);
+  };
+
+  const handleFormChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
@@ -80,160 +104,181 @@ export default function IndoorBlindsForm() {
     const { name, value } = e.target;
     const updated = [...windows];
     updated[index][name] = value;
-    if (name === 'fabric') updated[index]['color'] = '';
+
+    const w = parseFloat(updated[index].width);
+    const d = parseFloat(updated[index].drop);
+    const f = updated[index].fabric;
+    const c = updated[index].color;
+
+    if (!isNaN(w) && !isNaN(d) && f && c) {
+      updated[index].price = getPrice(w, d, f, c);
+    }
+
     setWindows(updated);
-  };
-
-  const addWindow = () => {
-    setWindows(prev => [...prev, JSON.parse(JSON.stringify(blankWindowTemplate))]);
-  };
-
-  const deleteWindow = (index) => {
-    const confirmDelete = window.confirm("Delete this window?");
-    if (confirmDelete) setWindows(windows.filter((_, i) => i !== index));
+    updateTotalPrice(updated);
   };
 
   const toggleCollapse = (index) => {
-    setCollapsedSections(prev => prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]);
+    setCollapsedSections(prev =>
+      prev.includes(index)
+        ? prev.filter(i => i !== index)
+        : [...prev, index]
+    );
   };
 
-  const capitalize = s => s.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+  const addWindow = () => {
+    setWindows([...windows, JSON.parse(JSON.stringify(blankWindow))]);
+  };
+
+  const deleteWindow = (index) => {
+    const confirmDelete = window.confirm("⚠️ Are you sure you want to delete this window?");
+    if (!confirmDelete) return;
+    const updated = windows.filter((_, i) => i !== index);
+    setWindows(updated);
+    updateTotalPrice(updated);
+  };
+
+  const handleDiscountChange = (e) => {
+    const val = parseFloat(e.target.value);
+    const safeVal = isNaN(val) ? 0 : val;
+    setDiscount(safeVal);
+    const updated = windows.map(win => {
+      const price = getPrice(win.width, win.drop, win.fabric, win.color);
+      return { ...win, price };
+    });
+    setWindows(updated);
+    updateTotalPrice(updated);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    alert("✅ Form submitted!");
+    generatePDF();
+  };
 
   const generatePDF = () => {
     const doc = new jsPDF();
-    doc.setFontSize(14);
-    doc.text("Indoor Blinds Submission", 10, 10);
+    doc.text("Indoor Blinds Quote", 14, 10);
 
     autoTable(doc, {
       startY: 20,
       head: [['Field', 'Value']],
-      body: Object.entries(formData).map(([key, val]) => [capitalize(key), val])
+      body: Object.entries(formData).map(([k, v]) => [k, v])
     });
 
-    windows.forEach((win, idx) => {
+    windows.forEach((w, i) => {
       autoTable(doc, {
         startY: doc.lastAutoTable.finalY + 10,
-        head: [[`Window ${idx + 1}`]],
+        head: [[`Window ${i + 1}`]],
         body: []
       });
+
       autoTable(doc, {
         startY: doc.lastAutoTable.finalY,
         head: [['Field', 'Value']],
-        body: Object.entries(win).map(([key, val]) => [capitalize(key), val])
+        body: Object.entries(w).map(([k, v]) => [k, v])
       });
     });
 
-    doc.save("indoor-blinds.pdf");
-  };
-
-  const handleSubmit = async e => {
-  e.preventDefault();
-  const payload = { ...formData, windows, productType: "Indoor Blinds" };
-  console.log("🚀 Sending payload:", payload);
-
-  try {
-    const res = await fetch('/api/indoor-blinds', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+    autoTable(doc, {
+      startY: doc.lastAutoTable.finalY + 10,
+      head: [['Summary', 'Value']],
+      body: [
+        ['Discount (%)', discount + '%'],
+        ['Total Price ($)', '$' + totalPrice.toFixed(2)]
+      ]
     });
 
-    const result = await res.json(); // ✅ Better
-    console.log("📦 Parsed API response JSON:", result);
-
-    if (result.result === 'success') {
-      generatePDF();
-      alert("✅ Submitted successfully");
-    } else {
-      alert(`❌ Submission failed: ${result.message}`);
-    }
-  } catch (err) {
-    console.error("❌ Frontend fetch failed:", err);
-    alert("❌ Network error: " + err.message);
-  }
-};
+    doc.save('indoor-blinds-quote.pdf');
+  };
 
   return (
     <form onSubmit={handleSubmit} className={styles.formContainer}>
       <h2 className={styles.formTitle}>Indoor Blinds Form</h2>
 
-      <div className={styles.windowSection}>
-        <h4 className={styles.windowHeader} onClick={() => toggleCollapse(-1)}>
-          Customer Information
-        </h4>
-        {!collapsedSections.includes(-1) && (
-          <>
-            {["salesRep", "customerName", "customerAddress", "customerPhone", "customerEmail"].map(field => (
-              <div key={field} className={styles.inputGroup}>
-                <label>{capitalize(field)}:</label>
-                <input name={field} value={formData[field]} onChange={handleFormChange} required />
-              </div>
-            ))}
-          </>
-        )}
+      <div className={styles.inputGroup}>
+        <label>Sales Rep:</label>
+        <input type="text" name="salesRep" value={formData.salesRep} onChange={handleFormChange} />
+        <label>Customer Name:</label>
+        <input type="text" name="customerName" value={formData.customerName} onChange={handleFormChange} required />
+        <label>Customer Address:</label>
+        <input type="text" name="customerAddress" value={formData.customerAddress} onChange={handleFormChange} required />
+        <label>Phone:</label>
+        <input type="text" name="customerPhone" value={formData.customerPhone} onChange={handleFormChange} required />
+        <label>Email:</label>
+        <input type="email" name="customerEmail" value={formData.customerEmail} onChange={handleFormChange} />
       </div>
 
-      {windows.map((w, i) => (
-        <div key={i} className={styles.windowSection}>
-          <h4 className={styles.windowHeader} onClick={() => toggleCollapse(i)}>
-            Window {i + 1}
-            <button type="button" onClick={() => deleteWindow(i)} className={styles.deleteBtn}>✕</button>
+      {windows.map((win, index) => (
+        <div key={index} className={styles.windowSection}>
+          <h4 className={styles.windowHeader} onClick={() => toggleCollapse(index)}>
+            Window {index + 1}
+            <button type="button" onClick={() => deleteWindow(index)}>✕</button>
           </h4>
-          {!collapsedSections.includes(i) && (
-            <>
-              {["roomName", "width", "height", "fabric", "color", "control", "fit", "roll", "comments"].map(field => {
-                if (field === 'fabric') {
-                  return (
-                    <div key={field} className={styles.inputGroup}>
-                      <label>Fabric:</label>
-                      <select name="fabric" value={w.fabric} onChange={e => handleWindowChange(i, e)} required>
-                        <option value="">-- Select Fabric --</option>
-                        {fabricOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                      </select>
-                    </div>
-                  );
-                } else if (field === 'color') {
-                  const colorOptions = fabricToColours[w.fabric] || [];
-                  return (
-                    <div key={field} className={styles.inputGroup}>
-  <label>Color:</label>
-  <select name="color" value={w.color} onChange={e => handleWindowChange(i, e)} required>
-    <option value="">-- Select Color --</option>
-    {colorOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-  </select>
-</div>
 
-                  );
-                } else if (field === 'control' || field === 'fit' || field === 'roll') {
-                  const options = blankWindow[field];
-                  return (
-                    <div key={field} className={styles.inputGroup}>
-                      <label>{capitalize(field)}:</label>
-                      <select name={field} value={w[field]} onChange={e => handleWindowChange(i, e)} required>
-                        <option value="">-- Select --</option>
-                        {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                      </select>
-                    </div>
-                  );
-                } else {
-                  return (
-                    <div key={field} className={styles.inputGroup}>
-                      <label>{capitalize(field)}:</label>
-                      <input
-                        name={field}
-                        type={['width', 'height'].includes(field) ? 'number' : 'text'}
-                        value={w[field]}
-                        onChange={e => handleWindowChange(i, e)}
-                        required={field !== 'comments'}
-                      />
-                    </div>
-                  );
-                }
-              })}
-            </>
+          {!collapsedSections.includes(index) && (
+            <div className={styles.inputGroup}>
+              <label>Room:</label>
+              <input type="text" name="room" value={win.room} onChange={(e) => handleWindowChange(index, e)} />
+              <label>Width (mm):</label>
+              <input type="number" name="width" value={win.width} onChange={(e) => handleWindowChange(index, e)} />
+              <label>Drop (mm):</label>
+              <input type="number" name="drop" value={win.drop} onChange={(e) => handleWindowChange(index, e)} />
+              <label>Fabric:</label>
+              <select name="fabric" value={win.fabric} onChange={(e) => handleWindowChange(index, e)}>
+                <option value="">-- Select Fabric --</option>
+                {fabricOptions.map(fab => (
+                  <option key={fab} value={fab}>{fab}</option>
+                ))}
+              </select>
+              <label>Color:</label>
+              <select name="color" value={win.color} onChange={(e) => handleWindowChange(index, e)}>
+                <option value="">-- Select Color --</option>
+                {getColorOptions(win.fabric).map(c => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+              <label>Control Side:</label>
+              <select name="control" value={win.control} onChange={(e) => handleWindowChange(index, e)}>
+                <option value="">-- Select --</option>
+                <option>Left</option>
+                <option>Right</option>
+              </select>
+              <label>Fit:</label>
+              <select name="fit" value={win.fit} onChange={(e) => handleWindowChange(index, e)}>
+                <option value="">-- Select --</option>
+                <option>Face</option>
+                <option>Reveal</option>
+              </select>
+              <label>Roll:</label>
+              <select name="roll" value={win.roll} onChange={(e) => handleWindowChange(index, e)}>
+                <option value="">-- Select --</option>
+                <option>Standard</option>
+                <option>Reverse</option>
+              </select>
+              <label>Comments:</label>
+              <input type="text" name="comments" value={win.comments} onChange={(e) => handleWindowChange(index, e)} />
+              <label>Price:</label>
+              <input type="text" value={`$${win.price.toFixed(2)}`} readOnly />
+            </div>
           )}
         </div>
       ))}
+
+      <div className={styles.inputGroup}>
+        <label>Discount (%):</label>
+        <input
+          type="number"
+          value={discount}
+          onChange={handleDiscountChange}
+          min="0"
+          max="100"
+        />
+      </div>
+
+      <div className={styles.totalBox}>
+        Total: <strong>${totalPrice.toFixed(2)}</strong> — Discount: <strong>{discount}%</strong>
+      </div>
 
       <button type="button" onClick={addWindow} className={styles.addBtn}>➕ Add Window</button>
       <button type="submit" className={styles.submitBtn}>✅ Submit</button>

@@ -1,0 +1,1794 @@
+[
+  {
+    "Group": 1,
+    "Width": 1000,
+    "Drop": 1000,
+    "MRP (Shown to Customer)": 276,
+    "Retail Price (After 40% Discount)": 165.6,
+    "Cost Price (Your Cost)": 65.6
+  },
+  {
+    "Group": 1,
+    "Width": 1500,
+    "Drop": 1000,
+    "MRP (Shown to Customer)": 300,
+    "Retail Price (After 40% Discount)": 180.0,
+    "Cost Price (Your Cost)": 80.0
+  },
+  {
+    "Group": 1,
+    "Width": 1800,
+    "Drop": 1000,
+    "MRP (Shown to Customer)": 314,
+    "Retail Price (After 40% Discount)": 188.4,
+    "Cost Price (Your Cost)": 88.4
+  },
+  {
+    "Group": 1,
+    "Width": 2100,
+    "Drop": 1000,
+    "MRP (Shown to Customer)": 328,
+    "Retail Price (After 40% Discount)": 196.8,
+    "Cost Price (Your Cost)": 96.8
+  },
+  {
+    "Group": 1,
+    "Width": 2400,
+    "Drop": 1000,
+    "MRP (Shown to Customer)": 342,
+    "Retail Price (After 40% Discount)": 205.2,
+    "Cost Price (Your Cost)": 105.2
+  },
+  {
+    "Group": 1,
+    "Width": 2700,
+    "Drop": 1000,
+    "MRP (Shown to Customer)": 357,
+    "Retail Price (After 40% Discount)": 214.2,
+    "Cost Price (Your Cost)": 114.2
+  },
+  {
+    "Group": 1,
+    "Width": 3000,
+    "Drop": 1000,
+    "MRP (Shown to Customer)": 371,
+    "Retail Price (After 40% Discount)": 222.6,
+    "Cost Price (Your Cost)": 122.6
+  },
+  {
+    "Group": 1,
+    "Width": 1000,
+    "Drop": 1500,
+    "MRP (Shown to Customer)": 284,
+    "Retail Price (After 40% Discount)": 170.4,
+    "Cost Price (Your Cost)": 70.4
+  },
+  {
+    "Group": 1,
+    "Width": 1500,
+    "Drop": 1500,
+    "MRP (Shown to Customer)": 312,
+    "Retail Price (After 40% Discount)": 187.2,
+    "Cost Price (Your Cost)": 87.2
+  },
+  {
+    "Group": 1,
+    "Width": 1800,
+    "Drop": 1500,
+    "MRP (Shown to Customer)": 329,
+    "Retail Price (After 40% Discount)": 197.4,
+    "Cost Price (Your Cost)": 97.4
+  },
+  {
+    "Group": 1,
+    "Width": 2100,
+    "Drop": 1500,
+    "MRP (Shown to Customer)": 345,
+    "Retail Price (After 40% Discount)": 207.0,
+    "Cost Price (Your Cost)": 107.0
+  },
+  {
+    "Group": 1,
+    "Width": 2400,
+    "Drop": 1500,
+    "MRP (Shown to Customer)": 362,
+    "Retail Price (After 40% Discount)": 217.2,
+    "Cost Price (Your Cost)": 117.2
+  },
+  {
+    "Group": 1,
+    "Width": 2700,
+    "Drop": 1500,
+    "MRP (Shown to Customer)": 379,
+    "Retail Price (After 40% Discount)": 227.4,
+    "Cost Price (Your Cost)": 127.4
+  },
+  {
+    "Group": 1,
+    "Width": 3000,
+    "Drop": 1500,
+    "MRP (Shown to Customer)": 395,
+    "Retail Price (After 40% Discount)": 237.0,
+    "Cost Price (Your Cost)": 137.0
+  },
+  {
+    "Group": 1,
+    "Width": 1000,
+    "Drop": 1800,
+    "MRP (Shown to Customer)": 289,
+    "Retail Price (After 40% Discount)": 173.4,
+    "Cost Price (Your Cost)": 73.4
+  },
+  {
+    "Group": 1,
+    "Width": 1500,
+    "Drop": 1800,
+    "MRP (Shown to Customer)": 319,
+    "Retail Price (After 40% Discount)": 191.4,
+    "Cost Price (Your Cost)": 91.4
+  },
+  {
+    "Group": 1,
+    "Width": 1800,
+    "Drop": 1800,
+    "MRP (Shown to Customer)": 337,
+    "Retail Price (After 40% Discount)": 202.2,
+    "Cost Price (Your Cost)": 102.2
+  },
+  {
+    "Group": 1,
+    "Width": 2100,
+    "Drop": 1800,
+    "MRP (Shown to Customer)": 355,
+    "Retail Price (After 40% Discount)": 213.0,
+    "Cost Price (Your Cost)": 113.0
+  },
+  {
+    "Group": 1,
+    "Width": 2400,
+    "Drop": 1800,
+    "MRP (Shown to Customer)": 374,
+    "Retail Price (After 40% Discount)": 224.4,
+    "Cost Price (Your Cost)": 124.4
+  },
+  {
+    "Group": 1,
+    "Width": 2700,
+    "Drop": 1800,
+    "MRP (Shown to Customer)": 392,
+    "Retail Price (After 40% Discount)": 235.2,
+    "Cost Price (Your Cost)": 135.2
+  },
+  {
+    "Group": 1,
+    "Width": 3000,
+    "Drop": 1800,
+    "MRP (Shown to Customer)": 410,
+    "Retail Price (After 40% Discount)": 246.0,
+    "Cost Price (Your Cost)": 146.0
+  },
+  {
+    "Group": 1,
+    "Width": 1000,
+    "Drop": 2100,
+    "MRP (Shown to Customer)": 294,
+    "Retail Price (After 40% Discount)": 176.4,
+    "Cost Price (Your Cost)": 76.4
+  },
+  {
+    "Group": 1,
+    "Width": 1500,
+    "Drop": 2100,
+    "MRP (Shown to Customer)": 326,
+    "Retail Price (After 40% Discount)": 195.6,
+    "Cost Price (Your Cost)": 95.6
+  },
+  {
+    "Group": 1,
+    "Width": 1800,
+    "Drop": 2100,
+    "MRP (Shown to Customer)": 346,
+    "Retail Price (After 40% Discount)": 207.6,
+    "Cost Price (Your Cost)": 107.6
+  },
+  {
+    "Group": 1,
+    "Width": 2100,
+    "Drop": 2100,
+    "MRP (Shown to Customer)": 366,
+    "Retail Price (After 40% Discount)": 219.6,
+    "Cost Price (Your Cost)": 119.6
+  },
+  {
+    "Group": 1,
+    "Width": 2400,
+    "Drop": 2100,
+    "MRP (Shown to Customer)": 385,
+    "Retail Price (After 40% Discount)": 231.0,
+    "Cost Price (Your Cost)": 131.0
+  },
+  {
+    "Group": 1,
+    "Width": 2700,
+    "Drop": 2100,
+    "MRP (Shown to Customer)": 405,
+    "Retail Price (After 40% Discount)": 243.0,
+    "Cost Price (Your Cost)": 143.0
+  },
+  {
+    "Group": 1,
+    "Width": 3000,
+    "Drop": 2100,
+    "MRP (Shown to Customer)": 425,
+    "Retail Price (After 40% Discount)": 255.0,
+    "Cost Price (Your Cost)": 155.0
+  },
+  {
+    "Group": 1,
+    "Width": 1000,
+    "Drop": 2400,
+    "MRP (Shown to Customer)": 299,
+    "Retail Price (After 40% Discount)": 179.4,
+    "Cost Price (Your Cost)": 79.4
+  },
+  {
+    "Group": 1,
+    "Width": 1500,
+    "Drop": 2400,
+    "MRP (Shown to Customer)": 334,
+    "Retail Price (After 40% Discount)": 200.4,
+    "Cost Price (Your Cost)": 100.4
+  },
+  {
+    "Group": 1,
+    "Width": 1800,
+    "Drop": 2400,
+    "MRP (Shown to Customer)": 355,
+    "Retail Price (After 40% Discount)": 213.0,
+    "Cost Price (Your Cost)": 113.0
+  },
+  {
+    "Group": 1,
+    "Width": 2100,
+    "Drop": 2400,
+    "MRP (Shown to Customer)": 376,
+    "Retail Price (After 40% Discount)": 225.6,
+    "Cost Price (Your Cost)": 125.6
+  },
+  {
+    "Group": 1,
+    "Width": 2400,
+    "Drop": 2400,
+    "MRP (Shown to Customer)": 397,
+    "Retail Price (After 40% Discount)": 238.2,
+    "Cost Price (Your Cost)": 138.2
+  },
+  {
+    "Group": 1,
+    "Width": 2700,
+    "Drop": 2400,
+    "MRP (Shown to Customer)": 418,
+    "Retail Price (After 40% Discount)": 250.8,
+    "Cost Price (Your Cost)": 150.8
+  },
+  {
+    "Group": 1,
+    "Width": 3000,
+    "Drop": 2400,
+    "MRP (Shown to Customer)": 439,
+    "Retail Price (After 40% Discount)": 263.4,
+    "Cost Price (Your Cost)": 163.4
+  },
+  {
+    "Group": 1,
+    "Width": 1000,
+    "Drop": 2700,
+    "MRP (Shown to Customer)": 304,
+    "Retail Price (After 40% Discount)": 182.4,
+    "Cost Price (Your Cost)": 82.4
+  },
+  {
+    "Group": 1,
+    "Width": 1500,
+    "Drop": 2700,
+    "MRP (Shown to Customer)": 341,
+    "Retail Price (After 40% Discount)": 204.6,
+    "Cost Price (Your Cost)": 104.6
+  },
+  {
+    "Group": 1,
+    "Width": 1800,
+    "Drop": 2700,
+    "MRP (Shown to Customer)": 364,
+    "Retail Price (After 40% Discount)": 218.4,
+    "Cost Price (Your Cost)": 118.4
+  },
+  {
+    "Group": 1,
+    "Width": 2100,
+    "Drop": 2700,
+    "MRP (Shown to Customer)": 386,
+    "Retail Price (After 40% Discount)": 231.6,
+    "Cost Price (Your Cost)": 131.6
+  },
+  {
+    "Group": 1,
+    "Width": 2400,
+    "Drop": 2700,
+    "MRP (Shown to Customer)": 409,
+    "Retail Price (After 40% Discount)": 245.4,
+    "Cost Price (Your Cost)": 145.4
+  },
+  {
+    "Group": 1,
+    "Width": 2700,
+    "Drop": 2700,
+    "MRP (Shown to Customer)": 431,
+    "Retail Price (After 40% Discount)": 258.6,
+    "Cost Price (Your Cost)": 158.6
+  },
+  {
+    "Group": 1,
+    "Width": 3000,
+    "Drop": 2700,
+    "MRP (Shown to Customer)": 454,
+    "Retail Price (After 40% Discount)": 272.4,
+    "Cost Price (Your Cost)": 172.4
+  },
+  {
+    "Group": 1,
+    "Width": 1000,
+    "Drop": 3000,
+    "MRP (Shown to Customer)": 308,
+    "Retail Price (After 40% Discount)": 184.8,
+    "Cost Price (Your Cost)": 84.8
+  },
+  {
+    "Group": 1,
+    "Width": 1500,
+    "Drop": 3000,
+    "MRP (Shown to Customer)": 348,
+    "Retail Price (After 40% Discount)": 208.8,
+    "Cost Price (Your Cost)": 108.8
+  },
+  {
+    "Group": 1,
+    "Width": 1800,
+    "Drop": 3000,
+    "MRP (Shown to Customer)": 373,
+    "Retail Price (After 40% Discount)": 223.8,
+    "Cost Price (Your Cost)": 123.8
+  },
+  {
+    "Group": 1,
+    "Width": 2100,
+    "Drop": 3000,
+    "MRP (Shown to Customer)": 397,
+    "Retail Price (After 40% Discount)": 238.2,
+    "Cost Price (Your Cost)": 138.2
+  },
+  {
+    "Group": 1,
+    "Width": 2400,
+    "Drop": 3000,
+    "MRP (Shown to Customer)": 421,
+    "Retail Price (After 40% Discount)": 252.6,
+    "Cost Price (Your Cost)": 152.6
+  },
+  {
+    "Group": 1,
+    "Width": 2700,
+    "Drop": 3000,
+    "MRP (Shown to Customer)": 445,
+    "Retail Price (After 40% Discount)": 267.0,
+    "Cost Price (Your Cost)": 167.0
+  },
+  {
+    "Group": 1,
+    "Width": 3000,
+    "Drop": 3000,
+    "MRP (Shown to Customer)": 469,
+    "Retail Price (After 40% Discount)": 281.4,
+    "Cost Price (Your Cost)": 181.4
+  },
+  {
+    "Group": 1,
+    "Width": 1000,
+    "Drop": 3200,
+    "MRP (Shown to Customer)": 310,
+    "Retail Price (After 40% Discount)": 186.0,
+    "Cost Price (Your Cost)": 86.0
+  },
+  {
+    "Group": 1,
+    "Width": 1500,
+    "Drop": 3200,
+    "MRP (Shown to Customer)": 351,
+    "Retail Price (After 40% Discount)": 210.6,
+    "Cost Price (Your Cost)": 110.6
+  },
+  {
+    "Group": 1,
+    "Width": 1800,
+    "Drop": 3200,
+    "MRP (Shown to Customer)": 375,
+    "Retail Price (After 40% Discount)": 225.0,
+    "Cost Price (Your Cost)": 125.0
+  },
+  {
+    "Group": 1,
+    "Width": 2100,
+    "Drop": 3200,
+    "MRP (Shown to Customer)": 400,
+    "Retail Price (After 40% Discount)": 240.0,
+    "Cost Price (Your Cost)": 140.0
+  },
+  {
+    "Group": 1,
+    "Width": 2400,
+    "Drop": 3200,
+    "MRP (Shown to Customer)": 425,
+    "Retail Price (After 40% Discount)": 255.0,
+    "Cost Price (Your Cost)": 155.0
+  },
+  {
+    "Group": 1,
+    "Width": 2700,
+    "Drop": 3200,
+    "MRP (Shown to Customer)": 449,
+    "Retail Price (After 40% Discount)": 269.4,
+    "Cost Price (Your Cost)": 169.4
+  },
+  {
+    "Group": 1,
+    "Width": 3000,
+    "Drop": 3200,
+    "MRP (Shown to Customer)": 474,
+    "Retail Price (After 40% Discount)": 284.4,
+    "Cost Price (Your Cost)": 184.4
+  },
+  {
+    "Group": 2,
+    "Width": 1000,
+    "Drop": 1000,
+    "MRP (Shown to Customer)": 287,
+    "Retail Price (After 40% Discount)": 172.2,
+    "Cost Price (Your Cost)": 72.2
+  },
+  {
+    "Group": 2,
+    "Width": 1500,
+    "Drop": 1000,
+    "MRP (Shown to Customer)": 316,
+    "Retail Price (After 40% Discount)": 189.6,
+    "Cost Price (Your Cost)": 89.6
+  },
+  {
+    "Group": 2,
+    "Width": 1800,
+    "Drop": 1000,
+    "MRP (Shown to Customer)": 333,
+    "Retail Price (After 40% Discount)": 199.8,
+    "Cost Price (Your Cost)": 99.8
+  },
+  {
+    "Group": 2,
+    "Width": 2100,
+    "Drop": 1000,
+    "MRP (Shown to Customer)": 351,
+    "Retail Price (After 40% Discount)": 210.6,
+    "Cost Price (Your Cost)": 110.6
+  },
+  {
+    "Group": 2,
+    "Width": 2400,
+    "Drop": 1000,
+    "MRP (Shown to Customer)": 368,
+    "Retail Price (After 40% Discount)": 220.8,
+    "Cost Price (Your Cost)": 120.8
+  },
+  {
+    "Group": 2,
+    "Width": 2700,
+    "Drop": 1000,
+    "MRP (Shown to Customer)": 386,
+    "Retail Price (After 40% Discount)": 231.6,
+    "Cost Price (Your Cost)": 131.6
+  },
+  {
+    "Group": 2,
+    "Width": 3000,
+    "Drop": 1000,
+    "MRP (Shown to Customer)": 403,
+    "Retail Price (After 40% Discount)": 241.8,
+    "Cost Price (Your Cost)": 141.8
+  },
+  {
+    "Group": 2,
+    "Width": 1000,
+    "Drop": 1500,
+    "MRP (Shown to Customer)": 300,
+    "Retail Price (After 40% Discount)": 180.0,
+    "Cost Price (Your Cost)": 80.0
+  },
+  {
+    "Group": 2,
+    "Width": 1500,
+    "Drop": 1500,
+    "MRP (Shown to Customer)": 336,
+    "Retail Price (After 40% Discount)": 201.6,
+    "Cost Price (Your Cost)": 101.6
+  },
+  {
+    "Group": 2,
+    "Width": 1800,
+    "Drop": 1500,
+    "MRP (Shown to Customer)": 358,
+    "Retail Price (After 40% Discount)": 214.8,
+    "Cost Price (Your Cost)": 114.8
+  },
+  {
+    "Group": 2,
+    "Width": 2100,
+    "Drop": 1500,
+    "MRP (Shown to Customer)": 379,
+    "Retail Price (After 40% Discount)": 227.4,
+    "Cost Price (Your Cost)": 127.4
+  },
+  {
+    "Group": 2,
+    "Width": 2400,
+    "Drop": 1500,
+    "MRP (Shown to Customer)": 401,
+    "Retail Price (After 40% Discount)": 240.6,
+    "Cost Price (Your Cost)": 140.6
+  },
+  {
+    "Group": 2,
+    "Width": 2700,
+    "Drop": 1500,
+    "MRP (Shown to Customer)": 422,
+    "Retail Price (After 40% Discount)": 253.2,
+    "Cost Price (Your Cost)": 153.2
+  },
+  {
+    "Group": 2,
+    "Width": 3000,
+    "Drop": 1500,
+    "MRP (Shown to Customer)": 444,
+    "Retail Price (After 40% Discount)": 266.4,
+    "Cost Price (Your Cost)": 166.4
+  },
+  {
+    "Group": 2,
+    "Width": 1000,
+    "Drop": 1800,
+    "MRP (Shown to Customer)": 308,
+    "Retail Price (After 40% Discount)": 184.8,
+    "Cost Price (Your Cost)": 84.8
+  },
+  {
+    "Group": 2,
+    "Width": 1500,
+    "Drop": 1800,
+    "MRP (Shown to Customer)": 348,
+    "Retail Price (After 40% Discount)": 208.8,
+    "Cost Price (Your Cost)": 108.8
+  },
+  {
+    "Group": 2,
+    "Width": 1800,
+    "Drop": 1800,
+    "MRP (Shown to Customer)": 372,
+    "Retail Price (After 40% Discount)": 223.2,
+    "Cost Price (Your Cost)": 123.2
+  },
+  {
+    "Group": 2,
+    "Width": 2100,
+    "Drop": 1800,
+    "MRP (Shown to Customer)": 396,
+    "Retail Price (After 40% Discount)": 237.6,
+    "Cost Price (Your Cost)": 137.6
+  },
+  {
+    "Group": 2,
+    "Width": 2400,
+    "Drop": 1800,
+    "MRP (Shown to Customer)": 420,
+    "Retail Price (After 40% Discount)": 252.0,
+    "Cost Price (Your Cost)": 152.0
+  },
+  {
+    "Group": 2,
+    "Width": 2700,
+    "Drop": 1800,
+    "MRP (Shown to Customer)": 444,
+    "Retail Price (After 40% Discount)": 266.4,
+    "Cost Price (Your Cost)": 166.4
+  },
+  {
+    "Group": 2,
+    "Width": 3000,
+    "Drop": 1800,
+    "MRP (Shown to Customer)": 468,
+    "Retail Price (After 40% Discount)": 280.8,
+    "Cost Price (Your Cost)": 180.8
+  },
+  {
+    "Group": 2,
+    "Width": 1000,
+    "Drop": 2100,
+    "MRP (Shown to Customer)": 316,
+    "Retail Price (After 40% Discount)": 189.6,
+    "Cost Price (Your Cost)": 89.6
+  },
+  {
+    "Group": 2,
+    "Width": 1500,
+    "Drop": 2100,
+    "MRP (Shown to Customer)": 361,
+    "Retail Price (After 40% Discount)": 216.6,
+    "Cost Price (Your Cost)": 116.6
+  },
+  {
+    "Group": 2,
+    "Width": 1800,
+    "Drop": 2100,
+    "MRP (Shown to Customer)": 387,
+    "Retail Price (After 40% Discount)": 232.2,
+    "Cost Price (Your Cost)": 132.2
+  },
+  {
+    "Group": 2,
+    "Width": 2100,
+    "Drop": 2100,
+    "MRP (Shown to Customer)": 413,
+    "Retail Price (After 40% Discount)": 247.8,
+    "Cost Price (Your Cost)": 147.8
+  },
+  {
+    "Group": 2,
+    "Width": 2400,
+    "Drop": 2100,
+    "MRP (Shown to Customer)": 440,
+    "Retail Price (After 40% Discount)": 264.0,
+    "Cost Price (Your Cost)": 164.0
+  },
+  {
+    "Group": 2,
+    "Width": 2700,
+    "Drop": 2100,
+    "MRP (Shown to Customer)": 466,
+    "Retail Price (After 40% Discount)": 279.6,
+    "Cost Price (Your Cost)": 179.6
+  },
+  {
+    "Group": 2,
+    "Width": 3000,
+    "Drop": 2100,
+    "MRP (Shown to Customer)": 493,
+    "Retail Price (After 40% Discount)": 295.8,
+    "Cost Price (Your Cost)": 195.8
+  },
+  {
+    "Group": 2,
+    "Width": 1000,
+    "Drop": 2400,
+    "MRP (Shown to Customer)": 325,
+    "Retail Price (After 40% Discount)": 195.0,
+    "Cost Price (Your Cost)": 95.0
+  },
+  {
+    "Group": 2,
+    "Width": 1500,
+    "Drop": 2400,
+    "MRP (Shown to Customer)": 373,
+    "Retail Price (After 40% Discount)": 223.8,
+    "Cost Price (Your Cost)": 123.8
+  },
+  {
+    "Group": 2,
+    "Width": 1800,
+    "Drop": 2400,
+    "MRP (Shown to Customer)": 402,
+    "Retail Price (After 40% Discount)": 241.2,
+    "Cost Price (Your Cost)": 141.2
+  },
+  {
+    "Group": 2,
+    "Width": 2100,
+    "Drop": 2400,
+    "MRP (Shown to Customer)": 431,
+    "Retail Price (After 40% Discount)": 258.6,
+    "Cost Price (Your Cost)": 158.6
+  },
+  {
+    "Group": 2,
+    "Width": 2400,
+    "Drop": 2400,
+    "MRP (Shown to Customer)": 459,
+    "Retail Price (After 40% Discount)": 275.4,
+    "Cost Price (Your Cost)": 175.4
+  },
+  {
+    "Group": 2,
+    "Width": 2700,
+    "Drop": 2400,
+    "MRP (Shown to Customer)": 488,
+    "Retail Price (After 40% Discount)": 292.8,
+    "Cost Price (Your Cost)": 192.8
+  },
+  {
+    "Group": 2,
+    "Width": 3000,
+    "Drop": 2400,
+    "MRP (Shown to Customer)": 517,
+    "Retail Price (After 40% Discount)": 310.2,
+    "Cost Price (Your Cost)": 210.2
+  },
+  {
+    "Group": 2,
+    "Width": 1000,
+    "Drop": 2700,
+    "MRP (Shown to Customer)": 333,
+    "Retail Price (After 40% Discount)": 199.8,
+    "Cost Price (Your Cost)": 99.8
+  },
+  {
+    "Group": 2,
+    "Width": 1500,
+    "Drop": 2700,
+    "MRP (Shown to Customer)": 385,
+    "Retail Price (After 40% Discount)": 231.0,
+    "Cost Price (Your Cost)": 131.0
+  },
+  {
+    "Group": 2,
+    "Width": 1800,
+    "Drop": 2700,
+    "MRP (Shown to Customer)": 416,
+    "Retail Price (After 40% Discount)": 249.6,
+    "Cost Price (Your Cost)": 149.6
+  },
+  {
+    "Group": 2,
+    "Width": 2100,
+    "Drop": 2700,
+    "MRP (Shown to Customer)": 448,
+    "Retail Price (After 40% Discount)": 268.8,
+    "Cost Price (Your Cost)": 168.8
+  },
+  {
+    "Group": 2,
+    "Width": 2400,
+    "Drop": 2700,
+    "MRP (Shown to Customer)": 479,
+    "Retail Price (After 40% Discount)": 287.4,
+    "Cost Price (Your Cost)": 187.4
+  },
+  {
+    "Group": 2,
+    "Width": 2700,
+    "Drop": 2700,
+    "MRP (Shown to Customer)": 510,
+    "Retail Price (After 40% Discount)": 306.0,
+    "Cost Price (Your Cost)": 206.0
+  },
+  {
+    "Group": 2,
+    "Width": 3000,
+    "Drop": 2700,
+    "MRP (Shown to Customer)": 542,
+    "Retail Price (After 40% Discount)": 325.2,
+    "Cost Price (Your Cost)": 225.2
+  },
+  {
+    "Group": 2,
+    "Width": 1000,
+    "Drop": 3000,
+    "MRP (Shown to Customer)": 341,
+    "Retail Price (After 40% Discount)": 204.6,
+    "Cost Price (Your Cost)": 104.6
+  },
+  {
+    "Group": 2,
+    "Width": 1500,
+    "Drop": 3000,
+    "MRP (Shown to Customer)": 397,
+    "Retail Price (After 40% Discount)": 238.2,
+    "Cost Price (Your Cost)": 138.2
+  },
+  {
+    "Group": 2,
+    "Width": 1800,
+    "Drop": 3000,
+    "MRP (Shown to Customer)": 431,
+    "Retail Price (After 40% Discount)": 258.6,
+    "Cost Price (Your Cost)": 158.6
+  },
+  {
+    "Group": 2,
+    "Width": 2100,
+    "Drop": 3000,
+    "MRP (Shown to Customer)": 465,
+    "Retail Price (After 40% Discount)": 279.0,
+    "Cost Price (Your Cost)": 179.0
+  },
+  {
+    "Group": 2,
+    "Width": 2400,
+    "Drop": 3000,
+    "MRP (Shown to Customer)": 499,
+    "Retail Price (After 40% Discount)": 299.4,
+    "Cost Price (Your Cost)": 199.4
+  },
+  {
+    "Group": 2,
+    "Width": 2700,
+    "Drop": 3000,
+    "MRP (Shown to Customer)": 532,
+    "Retail Price (After 40% Discount)": 319.2,
+    "Cost Price (Your Cost)": 219.2
+  },
+  {
+    "Group": 2,
+    "Width": 3000,
+    "Drop": 3000,
+    "MRP (Shown to Customer)": 566,
+    "Retail Price (After 40% Discount)": 339.6,
+    "Cost Price (Your Cost)": 239.6
+  },
+  {
+    "Group": 2,
+    "Width": 1000,
+    "Drop": 3200,
+    "MRP (Shown to Customer)": 344,
+    "Retail Price (After 40% Discount)": 206.4,
+    "Cost Price (Your Cost)": 106.4
+  },
+  {
+    "Group": 2,
+    "Width": 1500,
+    "Drop": 3200,
+    "MRP (Shown to Customer)": 401,
+    "Retail Price (After 40% Discount)": 240.6,
+    "Cost Price (Your Cost)": 140.6
+  },
+  {
+    "Group": 2,
+    "Width": 1800,
+    "Drop": 3200,
+    "MRP (Shown to Customer)": 436,
+    "Retail Price (After 40% Discount)": 261.6,
+    "Cost Price (Your Cost)": 161.6
+  },
+  {
+    "Group": 2,
+    "Width": 2100,
+    "Drop": 3200,
+    "MRP (Shown to Customer)": 470,
+    "Retail Price (After 40% Discount)": 282.0,
+    "Cost Price (Your Cost)": 182.0
+  },
+  {
+    "Group": 2,
+    "Width": 2400,
+    "Drop": 3200,
+    "MRP (Shown to Customer)": 505,
+    "Retail Price (After 40% Discount)": 303.0,
+    "Cost Price (Your Cost)": 203.0
+  },
+  {
+    "Group": 2,
+    "Width": 2700,
+    "Drop": 3200,
+    "MRP (Shown to Customer)": 540,
+    "Retail Price (After 40% Discount)": 324.0,
+    "Cost Price (Your Cost)": 224.0
+  },
+  {
+    "Group": 2,
+    "Width": 3000,
+    "Drop": 3200,
+    "MRP (Shown to Customer)": 574,
+    "Retail Price (After 40% Discount)": 344.4,
+    "Cost Price (Your Cost)": 244.4
+  },
+  {
+    "Group": 3,
+    "Width": 1000,
+    "Drop": 1000,
+    "MRP (Shown to Customer)": 293,
+    "Retail Price (After 40% Discount)": 175.8,
+    "Cost Price (Your Cost)": 75.8
+  },
+  {
+    "Group": 3,
+    "Width": 1500,
+    "Drop": 1000,
+    "MRP (Shown to Customer)": 326,
+    "Retail Price (After 40% Discount)": 195.6,
+    "Cost Price (Your Cost)": 95.6
+  },
+  {
+    "Group": 3,
+    "Width": 1800,
+    "Drop": 1000,
+    "MRP (Shown to Customer)": 345,
+    "Retail Price (After 40% Discount)": 207.0,
+    "Cost Price (Your Cost)": 107.0
+  },
+  {
+    "Group": 3,
+    "Width": 2100,
+    "Drop": 1000,
+    "MRP (Shown to Customer)": 364,
+    "Retail Price (After 40% Discount)": 218.4,
+    "Cost Price (Your Cost)": 118.4
+  },
+  {
+    "Group": 3,
+    "Width": 2400,
+    "Drop": 1000,
+    "MRP (Shown to Customer)": 384,
+    "Retail Price (After 40% Discount)": 230.4,
+    "Cost Price (Your Cost)": 130.4
+  },
+  {
+    "Group": 3,
+    "Width": 2700,
+    "Drop": 1000,
+    "MRP (Shown to Customer)": 403,
+    "Retail Price (After 40% Discount)": 241.8,
+    "Cost Price (Your Cost)": 141.8
+  },
+  {
+    "Group": 3,
+    "Width": 3000,
+    "Drop": 1000,
+    "MRP (Shown to Customer)": 423,
+    "Retail Price (After 40% Discount)": 253.8,
+    "Cost Price (Your Cost)": 153.8
+  },
+  {
+    "Group": 3,
+    "Width": 1000,
+    "Drop": 1500,
+    "MRP (Shown to Customer)": 310,
+    "Retail Price (After 40% Discount)": 186.0,
+    "Cost Price (Your Cost)": 86.0
+  },
+  {
+    "Group": 3,
+    "Width": 1500,
+    "Drop": 1500,
+    "MRP (Shown to Customer)": 351,
+    "Retail Price (After 40% Discount)": 210.6,
+    "Cost Price (Your Cost)": 110.6
+  },
+  {
+    "Group": 3,
+    "Width": 1800,
+    "Drop": 1500,
+    "MRP (Shown to Customer)": 375,
+    "Retail Price (After 40% Discount)": 225.0,
+    "Cost Price (Your Cost)": 125.0
+  },
+  {
+    "Group": 3,
+    "Width": 2100,
+    "Drop": 1500,
+    "MRP (Shown to Customer)": 400,
+    "Retail Price (After 40% Discount)": 240.0,
+    "Cost Price (Your Cost)": 140.0
+  },
+  {
+    "Group": 3,
+    "Width": 2400,
+    "Drop": 1500,
+    "MRP (Shown to Customer)": 424,
+    "Retail Price (After 40% Discount)": 254.4,
+    "Cost Price (Your Cost)": 154.4
+  },
+  {
+    "Group": 3,
+    "Width": 2700,
+    "Drop": 1500,
+    "MRP (Shown to Customer)": 449,
+    "Retail Price (After 40% Discount)": 269.4,
+    "Cost Price (Your Cost)": 169.4
+  },
+  {
+    "Group": 3,
+    "Width": 3000,
+    "Drop": 1500,
+    "MRP (Shown to Customer)": 473,
+    "Retail Price (After 40% Discount)": 283.8,
+    "Cost Price (Your Cost)": 183.8
+  },
+  {
+    "Group": 3,
+    "Width": 1000,
+    "Drop": 1800,
+    "MRP (Shown to Customer)": 320,
+    "Retail Price (After 40% Discount)": 192.0,
+    "Cost Price (Your Cost)": 92.0
+  },
+  {
+    "Group": 3,
+    "Width": 1500,
+    "Drop": 1800,
+    "MRP (Shown to Customer)": 366,
+    "Retail Price (After 40% Discount)": 219.6,
+    "Cost Price (Your Cost)": 119.6
+  },
+  {
+    "Group": 3,
+    "Width": 1800,
+    "Drop": 1800,
+    "MRP (Shown to Customer)": 393,
+    "Retail Price (After 40% Discount)": 235.8,
+    "Cost Price (Your Cost)": 135.8
+  },
+  {
+    "Group": 3,
+    "Width": 2100,
+    "Drop": 1800,
+    "MRP (Shown to Customer)": 421,
+    "Retail Price (After 40% Discount)": 252.6,
+    "Cost Price (Your Cost)": 152.6
+  },
+  {
+    "Group": 3,
+    "Width": 2400,
+    "Drop": 1800,
+    "MRP (Shown to Customer)": 448,
+    "Retail Price (After 40% Discount)": 268.8,
+    "Cost Price (Your Cost)": 168.8
+  },
+  {
+    "Group": 3,
+    "Width": 2700,
+    "Drop": 1800,
+    "MRP (Shown to Customer)": 476,
+    "Retail Price (After 40% Discount)": 285.6,
+    "Cost Price (Your Cost)": 185.6
+  },
+  {
+    "Group": 3,
+    "Width": 3000,
+    "Drop": 1800,
+    "MRP (Shown to Customer)": 503,
+    "Retail Price (After 40% Discount)": 301.8,
+    "Cost Price (Your Cost)": 201.8
+  },
+  {
+    "Group": 3,
+    "Width": 1000,
+    "Drop": 2100,
+    "MRP (Shown to Customer)": 330,
+    "Retail Price (After 40% Discount)": 198.0,
+    "Cost Price (Your Cost)": 98.0
+  },
+  {
+    "Group": 3,
+    "Width": 1500,
+    "Drop": 2100,
+    "MRP (Shown to Customer)": 381,
+    "Retail Price (After 40% Discount)": 228.6,
+    "Cost Price (Your Cost)": 128.6
+  },
+  {
+    "Group": 3,
+    "Width": 1800,
+    "Drop": 2100,
+    "MRP (Shown to Customer)": 411,
+    "Retail Price (After 40% Discount)": 246.6,
+    "Cost Price (Your Cost)": 146.6
+  },
+  {
+    "Group": 3,
+    "Width": 2100,
+    "Drop": 2100,
+    "MRP (Shown to Customer)": 442,
+    "Retail Price (After 40% Discount)": 265.2,
+    "Cost Price (Your Cost)": 165.2
+  },
+  {
+    "Group": 3,
+    "Width": 2400,
+    "Drop": 2100,
+    "MRP (Shown to Customer)": 472,
+    "Retail Price (After 40% Discount)": 283.2,
+    "Cost Price (Your Cost)": 183.2
+  },
+  {
+    "Group": 3,
+    "Width": 2700,
+    "Drop": 2100,
+    "MRP (Shown to Customer)": 503,
+    "Retail Price (After 40% Discount)": 301.8,
+    "Cost Price (Your Cost)": 201.8
+  },
+  {
+    "Group": 3,
+    "Width": 3000,
+    "Drop": 2100,
+    "MRP (Shown to Customer)": 534,
+    "Retail Price (After 40% Discount)": 320.4,
+    "Cost Price (Your Cost)": 220.4
+  },
+  {
+    "Group": 3,
+    "Width": 1000,
+    "Drop": 2400,
+    "MRP (Shown to Customer)": 340,
+    "Retail Price (After 40% Discount)": 204.0,
+    "Cost Price (Your Cost)": 104.0
+  },
+  {
+    "Group": 3,
+    "Width": 1500,
+    "Drop": 2400,
+    "MRP (Shown to Customer)": 396,
+    "Retail Price (After 40% Discount)": 237.6,
+    "Cost Price (Your Cost)": 137.6
+  },
+  {
+    "Group": 3,
+    "Width": 1800,
+    "Drop": 2400,
+    "MRP (Shown to Customer)": 430,
+    "Retail Price (After 40% Discount)": 258.0,
+    "Cost Price (Your Cost)": 158.0
+  },
+  {
+    "Group": 3,
+    "Width": 2100,
+    "Drop": 2400,
+    "MRP (Shown to Customer)": 463,
+    "Retail Price (After 40% Discount)": 277.8,
+    "Cost Price (Your Cost)": 177.8
+  },
+  {
+    "Group": 3,
+    "Width": 2400,
+    "Drop": 2400,
+    "MRP (Shown to Customer)": 497,
+    "Retail Price (After 40% Discount)": 298.2,
+    "Cost Price (Your Cost)": 198.2
+  },
+  {
+    "Group": 3,
+    "Width": 2700,
+    "Drop": 2400,
+    "MRP (Shown to Customer)": 530,
+    "Retail Price (After 40% Discount)": 318.0,
+    "Cost Price (Your Cost)": 218.0
+  },
+  {
+    "Group": 3,
+    "Width": 3000,
+    "Drop": 2400,
+    "MRP (Shown to Customer)": 564,
+    "Retail Price (After 40% Discount)": 338.4,
+    "Cost Price (Your Cost)": 238.4
+  },
+  {
+    "Group": 3,
+    "Width": 1000,
+    "Drop": 2700,
+    "MRP (Shown to Customer)": 350,
+    "Retail Price (After 40% Discount)": 210.0,
+    "Cost Price (Your Cost)": 110.0
+  },
+  {
+    "Group": 3,
+    "Width": 1500,
+    "Drop": 2700,
+    "MRP (Shown to Customer)": 411,
+    "Retail Price (After 40% Discount)": 246.6,
+    "Cost Price (Your Cost)": 146.6
+  },
+  {
+    "Group": 3,
+    "Width": 1800,
+    "Drop": 2700,
+    "MRP (Shown to Customer)": 448,
+    "Retail Price (After 40% Discount)": 268.8,
+    "Cost Price (Your Cost)": 168.8
+  },
+  {
+    "Group": 3,
+    "Width": 2100,
+    "Drop": 2700,
+    "MRP (Shown to Customer)": 484,
+    "Retail Price (After 40% Discount)": 290.4,
+    "Cost Price (Your Cost)": 190.4
+  },
+  {
+    "Group": 3,
+    "Width": 2400,
+    "Drop": 2700,
+    "MRP (Shown to Customer)": 521,
+    "Retail Price (After 40% Discount)": 312.6,
+    "Cost Price (Your Cost)": 212.6
+  },
+  {
+    "Group": 3,
+    "Width": 2700,
+    "Drop": 2700,
+    "MRP (Shown to Customer)": 557,
+    "Retail Price (After 40% Discount)": 334.2,
+    "Cost Price (Your Cost)": 234.2
+  },
+  {
+    "Group": 3,
+    "Width": 3000,
+    "Drop": 2700,
+    "MRP (Shown to Customer)": 594,
+    "Retail Price (After 40% Discount)": 356.4,
+    "Cost Price (Your Cost)": 256.4
+  },
+  {
+    "Group": 3,
+    "Width": 1000,
+    "Drop": 3000,
+    "MRP (Shown to Customer)": 360,
+    "Retail Price (After 40% Discount)": 216.0,
+    "Cost Price (Your Cost)": 116.0
+  },
+  {
+    "Group": 3,
+    "Width": 1500,
+    "Drop": 3000,
+    "MRP (Shown to Customer)": 426,
+    "Retail Price (After 40% Discount)": 255.6,
+    "Cost Price (Your Cost)": 155.6
+  },
+  {
+    "Group": 3,
+    "Width": 1800,
+    "Drop": 3000,
+    "MRP (Shown to Customer)": 466,
+    "Retail Price (After 40% Discount)": 279.6,
+    "Cost Price (Your Cost)": 179.6
+  },
+  {
+    "Group": 3,
+    "Width": 2100,
+    "Drop": 3000,
+    "MRP (Shown to Customer)": 505,
+    "Retail Price (After 40% Discount)": 303.0,
+    "Cost Price (Your Cost)": 203.0
+  },
+  {
+    "Group": 3,
+    "Width": 2400,
+    "Drop": 3000,
+    "MRP (Shown to Customer)": 545,
+    "Retail Price (After 40% Discount)": 327.0,
+    "Cost Price (Your Cost)": 227.0
+  },
+  {
+    "Group": 3,
+    "Width": 2700,
+    "Drop": 3000,
+    "MRP (Shown to Customer)": 585,
+    "Retail Price (After 40% Discount)": 351.0,
+    "Cost Price (Your Cost)": 251.0
+  },
+  {
+    "Group": 3,
+    "Width": 3000,
+    "Drop": 3000,
+    "MRP (Shown to Customer)": 624,
+    "Retail Price (After 40% Discount)": 374.4,
+    "Cost Price (Your Cost)": 274.4
+  },
+  {
+    "Group": 3,
+    "Width": 1000,
+    "Drop": 3200,
+    "MRP (Shown to Customer)": 364,
+    "Retail Price (After 40% Discount)": 218.4,
+    "Cost Price (Your Cost)": 118.4
+  },
+  {
+    "Group": 3,
+    "Width": 1500,
+    "Drop": 3200,
+    "MRP (Shown to Customer)": 431,
+    "Retail Price (After 40% Discount)": 258.6,
+    "Cost Price (Your Cost)": 158.6
+  },
+  {
+    "Group": 3,
+    "Width": 1800,
+    "Drop": 3200,
+    "MRP (Shown to Customer)": 472,
+    "Retail Price (After 40% Discount)": 283.2,
+    "Cost Price (Your Cost)": 183.2
+  },
+  {
+    "Group": 3,
+    "Width": 2100,
+    "Drop": 3200,
+    "MRP (Shown to Customer)": 512,
+    "Retail Price (After 40% Discount)": 307.2,
+    "Cost Price (Your Cost)": 207.2
+  },
+  {
+    "Group": 3,
+    "Width": 2400,
+    "Drop": 3200,
+    "MRP (Shown to Customer)": 553,
+    "Retail Price (After 40% Discount)": 331.8,
+    "Cost Price (Your Cost)": 231.8
+  },
+  {
+    "Group": 3,
+    "Width": 2700,
+    "Drop": 3200,
+    "MRP (Shown to Customer)": 594,
+    "Retail Price (After 40% Discount)": 356.4,
+    "Cost Price (Your Cost)": 256.4
+  },
+  {
+    "Group": 3,
+    "Width": 3000,
+    "Drop": 3200,
+    "MRP (Shown to Customer)": 634,
+    "Retail Price (After 40% Discount)": 380.4,
+    "Cost Price (Your Cost)": 280.4
+  },
+  {
+    "Group": 4,
+    "Width": 1000,
+    "Drop": 1000,
+    "MRP (Shown to Customer)": 306,
+    "Retail Price (After 40% Discount)": 183.6,
+    "Cost Price (Your Cost)": 83.6
+  },
+  {
+    "Group": 4,
+    "Width": 1500,
+    "Drop": 1000,
+    "MRP (Shown to Customer)": 341,
+    "Retail Price (After 40% Discount)": 204.6,
+    "Cost Price (Your Cost)": 104.6
+  },
+  {
+    "Group": 4,
+    "Width": 1800,
+    "Drop": 1000,
+    "MRP (Shown to Customer)": 363,
+    "Retail Price (After 40% Discount)": 217.8,
+    "Cost Price (Your Cost)": 117.8
+  },
+  {
+    "Group": 4,
+    "Width": 2100,
+    "Drop": 1000,
+    "MRP (Shown to Customer)": 384,
+    "Retail Price (After 40% Discount)": 230.4,
+    "Cost Price (Your Cost)": 130.4
+  },
+  {
+    "Group": 4,
+    "Width": 2400,
+    "Drop": 1000,
+    "MRP (Shown to Customer)": 406,
+    "Retail Price (After 40% Discount)": 243.6,
+    "Cost Price (Your Cost)": 143.6
+  },
+  {
+    "Group": 4,
+    "Width": 2700,
+    "Drop": 1000,
+    "MRP (Shown to Customer)": 427,
+    "Retail Price (After 40% Discount)": 256.2,
+    "Cost Price (Your Cost)": 156.2
+  },
+  {
+    "Group": 4,
+    "Width": 3000,
+    "Drop": 1000,
+    "MRP (Shown to Customer)": 448,
+    "Retail Price (After 40% Discount)": 268.8,
+    "Cost Price (Your Cost)": 168.8
+  },
+  {
+    "Group": 4,
+    "Width": 1000,
+    "Drop": 1500,
+    "MRP (Shown to Customer)": 324,
+    "Retail Price (After 40% Discount)": 194.4,
+    "Cost Price (Your Cost)": 94.4
+  },
+  {
+    "Group": 4,
+    "Width": 1500,
+    "Drop": 1500,
+    "MRP (Shown to Customer)": 369,
+    "Retail Price (After 40% Discount)": 221.4,
+    "Cost Price (Your Cost)": 121.4
+  },
+  {
+    "Group": 4,
+    "Width": 1800,
+    "Drop": 1500,
+    "MRP (Shown to Customer)": 396,
+    "Retail Price (After 40% Discount)": 237.6,
+    "Cost Price (Your Cost)": 137.6
+  },
+  {
+    "Group": 4,
+    "Width": 2100,
+    "Drop": 1500,
+    "MRP (Shown to Customer)": 423,
+    "Retail Price (After 40% Discount)": 253.8,
+    "Cost Price (Your Cost)": 153.8
+  },
+  {
+    "Group": 4,
+    "Width": 2400,
+    "Drop": 1500,
+    "MRP (Shown to Customer)": 450,
+    "Retail Price (After 40% Discount)": 270.0,
+    "Cost Price (Your Cost)": 170.0
+  },
+  {
+    "Group": 4,
+    "Width": 2700,
+    "Drop": 1500,
+    "MRP (Shown to Customer)": 477,
+    "Retail Price (After 40% Discount)": 286.2,
+    "Cost Price (Your Cost)": 186.2
+  },
+  {
+    "Group": 4,
+    "Width": 3000,
+    "Drop": 1500,
+    "MRP (Shown to Customer)": 504,
+    "Retail Price (After 40% Discount)": 302.4,
+    "Cost Price (Your Cost)": 202.4
+  },
+  {
+    "Group": 4,
+    "Width": 1000,
+    "Drop": 1800,
+    "MRP (Shown to Customer)": 335,
+    "Retail Price (After 40% Discount)": 201.0,
+    "Cost Price (Your Cost)": 101.0
+  },
+  {
+    "Group": 4,
+    "Width": 1500,
+    "Drop": 1800,
+    "MRP (Shown to Customer)": 386,
+    "Retail Price (After 40% Discount)": 231.6,
+    "Cost Price (Your Cost)": 131.6
+  },
+  {
+    "Group": 4,
+    "Width": 1800,
+    "Drop": 1800,
+    "MRP (Shown to Customer)": 416,
+    "Retail Price (After 40% Discount)": 249.6,
+    "Cost Price (Your Cost)": 149.6
+  },
+  {
+    "Group": 4,
+    "Width": 2100,
+    "Drop": 1800,
+    "MRP (Shown to Customer)": 446,
+    "Retail Price (After 40% Discount)": 267.6,
+    "Cost Price (Your Cost)": 167.6
+  },
+  {
+    "Group": 4,
+    "Width": 2400,
+    "Drop": 1800,
+    "MRP (Shown to Customer)": 476,
+    "Retail Price (After 40% Discount)": 285.6,
+    "Cost Price (Your Cost)": 185.6
+  },
+  {
+    "Group": 4,
+    "Width": 2700,
+    "Drop": 1800,
+    "MRP (Shown to Customer)": 507,
+    "Retail Price (After 40% Discount)": 304.2,
+    "Cost Price (Your Cost)": 204.2
+  },
+  {
+    "Group": 4,
+    "Width": 3000,
+    "Drop": 1800,
+    "MRP (Shown to Customer)": 537,
+    "Retail Price (After 40% Discount)": 322.2,
+    "Cost Price (Your Cost)": 222.2
+  },
+  {
+    "Group": 4,
+    "Width": 1000,
+    "Drop": 2100,
+    "MRP (Shown to Customer)": 346,
+    "Retail Price (After 40% Discount)": 207.6,
+    "Cost Price (Your Cost)": 107.6
+  },
+  {
+    "Group": 4,
+    "Width": 1500,
+    "Drop": 2100,
+    "MRP (Shown to Customer)": 402,
+    "Retail Price (After 40% Discount)": 241.2,
+    "Cost Price (Your Cost)": 141.2
+  },
+  {
+    "Group": 4,
+    "Width": 1800,
+    "Drop": 2100,
+    "MRP (Shown to Customer)": 436,
+    "Retail Price (After 40% Discount)": 261.6,
+    "Cost Price (Your Cost)": 161.6
+  },
+  {
+    "Group": 4,
+    "Width": 2100,
+    "Drop": 2100,
+    "MRP (Shown to Customer)": 469,
+    "Retail Price (After 40% Discount)": 281.4,
+    "Cost Price (Your Cost)": 181.4
+  },
+  {
+    "Group": 4,
+    "Width": 2400,
+    "Drop": 2100,
+    "MRP (Shown to Customer)": 503,
+    "Retail Price (After 40% Discount)": 301.8,
+    "Cost Price (Your Cost)": 201.8
+  },
+  {
+    "Group": 4,
+    "Width": 2700,
+    "Drop": 2100,
+    "MRP (Shown to Customer)": 537,
+    "Retail Price (After 40% Discount)": 322.2,
+    "Cost Price (Your Cost)": 222.2
+  },
+  {
+    "Group": 4,
+    "Width": 3000,
+    "Drop": 2100,
+    "MRP (Shown to Customer)": 570,
+    "Retail Price (After 40% Discount)": 342.0,
+    "Cost Price (Your Cost)": 242.0
+  },
+  {
+    "Group": 4,
+    "Width": 1000,
+    "Drop": 2400,
+    "MRP (Shown to Customer)": 357,
+    "Retail Price (After 40% Discount)": 214.2,
+    "Cost Price (Your Cost)": 114.2
+  },
+  {
+    "Group": 4,
+    "Width": 1500,
+    "Drop": 2400,
+    "MRP (Shown to Customer)": 419,
+    "Retail Price (After 40% Discount)": 251.4,
+    "Cost Price (Your Cost)": 151.4
+  },
+  {
+    "Group": 4,
+    "Width": 1800,
+    "Drop": 2400,
+    "MRP (Shown to Customer)": 456,
+    "Retail Price (After 40% Discount)": 273.6,
+    "Cost Price (Your Cost)": 173.6
+  },
+  {
+    "Group": 4,
+    "Width": 2100,
+    "Drop": 2400,
+    "MRP (Shown to Customer)": 493,
+    "Retail Price (After 40% Discount)": 295.8,
+    "Cost Price (Your Cost)": 195.8
+  },
+  {
+    "Group": 4,
+    "Width": 2400,
+    "Drop": 2400,
+    "MRP (Shown to Customer)": 530,
+    "Retail Price (After 40% Discount)": 318.0,
+    "Cost Price (Your Cost)": 218.0
+  },
+  {
+    "Group": 4,
+    "Width": 2700,
+    "Drop": 2400,
+    "MRP (Shown to Customer)": 567,
+    "Retail Price (After 40% Discount)": 340.2,
+    "Cost Price (Your Cost)": 240.2
+  },
+  {
+    "Group": 4,
+    "Width": 3000,
+    "Drop": 2400,
+    "MRP (Shown to Customer)": 603,
+    "Retail Price (After 40% Discount)": 361.8,
+    "Cost Price (Your Cost)": 261.8
+  },
+  {
+    "Group": 4,
+    "Width": 1000,
+    "Drop": 2700,
+    "MRP (Shown to Customer)": 369,
+    "Retail Price (After 40% Discount)": 221.4,
+    "Cost Price (Your Cost)": 121.4
+  },
+  {
+    "Group": 4,
+    "Width": 1500,
+    "Drop": 2700,
+    "MRP (Shown to Customer)": 436,
+    "Retail Price (After 40% Discount)": 261.6,
+    "Cost Price (Your Cost)": 161.6
+  },
+  {
+    "Group": 4,
+    "Width": 1800,
+    "Drop": 2700,
+    "MRP (Shown to Customer)": 476,
+    "Retail Price (After 40% Discount)": 285.6,
+    "Cost Price (Your Cost)": 185.6
+  },
+  {
+    "Group": 4,
+    "Width": 2100,
+    "Drop": 2700,
+    "MRP (Shown to Customer)": 516,
+    "Retail Price (After 40% Discount)": 309.6,
+    "Cost Price (Your Cost)": 209.6
+  },
+  {
+    "Group": 4,
+    "Width": 2400,
+    "Drop": 2700,
+    "MRP (Shown to Customer)": 556,
+    "Retail Price (After 40% Discount)": 333.6,
+    "Cost Price (Your Cost)": 233.6
+  },
+  {
+    "Group": 4,
+    "Width": 2700,
+    "Drop": 2700,
+    "MRP (Shown to Customer)": 596,
+    "Retail Price (After 40% Discount)": 357.6,
+    "Cost Price (Your Cost)": 257.6
+  },
+  {
+    "Group": 4,
+    "Width": 3000,
+    "Drop": 2700,
+    "MRP (Shown to Customer)": 637,
+    "Retail Price (After 40% Discount)": 382.2,
+    "Cost Price (Your Cost)": 282.2
+  },
+  {
+    "Group": 4,
+    "Width": 1000,
+    "Drop": 3000,
+    "MRP (Shown to Customer)": 380,
+    "Retail Price (After 40% Discount)": 228.0,
+    "Cost Price (Your Cost)": 128.0
+  },
+  {
+    "Group": 4,
+    "Width": 1500,
+    "Drop": 3000,
+    "MRP (Shown to Customer)": 452,
+    "Retail Price (After 40% Discount)": 271.2,
+    "Cost Price (Your Cost)": 171.2
+  },
+  {
+    "Group": 4,
+    "Width": 1800,
+    "Drop": 3000,
+    "MRP (Shown to Customer)": 496,
+    "Retail Price (After 40% Discount)": 297.6,
+    "Cost Price (Your Cost)": 197.6
+  },
+  {
+    "Group": 4,
+    "Width": 2100,
+    "Drop": 3000,
+    "MRP (Shown to Customer)": 539,
+    "Retail Price (After 40% Discount)": 323.4,
+    "Cost Price (Your Cost)": 223.4
+  },
+  {
+    "Group": 4,
+    "Width": 2400,
+    "Drop": 3000,
+    "MRP (Shown to Customer)": 583,
+    "Retail Price (After 40% Discount)": 349.8,
+    "Cost Price (Your Cost)": 249.8
+  },
+  {
+    "Group": 4,
+    "Width": 2700,
+    "Drop": 3000,
+    "MRP (Shown to Customer)": 626,
+    "Retail Price (After 40% Discount)": 375.6,
+    "Cost Price (Your Cost)": 275.6
+  },
+  {
+    "Group": 4,
+    "Width": 3000,
+    "Drop": 3000,
+    "MRP (Shown to Customer)": 670,
+    "Retail Price (After 40% Discount)": 402.0,
+    "Cost Price (Your Cost)": 302.0
+  },
+  {
+    "Group": 4,
+    "Width": 1000,
+    "Drop": 3200,
+    "MRP (Shown to Customer)": 383,
+    "Retail Price (After 40% Discount)": 229.8,
+    "Cost Price (Your Cost)": 129.8
+  },
+  {
+    "Group": 4,
+    "Width": 1500,
+    "Drop": 3200,
+    "MRP (Shown to Customer)": 458,
+    "Retail Price (After 40% Discount)": 274.8,
+    "Cost Price (Your Cost)": 174.8
+  },
+  {
+    "Group": 4,
+    "Width": 1800,
+    "Drop": 3200,
+    "MRP (Shown to Customer)": 502,
+    "Retail Price (After 40% Discount)": 301.2,
+    "Cost Price (Your Cost)": 201.2
+  },
+  {
+    "Group": 4,
+    "Width": 2100,
+    "Drop": 3200,
+    "MRP (Shown to Customer)": 547,
+    "Retail Price (After 40% Discount)": 328.2,
+    "Cost Price (Your Cost)": 228.2
+  },
+  {
+    "Group": 4,
+    "Width": 2400,
+    "Drop": 3200,
+    "MRP (Shown to Customer)": 592,
+    "Retail Price (After 40% Discount)": 355.2,
+    "Cost Price (Your Cost)": 255.2
+  },
+  {
+    "Group": 4,
+    "Width": 2700,
+    "Drop": 3200,
+    "MRP (Shown to Customer)": 636,
+    "Retail Price (After 40% Discount)": 381.6,
+    "Cost Price (Your Cost)": 281.6
+  },
+  {
+    "Group": 4,
+    "Width": 3000,
+    "Drop": 3200,
+    "MRP (Shown to Customer)": 681,
+    "Retail Price (After 40% Discount)": 408.6,
+    "Cost Price (Your Cost)": 308.6
+  }
+]
