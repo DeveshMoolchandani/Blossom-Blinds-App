@@ -91,7 +91,7 @@ export default function IndoorBlindsForm() {
 
   const retailPrice = Number(match["Retail Price"]);
   const discounted = retailPrice * (1 - discount / 100);
-  return parseFloat(discounted.toFixed(2));
+  return Math.round(finalPrice);
 };
 
 
@@ -116,7 +116,7 @@ export default function IndoorBlindsForm() {
     const c = updated[index].color;
 
     if (!isNaN(w) && !isNaN(d) && f && c) {
-      updated[index].price = getPrice(w, d, f, c);
+      updated[index].price = getPrice(w, d, f, c, discount);
     }
 
     setWindows(updated);
@@ -148,7 +148,7 @@ export default function IndoorBlindsForm() {
     const safeVal = isNaN(val) ? 0 : val;
     setDiscount(safeVal);
     const updated = windows.map(win => {
-      const price = getPrice(win.width, win.drop, win.fabric, win.color);
+      const price = getPrice(win.width, win.drop, win.fabric, win.color, safeVal);
       return { ...win, price };
     });
     setWindows(updated);
