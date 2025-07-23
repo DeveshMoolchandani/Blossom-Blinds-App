@@ -74,21 +74,26 @@ export default function IndoorBlindsForm() {
     return numbers.find(n => n >= val) || numbers[numbers.length - 1];
   };
 
-  const getPrice = (width, drop, fabric, color) => {
-    const group = getGroupForFabric(fabric);
-    if (!group || color === 'OTHER') return 0;
+ const getPrice = (width, drop, fabric, color) => {
+  const group = getGroupForFabric(fabric);
+  if (!group || color === 'OTHER') return 0;
 
-    const nearestWidth = getNearestSize(width, 'Width', group);
-    const nearestDrop = getNearestSize(drop, 'Drop', group);
+  const nearestWidth = getNearestSize(width, 'Width', group);
+  const nearestDrop = getNearestSize(drop, 'Drop', group);
 
-    const match = pricingData.find(entry =>
-      entry.Group === group &&
-      Number(entry.Width) === nearestWidth &&
-      Number(entry.Drop) === nearestDrop
-    );
+  const match = pricingData.find(entry =>
+    entry.Group === group &&
+    Number(entry.Width) === nearestWidth &&
+    Number(entry.Drop) === nearestDrop
+  );
 
-    return match ? Number(match["Retail Price (After 40% Discount)"]) : 0;
-  };
+  if (!match) return 0;
+
+  const retailPrice = Number(match["Retail Price"]);
+  const discounted = retailPrice * (1 - discount / 100);
+  return parseFloat(discounted.toFixed(2));
+};
+
 
   const updateTotalPrice = (winArr) => {
     const total = winArr.reduce((acc, win) => acc + (parseFloat(win.price) || 0), 0);
