@@ -32,7 +32,7 @@ export default function IndoorBlindsForm() {
 
   const [windows, setWindows] = useState([JSON.parse(JSON.stringify(blankWindow))]);
   const [collapsedSections, setCollapsedSections] = useState([]);
-  const [discount, setDiscount] = useState(40);
+  const [discount, setDiscount] = useState('');
   const [totalPrice, setTotalPrice] = useState(0);
 
   useEffect(() => {
@@ -74,7 +74,7 @@ export default function IndoorBlindsForm() {
     return numbers.find(n => n >= val) || numbers[numbers.length - 1];
   };
 
- const getPrice = (width, drop, fabric, color) => {
+const getPrice = (width, drop, fabric, color, appliedDiscount = 0) => {
   const group = getGroupForFabric(fabric);
   if (!group || color === 'OTHER') return 0;
 
@@ -89,11 +89,13 @@ export default function IndoorBlindsForm() {
 
   if (!match) return 0;
 
-  const basePrice = Number(match["MRP (Shown to Customer)"]); // Always use MRP
-  const discountedPrice = basePrice * (1 - discount / 100);   // Apply chosen discount
+  const mrp = Number(match["MRP (Shown to Customer)"]);
+  const discountRate = appliedDiscount / 100;
+  const finalPrice = mrp * (1 - discountRate);
 
-  return discountedPrice;
+  return parseFloat(finalPrice.toFixed(2));
 };
+
 
   const updateTotalPrice = (winArr) => {
     const total = winArr.reduce((acc, win) => acc + (parseFloat(win.price) || 0), 0);
@@ -116,7 +118,7 @@ export default function IndoorBlindsForm() {
     const c = updated[index].color;
 
     if (!isNaN(w) && !isNaN(d) && f && c) {
-      updated[index].price = getPrice(w, d, f, c, discount);
+   updated[index].price = getPrice(w, d, f, c, parseFloat(discount) || 0);
     }
 
     setWindows(updated);
@@ -143,17 +145,19 @@ export default function IndoorBlindsForm() {
     updateTotalPrice(updated);
   };
 
-  const handleDiscountChange = (e) => {
-    const val = parseFloat(e.target.value);
-    const safeVal = isNaN(val) ? 0 : val;
-    setDiscount(safeVal);
-    const updated = windows.map(win => {
-      const price = getPrice(win.width, win.drop, win.fabric, win.color, safeVal);
-      return { ...win, price };
-    });
-    setWindows(updated);
-    updateTotalPrice(updated);
-  };
+const handleDiscountChange = (e) => {
+  const val = parseFloat(e.target.value);
+  const safeVal = isNaN(val) ? 0 : val;
+  setDiscount(isNaN(val) ? '' : val);
+
+  const updated = windows.map(win => {
+    const price = getPrice(win.width, win.drop, win.fabric, win.color, safeVal);
+    return { ...win, price };
+  });
+
+  setWindows(updated);
+  updateTotalPrice(updated);
+};
 
  const handleSubmit = async (e) => {
   e.preventDefault();
