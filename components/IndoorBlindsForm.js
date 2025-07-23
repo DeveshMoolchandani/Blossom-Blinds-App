@@ -89,11 +89,11 @@ export default function IndoorBlindsForm() {
 
   if (!match) return 0;
 
-  const retailPrice = Number(match["Retail Price"]);
-  const discounted = retailPrice * (1 - discount / 100);
-  return Math.round(finalPrice);
-};
+  const basePrice = Number(match["MRP (Shown to Customer)"]); // Always use MRP
+  const discountedPrice = basePrice * (1 - discount / 100);   // Apply chosen discount
 
+  return discountedPrice;
+};
 
   const updateTotalPrice = (winArr) => {
     const total = winArr.reduce((acc, win) => acc + (parseFloat(win.price) || 0), 0);
