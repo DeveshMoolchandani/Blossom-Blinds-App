@@ -48,32 +48,27 @@ export default function CurtainsForm() {
 
   const getGroup = (fabric) => fabricGroupMap[fabric] || null;
 
-  const getNearestWidth = (width, group, height) => {
-    const dropKey = height <= 3000 ? "Drop<=3000" : "Drop>3000";
-    const filtered = pricingData.filter(p => p.Group === group && p.DropCategory === dropKey);
-    const sorted = filtered.map(e => e.Width).sort((a, b) => a - b);
-    return sorted.find(w => w >= width) || sorted[sorted.length - 1];
-  };
-
   const calculatePrice = (width, height, fabric) => {
     const group = getGroup(fabric);
     if (!group) return { price: 0, bracket: 0, linearPrice: 0 };
 
-    const dropKey = height <= 3000 ? "Drop<=3000" : "Drop>3000";
-    const nearestWidth = getNearestWidth(width, group, height);
-    const match = pricingData.find(p =>
-      p.Group === group &&
-      p.Width === nearestWidth &&
-      p.DropCategory === dropKey
-    );
+    const groupItems = pricingData.filter(p => p.Group === group);
+
+    const widths = [...new Set(groupItems.map(p => p.Width))].sort((a, b) => a - b);
+    const nearestWidth = widths.find(w => w >= width) || widths[widths.length - 1];
+
+    const drops = [...new Set(groupItems.map(p => p.Drop))].sort((a, b) => a - b);
+    const nearestDrop = drops.find(d => d >= height) || drops[drops.length - 1];
+
+    const match = groupItems.find(p => p.Width === nearestWidth && p.Drop === nearestDrop);
 
     if (!match) return { price: 0, bracket: 0, linearPrice: 0 };
 
-    const widthInM = width / 1000;
+    const mrp = match["MRP (Shown to Customer)"];
     const baseCost = match["Cost Price (Your Cost)"];
-    const linearRate = baseCost + 60;
-    const totalPrice = linearRate * widthInM;
-    const discountedPrice = discount ? totalPrice * (1 - discount / 100) : totalPrice;
+    const discountedPrice = discount ? mrp * (1 - discount / 100) : mrp;
+    const widthInM = width / 1000;
+    const linearRate = mrp / widthInM;
 
     return {
       price: parseFloat(discountedPrice.toFixed(2)),
@@ -249,6 +244,7 @@ export default function CurtainsForm() {
             <input type="text" name="color" value={win.color} onChange={(e) => handleWindowChange(index, e)} />
             <label>Opening:</label>
             <select name="opening" value={win.opening} onChange={(e) => handleWindowChange(index, e)}>
+              <option value="">-- Select Opening --</option>
               <option>Middle Opening</option>
               <option>One Way Left</option>
               <option>One Way Right</option>
@@ -256,18 +252,21 @@ export default function CurtainsForm() {
             </select>
             <label>Fit:</label>
             <select name="fit" value={win.fit} onChange={(e) => handleWindowChange(index, e)}>
+              <option value="">-- Select Fit --</option>
               <option>Face FIT Under Cornice</option>
               <option>Top Ceiling Fit</option>
               <option>Other</option>
             </select>
             <label>Track Type:</label>
             <select name="trackType" value={win.trackType} onChange={(e) => handleWindowChange(index, e)}>
+              <option value="">-- Select Track Type --</option>
               <option>Standard</option>
               <option>Designer</option>
               <option>Other</option>
             </select>
             <label>Track Colour:</label>
             <select name="trackColour" value={win.trackColour} onChange={(e) => handleWindowChange(index, e)}>
+              <option value="">-- Select Track Colour --</option>
               <option>White</option>
               <option>Black</option>
               <option>Grey</option>
