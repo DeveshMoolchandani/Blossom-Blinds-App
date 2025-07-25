@@ -48,34 +48,33 @@ export default function CurtainsForm() {
 
   const getGroup = (fabric) => fabricGroupMap[fabric] || null;
 
-  const calculatePrice = (width, height, fabric) => {
-    const group = getGroup(fabric);
-    if (!group) return { price: 0, bracket: 0, linearPrice: 0 };
+ const calculatePrice = (width, height, fabric) => {
+  const group = getGroup(fabric);
+  if (!group) return { price: 0, bracket: 0, linearPrice: 0 };
 
-    const groupItems = pricingData.filter(p => p.Group === group);
+  const groupItems = pricingData.filter(p => p.Group === group);
 
-    const widths = [...new Set(groupItems.map(p => p.Width))].sort((a, b) => a - b);
-    const nearestWidth = widths.find(w => w >= width) || widths[widths.length - 1];
+  const widths = [...new Set(groupItems.map(p => p.Width))].sort((a, b) => a - b);
+  const nearestWidth = widths.find(w => w >= width) || widths[widths.length - 1];
 
-    const drops = [...new Set(groupItems.map(p => p.Drop))].sort((a, b) => a - b);
-    const nearestDrop = drops.find(d => d >= height) || drops[drops.length - 1];
+  const dropBracket = height <= 3000 ? 3000 : 6000;
 
-    const match = groupItems.find(p => p.Width === nearestWidth && p.Drop === nearestDrop);
+  const match = groupItems.find(p => p.Width === nearestWidth && p.Drop === dropBracket);
 
-    if (!match) return { price: 0, bracket: 0, linearPrice: 0 };
+  if (!match) return { price: 0, bracket: 0, linearPrice: 0 };
 
-    const mrp = match["MRP (Shown to Customer)"];
-    const baseCost = match["Cost Price (Your Cost)"];
-    const discountedPrice = discount ? mrp * (1 - discount / 100) : mrp;
-    const widthInM = width / 1000;
-    const linearRate = mrp / widthInM;
+  const mrp = match["MRP (Shown to Customer)"];
+  const baseCost = match["Cost Price (Your Cost)"];
+  const discountedPrice = discount ? mrp * (1 - discount / 100) : mrp;
+  const widthInM = width / 1000;
+  const linearRate = mrp / widthInM;
 
-    return {
-      price: parseFloat(discountedPrice.toFixed(2)),
-      bracket: parseFloat(baseCost.toFixed(2)),
-      linearPrice: parseFloat(linearRate.toFixed(2))
-    };
+  return {
+    price: parseFloat(discountedPrice.toFixed(2)),
+    bracket: parseFloat(baseCost.toFixed(2)),
+    linearPrice: parseFloat(linearRate.toFixed(2))
   };
+};
 
   const updatePrices = () => {
     const updated = windows.map(w => {
