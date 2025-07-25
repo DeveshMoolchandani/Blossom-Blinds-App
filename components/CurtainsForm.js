@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import styles from '../styles/Form.module.css';
-import curtainFabricGroups from '../lib/curtainFabricGroups';
+import fabricGroupMap from '../lib/curtainFabricGroups';
 import pricingData from '../data/curtains_pricing_data.json';
 
 export default function CurtainsForm() {
@@ -28,9 +28,7 @@ export default function CurtainsForm() {
     trackColour: '',
     comments: '',
     price: 0,
-    bracket: 0,
-    linearPrice: 0,
-    showBracket: false
+    bracket: 0
   };
 
   const [windows, setWindows] = useState([JSON.parse(JSON.stringify(blankWindow))]);
@@ -46,47 +44,43 @@ export default function CurtainsForm() {
     }));
   }, []);
 
-  const getGroupForFabric = (fabric) => {
-    const key = Object.keys(curtainFabricGroups).find(
-      k => k.toLowerCase() === fabric?.toLowerCase()
-    );
-    return key ? curtainFabricGroups[key] : null;
+  const getGroupForFabric = (fabric) => fabricGroupMap[fabric] || null;
+
+  const getNearestSize = (val, field, group) => {
+    const values = pricingData
+      .filter(entry => entry.Group === group && entry[field])
+      .map(entry => Number(entry[field]))
+      .sort((a, b) => a - b);
+    return values.find(n => n >= val) || values[values.length - 1];
   };
 
-  const getNearestWidth = (width, group, height) => {
-    const dropKey = height <= 3000 ? "Drop<=3000" : "Drop>3000";
-    const entries = pricingData.filter(p => p.Group === group && p.DropCategory === dropKey);
-    const widths = entries.map(e => e.Width).sort((a, b) => a - b);
-    return widths.find(w => w >= width) || widths[widths.length - 1];
-  };
-
-  const getPrice = (width, height, fabric) => {
+  const getPriceInfo = (width, height, fabric) => {
     const group = getGroupForFabric(fabric);
-    if (!group || !width || !height) return { price: 0, bracket: 0, linearPrice: 0 };
+    if (!group) return { price: 0, bracket: 0 };
 
-    const dropKey = height <= 3000 ? "Drop<=3000" : "Drop>3000";
-    const nearestWidth = getNearestWidth(width, group, height);
-
-    const match = pricingData.find(p =>
-      p.Group === group &&
-      p.Width === nearestWidth &&
-      p.DropCategory === dropKey
+    const dropLimit = height > 3000 ? 6000 : 3000;
+    const nearestWidth = getNearestSize(width, 'Width', group);
+    const match = pricingData.find(entry =>
+      entry.Group === group &&
+      entry.Width === nearestWidth &&
+      entry.Drop === dropLimit
     );
 
-    if (!match) return { price: 0, bracket: 0, linearPrice: 0 };
+    if (!match) return { price: 0, bracket: 0 };
 
-    const widthInM = width / 1000;
-    const mrp = match["MRP (Shown to Customer)"];
-    const bracket = match["Cost Price (Your Cost)"];
-    const discountFactor = discount ? (1 - discount / 100) : 1;
-    const price = mrp * discountFactor;
-    const linearPrice = mrp / widthInM;
+    const linearMeters = width / 1000;
+    const cpPerMeter = match['Cost Price (Your Cost)'] / (nearestWidth / 1000);
+    const mrp = (cpPerMeter + 60) * linearMeters;
+    const retail = discount ? mrp * (1 - discount / 100) : mrp;
 
-    return { price, bracket, linearPrice };
+    return {
+      price: parseFloat(retail.toFixed(2)),
+      bracket: parseFloat(match['Cost Price (Your Cost)'].toFixed(2))
+    };
   };
 
-  const updateTotalPrice = (arr) => {
-    const total = arr.reduce((sum, w) => sum + (parseFloat(w.price) || 0), 0);
+  const updateTotal = (winArr) => {
+    const total = winArr.reduce((acc, w) => acc + (parseFloat(w.price) || 0), 0);
     setTotalPrice(total);
   };
 
@@ -100,25 +94,30 @@ export default function CurtainsForm() {
     const updated = [...windows];
     updated[index][name] = value;
 
-    const width = parseFloat(updated[index].width);
-    const height = parseFloat(updated[index].height);
-    const fabric = updated[index].fabric;
+    const w = parseFloat(updated[index].width);
+    const h = parseFloat(updated[index].height);
+    const f = updated[index].fabric;
 
-    if (!isNaN(width) && !isNaN(height) && fabric) {
-      const { price, bracket, linearPrice } = getPrice(width, height, fabric);
+    if (!isNaN(w) && !isNaN(h) && f) {
+      const { price, bracket } = getPriceInfo(w, h, f);
       updated[index].price = price;
       updated[index].bracket = bracket;
-      updated[index].linearPrice = linearPrice;
     }
 
     setWindows(updated);
-    updateTotalPrice(updated);
+    updateTotal(updated);
   };
 
-  const toggleBracket = (index) => {
-    const updated = [...windows];
-    updated[index].showBracket = !updated[index].showBracket;
+  const handleDiscountChange = (e) => {
+    const val = parseFloat(e.target.value);
+    const safe = isNaN(val) ? 0 : val;
+    setDiscount(safe);
+    const updated = windows.map(w => {
+      const { price, bracket } = getPriceInfo(w.width, w.height, w.fabric);
+      return { ...w, price, bracket };
+    });
     setWindows(updated);
+    updateTotal(updated);
   };
 
   const addWindow = () => {
@@ -126,16 +125,14 @@ export default function CurtainsForm() {
   };
 
   const deleteWindow = (index) => {
-    const confirmed = window.confirm("Delete this curtain?");
-    if (!confirmed) return;
+    if (!confirm("Delete this curtain?")) return;
     const updated = windows.filter((_, i) => i !== index);
     setWindows(updated);
-    updateTotalPrice(updated);
+    updateTotal(updated);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const payload = {
       ...formData,
       windows,
@@ -150,23 +147,22 @@ export default function CurtainsForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-
       const result = await res.json();
-      if (result.result === 'success') {
-        alert("✅ Submitted");
+      if (result.success || result.result === 'success') {
+        alert('✅ Submitted!');
         generatePDF();
       } else {
-        alert("❌ Submission failed");
+        alert('❌ Submission failed');
       }
-    } catch {
-      alert("❌ Network Error");
+    } catch (err) {
+      console.error("Error:", err);
+      alert('❌ Error submitting');
     }
   };
 
   const generatePDF = () => {
     const doc = new jsPDF();
-    doc.text("Curtains Quote", 14, 10);
-
+    doc.text("Curtain Quote", 14, 10);
     autoTable(doc, {
       startY: 20,
       head: [['Field', 'Value']],
@@ -174,20 +170,16 @@ export default function CurtainsForm() {
     });
 
     windows.forEach((w, i) => {
+      const { bracket, ...printData } = w;
       autoTable(doc, {
         startY: doc.lastAutoTable.finalY + 10,
         head: [[`Curtain ${i + 1}`]],
         body: []
       });
-
-      const rows = Object.entries(w)
-        .filter(([k]) => !['bracket', 'showBracket'].includes(k))
-        .map(([k, v]) => [k, v]);
-
       autoTable(doc, {
         startY: doc.lastAutoTable.finalY,
         head: [['Field', 'Value']],
-        body: rows
+        body: Object.entries(printData).map(([k, v]) => [k, v])
       });
     });
 
@@ -200,8 +192,10 @@ export default function CurtainsForm() {
       ]
     });
 
-    doc.save('curtains-quote.pdf');
+    doc.save('curtain-quote.pdf');
   };
+
+  const fabricOptions = Object.keys(fabricGroupMap).sort();
 
   return (
     <form onSubmit={handleSubmit} className={styles.formContainer}>
@@ -211,90 +205,86 @@ export default function CurtainsForm() {
         <label>Sales Rep:</label>
         <input type="text" name="salesRep" value={formData.salesRep} onChange={handleFormChange} />
         <label>Customer Name:</label>
-        <input type="text" name="customerName" value={formData.customerName} onChange={handleFormChange} required />
+        <input type="text" name="customerName" value={formData.customerName} onChange={handleFormChange} />
         <label>Customer Address:</label>
         <input type="text" name="customerAddress" value={formData.customerAddress} onChange={handleFormChange} />
         <label>Phone:</label>
         <input type="text" name="customerPhone" value={formData.customerPhone} onChange={handleFormChange} />
         <label>Email:</label>
-        <input type="email" name="customerEmail" value={formData.customerEmail} onChange={handleFormChange} />
+        <input type="text" name="customerEmail" value={formData.customerEmail} onChange={handleFormChange} />
       </div>
 
-      {windows.map((w, i) => (
-        <div key={i} className={styles.windowSection}>
-          <h4 className={styles.windowHeader}>
-            Curtain {i + 1}
-            <button type="button" onClick={() => deleteWindow(i)}>✕</button>
-          </h4>
-
-          <div className={styles.inputGroup}>
-            <label>Room:</label>
-            <input type="text" name="room" value={w.room} onChange={(e) => handleWindowChange(i, e)} />
-            <label>Width (mm):</label>
-            <input type="number" name="width" value={w.width} onChange={(e) => handleWindowChange(i, e)} />
-            <label>Height (mm):</label>
-            <input type="number" name="height" value={w.height} onChange={(e) => handleWindowChange(i, e)} />
-            <label>Fabric:</label>
-            <select name="fabric" value={w.fabric} onChange={(e) => handleWindowChange(i, e)}>
-              <option value="">-- Select --</option>
-              {Object.keys(curtainFabricGroups).map(f => (
-                <option key={f} value={f}>{f}</option>
-              ))}
-            </select>
-            <label>Color:</label>
-            <input type="text" name="color" value={w.color} onChange={(e) => handleWindowChange(i, e)} />
-            <label>Opening:</label>
-            <select name="opening" value={w.opening} onChange={(e) => handleWindowChange(i, e)}>
-              <option value="">-- Select --</option>
-              <option>Middle Opening</option>
-              <option>One way Left</option>
-              <option>One way Right</option>
-              <option>Other</option>
-            </select>
-            <label>Fit:</label>
-            <select name="fit" value={w.fit} onChange={(e) => handleWindowChange(i, e)}>
-              <option value="">-- Select --</option>
-              <option>Face FIT Under Cornice</option>
-              <option>Top Ceiling Fit</option>
-              <option>Other</option>
-            </select>
-            <label>Track Type:</label>
-            <select name="trackType" value={w.trackType} onChange={(e) => handleWindowChange(i, e)}>
-              <option value="">-- Select --</option>
-              <option>Standard</option>
-              <option>Designer</option>
-              <option>Other</option>
-            </select>
-            <label>Track Colour:</label>
-            <select name="trackColour" value={w.trackColour} onChange={(e) => handleWindowChange(i, e)}>
-              <option value="">-- Select --</option>
-              <option>White</option>
-              <option>Black</option>
-              <option>Grey</option>
-              <option>Silver</option>
-              <option>Other</option>
-            </select>
-            <label>Comments:</label>
-            <input type="text" name="comments" value={w.comments} onChange={(e) => handleWindowChange(i, e)} />
-            <label>Price:</label>
-            <input type="text" value={`$${w.price.toFixed(2)}`} readOnly />
-            <label>Price Per Linear Meter:</label>
-            <input type="text" value={`$${w.linearPrice.toFixed(2)}`} readOnly />
-            <details>
-              <summary>Bracket</summary>
-              <div><strong>${w.bracket.toFixed(2)}</strong></div>
-            </details>
-          </div>
+      {windows.map((win, index) => (
+        <div key={index} className={styles.windowSection}>
+          <h4>Curtain {index + 1}</h4>
+          <label>Room:</label>
+          <input type="text" name="room" value={win.room} onChange={(e) => handleWindowChange(index, e)} />
+          <label>Width (mm):</label>
+          <input type="number" name="width" value={win.width} onChange={(e) => handleWindowChange(index, e)} />
+          <label>Height (mm):</label>
+          <input type="number" name="height" value={win.height} onChange={(e) => handleWindowChange(index, e)} />
+          <label>Fabric:</label>
+          <select name="fabric" value={win.fabric} onChange={(e) => handleWindowChange(index, e)}>
+            <option value="">-- Select --</option>
+            {fabricOptions.map(f => <option key={f} value={f}>{f}</option>)}
+          </select>
+          <label>Color:</label>
+          <input type="text" name="color" value={win.color} onChange={(e) => handleWindowChange(index, e)} />
+          <label>Opening:</label>
+          <select name="opening" value={win.opening} onChange={(e) => handleWindowChange(index, e)}>
+            <option>Middle Opening</option>
+            <option>One Way Left</option>
+            <option>One Way Right</option>
+            <option>Other</option>
+          </select>
+          <label>Fit:</label>
+          <select name="fit" value={win.fit} onChange={(e) => handleWindowChange(index, e)}>
+            <option>Face FIT Under Cornice</option>
+            <option>Top Ceiling Fit</option>
+            <option>Other</option>
+          </select>
+          <label>Track Type:</label>
+          <select name="trackType" value={win.trackType} onChange={(e) => handleWindowChange(index, e)}>
+            <option>Standard</option>
+            <option>Designer</option>
+            <option>Other</option>
+          </select>
+          <label>Track Colour:</label>
+          <select name="trackColour" value={win.trackColour} onChange={(e) => handleWindowChange(index, e)}>
+            <option>White</option>
+            <option>Black</option>
+            <option>Grey</option>
+            <option>Silver</option>
+            <option>Other</option>
+          </select>
+          <label>Comments:</label>
+          <input type="text" name="comments" value={win.comments} onChange={(e) => handleWindowChange(index, e)} />
+          <label>Price:</label>
+          <input type="text" value={`$${win.price.toFixed(2)}`} readOnly />
+          <label>Price Per Linear Meter:</label>
+          <input
+            type="text"
+            value={`$${(win.width ? (win.price / (win.width / 1000)).toFixed(2) : '0.00')}`}
+            readOnly
+          />
+          <details>
+            <summary>▶ Bracket</summary>
+            <input type="text" value={`$${win.bracket.toFixed(2)}`} readOnly />
+          </details>
         </div>
       ))}
 
       <div className={styles.inputGroup}>
         <label>Discount (%):</label>
-        <input type="number" value={discount} onChange={(e) => setDiscount(e.target.value)} />
+        <input
+          type="number"
+          value={discount}
+          onChange={handleDiscountChange}
+        />
       </div>
 
       <div className={styles.totalBox}>
-        Total: <strong>${totalPrice.toFixed(2)}</strong> — Discount: <strong>{discount}%</strong>
+        Total: <strong>${totalPrice.toFixed(2)}</strong> — Discount: <strong>{discount || 0}%</strong>
       </div>
 
       <button type="button" onClick={addWindow} className={styles.addBtn}>➕ Add Curtain</button>
