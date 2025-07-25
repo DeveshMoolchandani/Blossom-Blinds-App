@@ -34,6 +34,7 @@ export default function CurtainsForm() {
   };
 
   const [windows, setWindows] = useState([JSON.parse(JSON.stringify(blankWindow))]);
+  const [collapsedSections, setCollapsedSections] = useState([]);
   const [discount, setDiscount] = useState('');
   const [totalPrice, setTotalPrice] = useState(0);
 
@@ -73,8 +74,8 @@ export default function CurtainsForm() {
     const mrp = match["MRP (Shown to Customer)"];
     const bracket = match["Cost Price (Your Cost)"];
     const discountFactor = discount ? (1 - discount / 100) : 1;
-    const price = mrp * discountFactor;
-    const linearPrice = mrp / widthInM;
+    const price = parseFloat((mrp * discountFactor).toFixed(2));
+    const linearPrice = parseFloat((mrp / widthInM).toFixed(2));
 
     return { price, bracket, linearPrice };
   };
@@ -109,20 +110,39 @@ export default function CurtainsForm() {
     updateTotalPrice(updated);
   };
 
-  const addWindow = () => {
-    setWindows([...windows, JSON.parse(JSON.stringify(blankWindow))]);
-  };
+  const handleDiscountChange = (e) => {
+    const val = parseFloat(e.target.value);
+    const safeVal = isNaN(val) ? 0 : val;
+    setDiscount(isNaN(val) ? '' : val);
 
-  const deleteWindow = (index) => {
-    const updated = windows.filter((_, i) => i !== index);
+    const updated = windows.map(win => {
+      const { price, bracket, linearPrice } = getPrice(parseFloat(win.width), parseFloat(win.height), win.fabric);
+      return { ...win, price, bracket, linearPrice };
+    });
+
     setWindows(updated);
     updateTotalPrice(updated);
+  };
+
+  const toggleCollapse = (index) => {
+    setCollapsedSections(prev =>
+      prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]
+    );
   };
 
   const toggleBracket = (index) => {
     const updated = [...windows];
     updated[index].showBracket = !updated[index].showBracket;
     setWindows(updated);
+  };
+
+  const addWindow = () => setWindows([...windows, JSON.parse(JSON.stringify(blankWindow))]);
+
+  const deleteWindow = (index) => {
+    if (!confirm("Delete this curtain?")) return;
+    const updated = windows.filter((_, i) => i !== index);
+    setWindows(updated);
+    updateTotalPrice(updated);
   };
 
   const generatePDF = () => {
@@ -156,8 +176,8 @@ export default function CurtainsForm() {
           ['Track Type', w.trackType],
           ['Track Colour', w.trackColour],
           ['Comments', w.comments],
-          ['Price', `$${w.price?.toFixed(2) || '0.00'}`],
-          ['Price Per Linear Meter', `$${w.linearPrice?.toFixed(2) || '0.00'}`]
+          ['Price', `$${w.price?.toFixed(2)}`],
+          ['Price Per Linear Meter', `$${w.linearPrice?.toFixed(2)}`]
         ]
       });
     });
@@ -200,7 +220,7 @@ export default function CurtainsForm() {
       } else {
         alert("❌ Submission failed.");
       }
-    } catch (err) {
+    } catch {
       alert("❌ Network error.");
     }
   };
@@ -209,60 +229,91 @@ export default function CurtainsForm() {
     <form onSubmit={handleSubmit} className={styles.formContainer}>
       <h2 className={styles.formTitle}>Curtains Form</h2>
 
-      {/* Customer Info */}
-      {Object.keys(formData).map((key) => (
-        <input
-          key={key}
-          name={key}
-          placeholder={key}
-          value={formData[key]}
-          onChange={handleFormChange}
-          className={styles.inputField}
-        />
-      ))}
+      <div className={styles.inputGroup}>
+        <label>Sales Rep:</label>
+        <input type="text" name="salesRep" value={formData.salesRep} onChange={handleFormChange} />
+        <label>Customer Name:</label>
+        <input type="text" name="customerName" value={formData.customerName} onChange={handleFormChange} required />
+        <label>Address:</label>
+        <input type="text" name="customerAddress" value={formData.customerAddress} onChange={handleFormChange} />
+        <label>Phone:</label>
+        <input type="text" name="customerPhone" value={formData.customerPhone} onChange={handleFormChange} />
+        <label>Email:</label>
+        <input type="text" name="customerEmail" value={formData.customerEmail} onChange={handleFormChange} />
+        <label>Discount (%):</label>
+        <input type="number" value={discount} onChange={handleDiscountChange} />
+      </div>
 
-      {/* Discount */}
-      <input
-        type="number"
-        placeholder="Discount (%)"
-        value={discount}
-        onChange={(e) => setDiscount(e.target.value)}
-        className={styles.inputField}
-      />
+      {windows.map((win, index) => (
+        <div key={index} className={styles.windowSection}>
+          <h4 className={styles.windowHeader} onClick={() => toggleCollapse(index)}>
+            Curtain {index + 1}
+            <button type="button" onClick={() => deleteWindow(index)}>✕</button>
+          </h4>
 
-      {/* Curtain Entries */}
-      {windows.map((win, i) => (
-        <div key={i} className={styles.sectionBox}>
-          <h4>Curtain {i + 1}</h4>
-          {Object.keys(blankWindow).filter(k => k !== 'price' && k !== 'bracket' && k !== 'linearPrice' && k !== 'showBracket').map(key => (
-            <input
-              key={key}
-              name={key}
-              placeholder={key}
-              value={win[key]}
-              onChange={(e) => handleWindowChange(i, e)}
-              className={styles.inputField}
-            />
-          ))}
-
-          <p><strong>Price:</strong> ${win.price.toFixed(2)}</p>
-          <p><strong>Per Meter:</strong> ${win.linearPrice.toFixed(2)}</p>
-
-          <button type="button" onClick={() => toggleBracket(i)}>
-            {win.showBracket ? "Hide Bracket" : "Show Bracket"}
-          </button>
-          {win.showBracket && (
-            <p><strong>Bracket:</strong> ${win.bracket.toFixed(2)}</p>
+          {!collapsedSections.includes(index) && (
+            <div className={styles.inputGroup}>
+              <label>Room:</label>
+              <input name="room" value={win.room} onChange={(e) => handleWindowChange(index, e)} />
+              <label>Width (mm):</label>
+              <input name="width" type="number" value={win.width} onChange={(e) => handleWindowChange(index, e)} />
+              <label>Height (mm):</label>
+              <input name="height" type="number" value={win.height} onChange={(e) => handleWindowChange(index, e)} />
+              <label>Fabric:</label>
+              <select name="fabric" value={win.fabric} onChange={(e) => handleWindowChange(index, e)}>
+                <option value="">-- Select --</option>
+                {Object.keys(curtainFabricGroups).map(f => (
+                  <option key={f} value={f}>{f}</option>
+                ))}
+              </select>
+              <label>Color:</label>
+              <input name="color" value={win.color} onChange={(e) => handleWindowChange(index, e)} />
+              <label>Opening:</label>
+              <select name="opening" value={win.opening} onChange={(e) => handleWindowChange(index, e)}>
+                <option>Middle Opening</option>
+                <option>One Way Left</option>
+                <option>One Way Right</option>
+                <option>Other</option>
+              </select>
+              <label>Fit:</label>
+              <select name="fit" value={win.fit} onChange={(e) => handleWindowChange(index, e)}>
+                <option>Face Fit Under Cornice</option>
+                <option>Top Ceiling Fit</option>
+                <option>Other</option>
+              </select>
+              <label>Track Type:</label>
+              <select name="trackType" value={win.trackType} onChange={(e) => handleWindowChange(index, e)}>
+                <option>Standard</option>
+                <option>Designer</option>
+                <option>Other</option>
+              </select>
+              <label>Track Colour:</label>
+              <select name="trackColour" value={win.trackColour} onChange={(e) => handleWindowChange(index, e)}>
+                <option>White</option>
+                <option>Black</option>
+                <option>Grey</option>
+                <option>Silver</option>
+                <option>Other</option>
+              </select>
+              <label>Comments:</label>
+              <input name="comments" value={win.comments} onChange={(e) => handleWindowChange(index, e)} />
+              <p>Price: ${win.price.toFixed(2)}</p>
+              <p>Per Meter: ${win.linearPrice.toFixed(2)}</p>
+              <button type="button" onClick={() => toggleBracket(index)}>
+                {win.showBracket ? 'Hide Bracket' : 'Show Bracket'}
+              </button>
+              {win.showBracket && <p>Bracket: ${win.bracket.toFixed(2)}</p>}
+            </div>
           )}
-
-          <button type="button" onClick={() => deleteWindow(i)}>Delete</button>
         </div>
       ))}
 
-      <button type="button" onClick={addWindow}>Add Curtain</button>
-      <button type="submit">Submit</button>
+      <div className={styles.totalBox}>
+        Total: <strong>${totalPrice.toFixed(2)}</strong>
+      </div>
 
-      <p><strong>Total:</strong> ${totalPrice.toFixed(2)}</p>
+      <button type="button" onClick={addWindow} className={styles.addBtn}>➕ Add Curtain</button>
+      <button type="submit" className={styles.submitBtn}>✅ Submit</button>
     </form>
   );
 }
