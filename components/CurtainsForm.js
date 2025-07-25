@@ -51,7 +51,7 @@ export default function CurtainsForm() {
   const getNearestWidth = (width, group) => {
     const widths = pricingData
       .filter(p => p.Group === group)
-      .map(p => p.Width)
+      .map(p => Number(p.Width))
       .filter((v, i, a) => a.indexOf(v) === i)
       .sort((a, b) => a - b);
 
@@ -66,11 +66,15 @@ export default function CurtainsForm() {
     const nearestWidth = getNearestWidth(width, group);
     const dropBracket = height <= 3000 ? 3000 : 6000;
 
-    const match = groupItems.find(p => p.Width === nearestWidth && p.Drop === dropBracket);
+    const match = groupItems.find(p =>
+      Number(p.Width) === nearestWidth &&
+      Number(p.Drop) === dropBracket
+    );
+
     if (!match) return { price: 0, bracket: 0, linearPrice: 0 };
 
-    const mrp = match["MRP (Shown to Customer)"];
-    const baseCost = match["Cost Price (Your Cost)"];
+    const mrp = Number(match["MRP (Shown to Customer)"]);
+    const baseCost = Number(match["Cost Price (Your Cost)"]);
     const discountedPrice = discount ? mrp * (1 - discount / 100) : mrp;
     const widthInM = width / 1000;
     const linearRate = mrp / widthInM;
