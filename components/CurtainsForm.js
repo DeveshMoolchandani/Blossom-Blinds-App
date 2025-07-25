@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import styles from '../styles/Form.module.css';
-import fabricGroupMap from '../lib/curtainFabricGroups';
+import fabricGroupMap from '../lib/curtainFabricGroupMap';
 import pricingData from '../data/curtains_pricing_data.json';
 
 export default function CurtainsForm() {
@@ -48,33 +48,39 @@ export default function CurtainsForm() {
 
   const getGroup = (fabric) => fabricGroupMap[fabric] || null;
 
- const calculatePrice = (width, height, fabric) => {
-  const group = getGroup(fabric);
-  if (!group) return { price: 0, bracket: 0, linearPrice: 0 };
+  const getNearestWidth = (width, group) => {
+    const widths = pricingData
+      .filter(p => p.Group === group)
+      .map(p => p.Width)
+      .filter((v, i, a) => a.indexOf(v) === i)
+      .sort((a, b) => a - b);
 
-  const groupItems = pricingData.filter(p => p.Group === group);
-
-  const widths = [...new Set(groupItems.map(p => p.Width))].sort((a, b) => a - b);
-  const nearestWidth = widths.find(w => w >= width) || widths[widths.length - 1];
-
-  const dropBracket = height <= 3000 ? 3000 : 6000;
-
-  const match = groupItems.find(p => p.Width === nearestWidth && p.Drop === dropBracket);
-
-  if (!match) return { price: 0, bracket: 0, linearPrice: 0 };
-
-  const mrp = match["MRP (Shown to Customer)"];
-  const baseCost = match["Cost Price (Your Cost)"];
-  const discountedPrice = discount ? mrp * (1 - discount / 100) : mrp;
-  const widthInM = width / 1000;
-  const linearRate = mrp / widthInM;
-
-  return {
-    price: parseFloat(discountedPrice.toFixed(2)),
-    bracket: parseFloat(baseCost.toFixed(2)),
-    linearPrice: parseFloat(linearRate.toFixed(2))
+    return widths.find(w => w >= width) || widths[widths.length - 1];
   };
-};
+
+  const calculatePrice = (width, height, fabric) => {
+    const group = getGroup(fabric);
+    if (!group) return { price: 0, bracket: 0, linearPrice: 0 };
+
+    const groupItems = pricingData.filter(p => p.Group === group);
+    const nearestWidth = getNearestWidth(width, group);
+    const dropBracket = height <= 3000 ? 3000 : 6000;
+
+    const match = groupItems.find(p => p.Width === nearestWidth && p.Drop === dropBracket);
+    if (!match) return { price: 0, bracket: 0, linearPrice: 0 };
+
+    const mrp = match["MRP (Shown to Customer)"];
+    const baseCost = match["Cost Price (Your Cost)"];
+    const discountedPrice = discount ? mrp * (1 - discount / 100) : mrp;
+    const widthInM = width / 1000;
+    const linearRate = mrp / widthInM;
+
+    return {
+      price: parseFloat(discountedPrice.toFixed(2)),
+      bracket: parseFloat(baseCost.toFixed(2)),
+      linearPrice: parseFloat(linearRate.toFixed(2))
+    };
+  };
 
   const updatePrices = () => {
     const updated = windows.map(w => {
@@ -117,19 +123,12 @@ export default function CurtainsForm() {
     setTotalPrice(total);
   };
 
-  const toggleBracket = (index) => {
-    const updated = [...windows];
-    updated[index].showBracket = !updated[index].showBracket;
-    setWindows(updated);
-  };
-
   const addWindow = () => {
     setWindows([...windows, JSON.parse(JSON.stringify(blankWindow))]);
   };
 
   const deleteWindow = (i) => {
-    const confirmDelete = window.confirm("Delete this window?");
-    if (!confirmDelete) return;
+    if (!window.confirm("Delete this window?")) return;
     const updated = windows.filter((_, index) => index !== i);
     setWindows(updated);
     const total = updated.reduce((sum, w) => sum + (w.price || 0), 0);
@@ -174,7 +173,6 @@ export default function CurtainsForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const payload = {
       ...formData,
       windows,
@@ -244,33 +242,33 @@ export default function CurtainsForm() {
             <label>Opening:</label>
             <select name="opening" value={win.opening} onChange={(e) => handleWindowChange(index, e)}>
               <option value="">-- Select Opening --</option>
-              <option>Middle Opening</option>
-              <option>One Way Left</option>
-              <option>One Way Right</option>
-              <option>Other</option>
+              <option value="Middle Opening">Middle Opening</option>
+              <option value="One Way Left">One Way Left</option>
+              <option value="One Way Right">One Way Right</option>
+              <option value="Other">Other</option>
             </select>
             <label>Fit:</label>
             <select name="fit" value={win.fit} onChange={(e) => handleWindowChange(index, e)}>
               <option value="">-- Select Fit --</option>
-              <option>Face FIT Under Cornice</option>
-              <option>Top Ceiling Fit</option>
-              <option>Other</option>
+              <option value="Face FIT Under Cornice">Face FIT Under Cornice</option>
+              <option value="Top Ceiling Fit">Top Ceiling Fit</option>
+              <option value="Other">Other</option>
             </select>
             <label>Track Type:</label>
             <select name="trackType" value={win.trackType} onChange={(e) => handleWindowChange(index, e)}>
               <option value="">-- Select Track Type --</option>
-              <option>Standard</option>
-              <option>Designer</option>
-              <option>Other</option>
+              <option value="Standard">Standard</option>
+              <option value="Designer">Designer</option>
+              <option value="Other">Other</option>
             </select>
             <label>Track Colour:</label>
             <select name="trackColour" value={win.trackColour} onChange={(e) => handleWindowChange(index, e)}>
               <option value="">-- Select Track Colour --</option>
-              <option>White</option>
-              <option>Black</option>
-              <option>Grey</option>
-              <option>Silver</option>
-              <option>Other</option>
+              <option value="White">White</option>
+              <option value="Black">Black</option>
+              <option value="Grey">Grey</option>
+              <option value="Silver">Silver</option>
+              <option value="Other">Other</option>
             </select>
             <label>Comments:</label>
             <input type="text" name="comments" value={win.comments} onChange={(e) => handleWindowChange(index, e)} />
