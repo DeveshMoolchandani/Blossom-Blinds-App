@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import styles from '../styles/Form.module.css';
-import fabricGroupMap from '../lib/curtainFabricGroupMap';
+import fabricGroupMap from '../lib/curtainFabricGroup';
 import pricingData from '../data/curtains_pricing_data.json';
 
 export default function CurtainsForm() {
