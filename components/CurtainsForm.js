@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -30,11 +29,11 @@ export default function CurtainsForm() {
     comments: '',
     price: 0,
     bracket: 0,
-    linearPrice: 0
+    linearPrice: 0,
+    showBracket: false
   };
 
   const [windows, setWindows] = useState([JSON.parse(JSON.stringify(blankWindow))]);
-  const [collapsedSections, setCollapsedSections] = useState([]);
   const [discount, setDiscount] = useState('');
   const [totalPrice, setTotalPrice] = useState(0);
 
@@ -47,9 +46,7 @@ export default function CurtainsForm() {
     }));
   }, []);
 
-  const getGroupForFabric = (fabric) => {
-    return curtainFabricGroups[fabric] || null;
-  };
+  const getGroupForFabric = (fabric) => curtainFabricGroups[fabric] || null;
 
   const getNearestWidth = (width, group, height) => {
     const dropKey = height <= 3000 ? "Drop<=3000" : "Drop>3000";
@@ -120,6 +117,12 @@ export default function CurtainsForm() {
     const updated = windows.filter((_, i) => i !== index);
     setWindows(updated);
     updateTotalPrice(updated);
+  };
+
+  const toggleBracket = (index) => {
+    const updated = [...windows];
+    updated[index].showBracket = !updated[index].showBracket;
+    setWindows(updated);
   };
 
   const generatePDF = () => {
@@ -205,9 +208,61 @@ export default function CurtainsForm() {
   return (
     <form onSubmit={handleSubmit} className={styles.formContainer}>
       <h2 className={styles.formTitle}>Curtains Form</h2>
-      {/* Customer Info Section */}
-      {/* Windows Section - map each window with bracket hidden behind a dropdown */}
-      {/* Add Discount input, Total summary, Add Window, Submit */}
+
+      {/* Customer Info */}
+      {Object.keys(formData).map((key) => (
+        <input
+          key={key}
+          name={key}
+          placeholder={key}
+          value={formData[key]}
+          onChange={handleFormChange}
+          className={styles.inputField}
+        />
+      ))}
+
+      {/* Discount */}
+      <input
+        type="number"
+        placeholder="Discount (%)"
+        value={discount}
+        onChange={(e) => setDiscount(e.target.value)}
+        className={styles.inputField}
+      />
+
+      {/* Curtain Entries */}
+      {windows.map((win, i) => (
+        <div key={i} className={styles.sectionBox}>
+          <h4>Curtain {i + 1}</h4>
+          {Object.keys(blankWindow).filter(k => k !== 'price' && k !== 'bracket' && k !== 'linearPrice' && k !== 'showBracket').map(key => (
+            <input
+              key={key}
+              name={key}
+              placeholder={key}
+              value={win[key]}
+              onChange={(e) => handleWindowChange(i, e)}
+              className={styles.inputField}
+            />
+          ))}
+
+          <p><strong>Price:</strong> ${win.price.toFixed(2)}</p>
+          <p><strong>Per Meter:</strong> ${win.linearPrice.toFixed(2)}</p>
+
+          <button type="button" onClick={() => toggleBracket(i)}>
+            {win.showBracket ? "Hide Bracket" : "Show Bracket"}
+          </button>
+          {win.showBracket && (
+            <p><strong>Bracket:</strong> ${win.bracket.toFixed(2)}</p>
+          )}
+
+          <button type="button" onClick={() => deleteWindow(i)}>Delete</button>
+        </div>
+      ))}
+
+      <button type="button" onClick={addWindow}>Add Curtain</button>
+      <button type="submit">Submit</button>
+
+      <p><strong>Total:</strong> ${totalPrice.toFixed(2)}</p>
     </form>
   );
 }
