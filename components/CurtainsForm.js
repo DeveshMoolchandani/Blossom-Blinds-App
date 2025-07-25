@@ -70,15 +70,15 @@ export default function CurtainsForm() {
     if (!match) return { price: 0, bracket: 0, linearPrice: 0 };
 
     const widthInM = width / 1000;
-    const cp = match["Cost Price (Your Cost)"];
-    const mrp = (cp / widthInM + 60) * widthInM;
-    const final = discount ? mrp * (1 - discount / 100) : mrp;
-    const linear = mrp / widthInM;
+    const baseCost = match["Cost Price (Your Cost)"];
+    const linearRate = baseCost + 60;
+    const totalPrice = linearRate * widthInM;
+    const discountedPrice = discount ? totalPrice * (1 - discount / 100) : totalPrice;
 
     return {
-      price: parseFloat(final.toFixed(2)),
-      bracket: parseFloat(cp.toFixed(2)),
-      linearPrice: parseFloat(linear.toFixed(2))
+      price: parseFloat(discountedPrice.toFixed(2)),
+      bracket: parseFloat(baseCost.toFixed(2)),
+      linearPrice: parseFloat(linearRate.toFixed(2))
     };
   };
 
@@ -224,8 +224,6 @@ export default function CurtainsForm() {
         <input type="text" name="customerPhone" required value={formData.customerPhone} onChange={handleChange} />
         <label>Email:</label>
         <input type="email" name="customerEmail" value={formData.customerEmail} onChange={handleChange} />
-        <label>Discount (%):</label>
-        <input type="number" value={discount} onChange={(e) => setDiscount(e.target.value)} />
       </div>
 
       {windows.map((win, index) => (
@@ -289,6 +287,11 @@ export default function CurtainsForm() {
           </div>
         </div>
       ))}
+
+      <div className={styles.inputGroup}>
+        <label>Discount (%):</label>
+        <input type="number" value={discount} onChange={(e) => setDiscount(e.target.value)} />
+      </div>
 
       <div className={styles.totalBox}>
         Total: <strong>${totalPrice.toFixed(2)}</strong> — Discount: <strong>{discount || 0}%</strong>
