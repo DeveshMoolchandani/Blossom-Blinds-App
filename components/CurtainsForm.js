@@ -75,7 +75,8 @@ export default function CurtainsForm() {
 
     const mrp = Number(match["MRP (Shown to Customer)"]);
     const baseCost = Number(match["Cost Price (Your Cost)"]);
-    const discountedPrice = discount ? mrp * (1 - discount / 100) : mrp;
+   const discountValue = parseFloat(discount) || 0;
+const discountedPrice = mrp * (1 - discountValue / 100);
     const widthInM = width / 1000;
     const linearRate = mrp / widthInM;
 
