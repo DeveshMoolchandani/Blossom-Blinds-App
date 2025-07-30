@@ -74,28 +74,27 @@ export default function IndoorBlindsForm() {
     return numbers.find(n => n >= val) || numbers[numbers.length - 1];
   };
 
-const getPrice = (width, drop, fabric, color, appliedDiscount = 0) => {
-  const group = getGroupForFabric(fabric);
-  if (!group || color === 'OTHER') return 0;
+  const getPrice = (width, drop, fabric, color, appliedDiscount = 0) => {
+    const group = getGroupForFabric(fabric);
+    if (!group || color === 'OTHER') return 0;
 
-  const nearestWidth = getNearestSize(width, 'Width', group);
-  const nearestDrop = getNearestSize(drop, 'Drop', group);
+    const nearestWidth = getNearestSize(width, 'Width', group);
+    const nearestDrop = getNearestSize(drop, 'Drop', group);
 
-  const match = pricingData.find(entry =>
-    entry.Group === group &&
-    Number(entry.Width) === nearestWidth &&
-    Number(entry.Drop) === nearestDrop
-  );
+    const match = pricingData.find(entry =>
+      entry.Group === group &&
+      Number(entry.Width) === nearestWidth &&
+      Number(entry.Drop) === nearestDrop
+    );
 
-  if (!match) return 0;
+    if (!match) return 0;
 
-  const mrp = Number(match["MRP (Shown to Customer)"]);
-  const discountRate = appliedDiscount / 100;
-  const finalPrice = mrp * (1 - discountRate);
+    const mrp = Number(match["MRP (Shown to Customer)"]);
+    const discountRate = appliedDiscount / 100;
+    const finalPrice = mrp * (1 - discountRate);
 
-  return parseFloat(finalPrice.toFixed(2));
-};
-
+    return parseFloat(finalPrice.toFixed(2));
+  };
 
   const updateTotalPrice = (winArr) => {
     const total = winArr.reduce((acc, win) => acc + (parseFloat(win.price) || 0), 0);
@@ -117,8 +116,18 @@ const getPrice = (width, drop, fabric, color, appliedDiscount = 0) => {
     const f = updated[index].fabric;
     const c = updated[index].color;
 
+    // Width validation
+    if (name === "width" && w > 3000) {
+      alert("❌ Width cannot exceed 3000 mm.");
+      updated[index].width = "";
+      updated[index].price = 0;
+      setWindows(updated);
+      updateTotalPrice(updated);
+      return;
+    }
+
     if (!isNaN(w) && !isNaN(d) && f && c) {
-   updated[index].price = getPrice(w, d, f, c, parseFloat(discount) || 0);
+      updated[index].price = getPrice(w, d, f, c, parseFloat(discount) || 0);
     }
 
     setWindows(updated);
@@ -145,57 +154,56 @@ const getPrice = (width, drop, fabric, color, appliedDiscount = 0) => {
     updateTotalPrice(updated);
   };
 
-const handleDiscountChange = (e) => {
-  const val = parseFloat(e.target.value);
-  const safeVal = isNaN(val) ? 0 : val;
-  setDiscount(isNaN(val) ? '' : val);
+  const handleDiscountChange = (e) => {
+    const val = parseFloat(e.target.value);
+    const safeVal = isNaN(val) ? 0 : val;
+    setDiscount(isNaN(val) ? '' : val);
 
-  const updated = windows.map(win => {
-    const price = getPrice(win.width, win.drop, win.fabric, win.color, safeVal);
-    return { ...win, price };
-  });
-
-  setWindows(updated);
-  updateTotalPrice(updated);
-};
-
- const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  try {
-const payload = {
-  ...formData,
-  windows,
-  productType: 'Indoor Blinds',
-  discount,
-  totalPrice
-};
-
-console.log("🔍 SUBMITTING PAYLOAD:", payload); // ✅ Add this for debug
-
-    const response = await fetch('/api/submit', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
+    const updated = windows.map(win => {
+      const price = getPrice(win.width, win.drop, win.fabric, win.color, safeVal);
+      return { ...win, price };
     });
 
-    const result = await response.json();
+    setWindows(updated);
+    updateTotalPrice(updated);
+  };
 
-    if (result.success) {
-      alert("✅ Form submitted successfully!");
-      generatePDF(); // Keep PDF generation on success
-    } else {
-      console.error("❌ Submission error:", result.message);
-      alert("❌ Submission failed: " + (result.message || "Unknown error"));
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const payload = {
+        ...formData,
+        windows,
+        productType: 'Indoor Blinds',
+        discount,
+        totalPrice
+      };
+
+      console.log("🔍 SUBMITTING PAYLOAD:", payload);
+
+      const response = await fetch('/api/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert("✅ Form submitted successfully!");
+        generatePDF();
+      } else {
+        console.error("❌ Submission error:", result.message);
+        alert("❌ Submission failed: " + (result.message || "Unknown error"));
+      }
+    } catch (err) {
+      console.error("❌ Network or server error:", err);
+      alert("❌ Submission failed. Please check your internet or try again.");
     }
-  } catch (err) {
-    console.error("❌ Network or server error:", err);
-    alert("❌ Submission failed. Please check your internet or try again.");
-  }
-};
-
+  };
 
   const generatePDF = () => {
     const doc = new jsPDF();
@@ -262,7 +270,13 @@ console.log("🔍 SUBMITTING PAYLOAD:", payload); // ✅ Add this for debug
               <label>Room:</label>
               <input type="text" name="room" value={win.room} onChange={(e) => handleWindowChange(index, e)} />
               <label>Width (mm):</label>
-              <input type="number" name="width" value={win.width} onChange={(e) => handleWindowChange(index, e)} />
+              <input
+                type="number"
+                name="width"
+                value={win.width}
+                onChange={(e) => handleWindowChange(index, e)}
+                max="3000"
+              />
               <label>Drop (mm):</label>
               <input type="number" name="drop" value={win.drop} onChange={(e) => handleWindowChange(index, e)} />
               <label>Fabric:</label>
